@@ -268,6 +268,8 @@ fastkrr = function(x, y,
       n_threads = 1
     else
       n_threads = min(n_threads, max_threads - 1)
+  }else{
+    n_threads = 1
   }
 
 
