@@ -24,7 +24,7 @@ The 'FastKRR' implements its core computational operations in C++ via 'RcppArmad
 This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
 
 
-* Authorss: 
+* Authors: 
   + Gyeongmin Kim, Sungshin Women's University, rlarudals0824@gmail.com
   + Seyoung Lee, Sungshin Women's University, sudang0404@gmail.com
   + Miyoung Jang, Sungshin Women's University, miyoung9072@gmail.com
@@ -34,7 +34,7 @@ This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
 
 You can install the development version of FastKRR from [GitHub](https://github.com/kybak90/FastKRR) with:
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 # install.packages("pak")
 pak::pak("kybak90/FastKRR")
 ```
@@ -49,7 +49,7 @@ pak::pak("kybak90/FastKRR")
 
 ## Example
 
-This is a basic example of fitting a Gaussian kernel ridge regression estimator to a dataset ${(x_i, y_i)}_{i=1}^n$ using (1) exact computation, (2) the Nyström approximation, (3) pivoted Cholesky decomposition, and (4) random Fourier features.
+This is a basic example of fitting a Gaussian kernel ridge regression estimator to a dataset ${(x_i, y_i)}_{i=1}^n$ using (1) exact computation, (2) pivoted Cholesky decomposition, (3) Nyström approximation, and (4) random Fourier features.
 
 ```{r example}
 library(FastKRR)
