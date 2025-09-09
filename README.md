@@ -10,11 +10,11 @@ This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 3)**.
 
 ## Installation
 
-You can install the development version of FastKRR from [GitHub](https://github.com/jang-miyoung-041/FastKRR) with:
+You can install the development version of FastKRR from [GitHub](https://github.com/kybak90/FastKRR) with:
 
 ``` r
 # install.packages("pak")
-pak::pak("jang-miyoung-041/FastKRR")
+pak::pak("kybak90/FastKRR")
 ```
 
 ## Example
