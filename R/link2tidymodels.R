@@ -356,7 +356,11 @@ update.krr_reg <- function(object, parameters = NULL,
 #' @return A fitted KRR object (class includes \code{"krr"}).
 #'
 #' @examples
-#' \donttest{{
+#' \donttest{
+#' if (all(vapply(
+#'   c("parsnip","stats","modeldata"),
+#'   requireNamespace, quietly = TRUE, FUN.VALUE = logical(1)
+#' ))) {
 #' library(modeldata)
 #' library(dplyr)
 #'

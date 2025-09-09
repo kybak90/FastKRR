@@ -49,7 +49,11 @@ In particular, this package provides a \pkg{parsnip} model specification
 }
 
 \examples{
-\donttest{{
+\donttest{
+if (all(vapply(
+  c("parsnip","stats","modeldata"),
+  requireNamespace, quietly = TRUE, FUN.VALUE = logical(1)
+))) {
 library(modeldata)
 library(dplyr)
 
