@@ -47,16 +47,16 @@ X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 
 # model fitting - exact
-model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact")
+model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 
 # model fitting - pivoted
-model_pivoted = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "pivoted")
+model_pivoted = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "pivoted", verbose = FALSE)
 
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom")
+model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 # model fitting - rff
-model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff")
+model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
 
 
 # predict

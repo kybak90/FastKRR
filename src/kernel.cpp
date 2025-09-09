@@ -84,7 +84,9 @@ arma::mat make_kernel(const arma::mat& X,
         }
       }
     }else{ // for prediction
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(n_threads) schedule(static)
+#endif
       for(int i = 0; i < n; ++i){
         arma::rowvec xi = X.row(i);
         for(int j = 0; j < p; ++j){
