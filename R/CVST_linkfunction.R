@@ -357,7 +357,7 @@ fastkrr = function(x, y,
       "lambda" = lambda,
       "rho" = rho,
       "eps" = eps,
-      "n_thread" = n_threads
+      "n_threads" = n_threads
     ))
   }else if(opt == "nystrom"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
@@ -375,7 +375,7 @@ fastkrr = function(x, y,
       "R" = rslt$R,
       "lambda" = lambda,
       "rho" = rho,
-      "n_thread" = n_threads
+      "n_threads" = n_threads
     ))
   }
 }

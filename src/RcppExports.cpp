@@ -54,20 +54,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// nystrom_vec
-Rcpp::List nystrom_vec(const arma::mat& K, const arma::vec& y, int m, double lambda);
-RcppExport SEXP _FastKRR_nystrom_vec(SEXP KSEXP, SEXP ySEXP, SEXP mSEXP, SEXP lambdaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(nystrom_vec(K, y, m, lambda));
-    return rcpp_result_gen;
-END_RCPP
-}
 // pchol
 List pchol(const arma::mat& A, const arma::vec& y, double lambda, Rcpp::Nullable<int> m, double eps, bool verbose);
 RcppExport SEXP _FastKRR_pchol(SEXP ASEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP mSEXP, SEXP epsSEXP, SEXP verboseSEXP) {
@@ -127,15 +113,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_Z
-arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b);
-RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP) {
+arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b, int n_threads);
+RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_Z(X, W, b));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_Z(X, W, b, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -178,12 +165,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_make_kernel", (DL_FUNC) &_FastKRR_make_kernel, 5},
     {"_FastKRR_nystrom", (DL_FUNC) &_FastKRR_nystrom, 5},
     {"_FastKRR_nystrom_kernel", (DL_FUNC) &_FastKRR_nystrom_kernel, 3},
-    {"_FastKRR_nystrom_vec", (DL_FUNC) &_FastKRR_nystrom_vec, 4},
     {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 6},
     {"_FastKRR_pchol_kernel", (DL_FUNC) &_FastKRR_pchol_kernel, 4},
     {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
     {"_FastKRR_predict_rff", (DL_FUNC) &_FastKRR_predict_rff, 2},
-    {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 3},
+    {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 4},
     {"_FastKRR_get_num_procs", (DL_FUNC) &_FastKRR_get_num_procs, 0},
     {"_FastKRR_solve_chol", (DL_FUNC) &_FastKRR_solve_chol, 2},
     {"_FastKRR_SOLVE_sympd", (DL_FUNC) &_FastKRR_SOLVE_sympd, 2},

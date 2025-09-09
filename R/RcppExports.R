@@ -13,10 +13,6 @@ nystrom_kernel <- function(K, m_in = NULL, n_threads = 4L) {
     .Call(`_FastKRR_nystrom_kernel`, K, m_in, n_threads)
 }
 
-nystrom_vec <- function(K, y, m, lambda) {
-    .Call(`_FastKRR_nystrom_vec`, K, y, m, lambda)
-}
-
 pchol <- function(A, y, lambda, m = NULL, eps = 1e-6, verbose = TRUE) {
     .Call(`_FastKRR_pchol`, A, y, lambda, m, eps, verbose)
 }
@@ -33,8 +29,8 @@ predict_rff <- function(model, X_new) {
     .Call(`_FastKRR_predict_rff`, model, X_new)
 }
 
-make_Z <- function(X, W, b) {
-    .Call(`_FastKRR_make_Z`, X, W, b)
+make_Z <- function(X, W, b, n_threads = 4L) {
+    .Call(`_FastKRR_make_Z`, X, W, b, n_threads)
 }
 
 get_num_procs <- function() {
