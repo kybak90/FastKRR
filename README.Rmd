@@ -74,7 +74,7 @@ model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", v
 model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
 
 
-# predict
+# prediction
 new_n = 500
 new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
@@ -88,7 +88,7 @@ pred_rff = pred_krr(model_rff, new_x)
 
 The visualization of the fitted results is shown below.
 
-```{r echo = FALSE}
+```{r warning=FALSE, message=FALSE}
 library(ggplot2)
 data = data.frame(new_x, new_y)
 data$pred_exact = as.numeric(pred_exact)

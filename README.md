@@ -79,7 +79,7 @@ model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", v
 model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
 
 
-# predict
+# prediction
 new_n = 500
 new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
@@ -92,6 +92,20 @@ pred_rff = pred_krr(model_rff, new_x)
 
 The visualization of the fitted results is shown below.
 
-    #> Warning: package 'ggplot2' was built under R version 4.3.3
+``` r
+library(ggplot2)
+data = data.frame(new_x, new_y)
+data$pred_exact = as.numeric(pred_exact)
+data$pred_pivoted = as.numeric(pred_pivoted)
+data$pred_nystrom = as.numeric(pred_nystrom)
+data$pred_rff = as.numeric(pred_rff)
+
+ggplot(data = data, aes("x" = new_x, "y" = new_y)) +
+  geom_point("x" = new_x, "y" = new_y) +
+  geom_line(aes("x" = new_x, "y" = pred_exact, color = 'opt = "exact"'), linewidth=1.2) + 
+  geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'),linewidth=1.2) + 
+  geom_line(aes("x" = new_x, "y" = pred_nystrom, color = 'opt = "nystrom"'), linewidth=1.2) + 
+  geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2)
+```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
