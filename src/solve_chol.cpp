@@ -13,7 +13,7 @@ int get_num_procs() {
   #ifdef _OPENMP
     max_threads = omp_get_num_procs();
   #endif
-  return max_threads();
+  return max_threads;
 }
 
 
