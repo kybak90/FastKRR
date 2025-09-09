@@ -37,6 +37,10 @@ make_Z <- function(X, W, b) {
     .Call(`_FastKRR_make_Z`, X, W, b)
 }
 
+get_num_procs <- function() {
+    .Call(`_FastKRR_get_num_procs`)
+}
+
 solve_chol <- function(A, b) {
     .Call(`_FastKRR_solve_chol`, A, b)
 }

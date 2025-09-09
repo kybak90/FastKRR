@@ -139,6 +139,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_num_procs
+int get_num_procs();
+RcppExport SEXP _FastKRR_get_num_procs() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(get_num_procs());
+    return rcpp_result_gen;
+END_RCPP
+}
 // solve_chol
 arma::vec solve_chol(const arma::mat& A, const arma::vec& b);
 RcppExport SEXP _FastKRR_solve_chol(SEXP ASEXP, SEXP bSEXP) {
@@ -174,6 +184,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
     {"_FastKRR_predict_rff", (DL_FUNC) &_FastKRR_predict_rff, 2},
     {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 3},
+    {"_FastKRR_get_num_procs", (DL_FUNC) &_FastKRR_get_num_procs, 0},
     {"_FastKRR_solve_chol", (DL_FUNC) &_FastKRR_solve_chol, 2},
     {"_FastKRR_SOLVE_sympd", (DL_FUNC) &_FastKRR_SOLVE_sympd, 2},
     {NULL, NULL, 0}
