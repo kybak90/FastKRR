@@ -3,11 +3,31 @@ Package: FastKRR
 Title: Kernel Ridge Regression using the RcppArmadillo Package
 Version: 0.1.0
 Authors@R: 
-    person("Kwan-Young", "Bak", , "kybak@sungshin.ac.kr", role = c("aut", "cre"))
-Description: The 'FastKRR' implements its core computational operations in C++ via 'RcppArmadillo', enabling parallel execution, faster performance than pure R, and improved numerical stability. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three widely used scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR while retaining strong predictive performance. This combination of a compiled backend and scalable algorithms addresses limitations of packages that rely solely on exact computation, which is often impractical for large n. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method 'tunable.krr_reg()' (exposes tunable parameters to ('dials'/'tune'), and the direct fitting helper 'fit_krr()'; see their help pages for usage.
-License: GPL (>= 3)
-URL: https://github.com/professor/github/FastKRR,
+  c(person(given = "Gyeongmin",
+           family = "Kim",
+           role = c("aut"),
+           email = "rlarudals0824@gmail.com",
+           comment = "Sungshin Women's University"),
+    person(given = "Seyoung",
+           family = "Lee",
+           role = c("aut"),
+           email = "sudang0404@gmail.com",
+           comment = "Sungshin Women's University"),
+    person(given = "Miyoung",
+           family = "Jang",
+           role = c("aut"),
+           email = "miyoung9072@gmail.com",
+           comment = "Sungshin Women's University"),
+    person(given = "Kwan-Young",
+           family = "Bak",
+           role = c("aut", "cre", "cph"),
+           email = "kybak@sungshin.ac.kr",
+           comment = c(ORCID = "0000-0002-4541-160X", "Sungshin Women's University")))
+Description: The 'FastKRR' implements its core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method 'tunable.krr_reg()', and the direct fitting helper 'fit_krr()'.
+License: GPL (>= 2)
+URL: https://github.com/kybak90/FastKRR,
     https://www.tidymodels.org
+BugReports: https://github.com/kybak90/FastKRR/issues
 Imports: 
     CVST,
     generics,
@@ -25,5 +45,7 @@ Suggests:
     tidymodels,
     modeldata,
     dplyr
+SystemRequirements: 
+    OpenMP (optional)
 Encoding: UTF-8
 RoxygenNote: 7.3.3

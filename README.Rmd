@@ -18,23 +18,38 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of FastKRR is to fit a Kernel Ridge regression estimator based on a set of data $(x_i, y_i)^n_{i = 1}$.
+The 'FastKRR' implements its core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method 'tunable.krr_reg()', and the direct fitting helper 'fit_krr()'.
 
 **Dependencies:** Rcpp, RcppArmadillo, CVST, parsnip  
-This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 3)**.
+This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
+
+
+* Authorss: 
+  + Gyeongmin Kim, Sungshin Women's University, rlarudals0824@gmail.com
+  + Seyoung Lee, Sungshin Women's University, sudang0404@gmail.com
+  + Miyoung Jang, Sungshin Women's University, miyoung9072@gmail.com
+  + Kwan-Young Bak, professor at Sungshin Women's University, kybak@sungshin.ac.kr, [ORCID:0000-0002-4541-160X](https://orcid.org/0000-0002-4541-160X}{ORCID:0000-0002-4541-160X)
 
 ## Installation
 
 You can install the development version of FastKRR from [GitHub](https://github.com/kybak90/FastKRR) with:
 
-``` r
+```{r}
 # install.packages("pak")
 pak::pak("kybak90/FastKRR")
 ```
 
+
+<!-- ## Parallelization -->
+<!-- Some functions in **FastKRR** support parallel computation via OpenMP. -->
+<!-- - On Windows and most Linux systems, OpenMP is available by default, and computations will use multiple threads. -->
+<!-- - On macOS, if OpenMP is not installed, the package will run in single-threaded mode automatically. -->
+
+<!-- No special installation steps are required. -->
+
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example of fitting a Gaussian kernel ridge regression estimator to a dataset ${(x_i, y_i)}_{i=1}^n$ using (1) exact computation, (2) the Nyström approximation, (3) pivoted Cholesky decomposition, and (4) random Fourier features.
 
 ```{r example}
 library(FastKRR)
@@ -71,7 +86,7 @@ pred_rff = pred_krr(model_rff, new_x)
 ```
 
 
-You can also embed plots, for example:
+The visualization of the fitted results is shown below.
 
 ```{r echo = FALSE}
 library(ggplot2)
@@ -89,4 +104,3 @@ ggplot(data = data, aes("x" = new_x, "y" = new_y)) +
   geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
