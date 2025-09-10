@@ -28,8 +28,8 @@ List pchol(const arma::mat& A,
   arma::vec schur_diags = arma::sqrt(diag_B);
 
   // Select pivot for the first column
-  arma::uword max_idx = diag_B.index_max();;
-  double max_diag = diag_B.max(max_idx);
+  arma::uword max_idx = diag_B.index_max();
+  double max_diag = diag_B(max_idx);
 
   if(max_idx != 0){
     B.swap_cols(0, max_idx);
@@ -143,10 +143,10 @@ Rcpp::List pchol_kernel(const arma::mat& A,
   arma::vec schur_diags = arma::sqrt(diag_B);
 
   // 1st column pivot
-  arma::uword max_idx = diag_B.index_max();;
-  double max_diag = diag_B.max(max_idx);
+  arma::uword max_idx = diag_B.index_max();
+  double max_diag = diag_B(max_idx);
 
-  if(max_idx != 1){
+  if(max_idx != 0){
     B.swap_cols(0, max_idx);
     B.swap_rows(0, max_idx);
     P.swap_cols(0, max_idx);
