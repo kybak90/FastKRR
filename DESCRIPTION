@@ -1,6 +1,6 @@
 Type: Package
 Package: FastKRR
-Title: Kernel Ridge Regression using the RcppArmadillo Package
+Title: Kernel Ridge Regression using 'RcppArmadillo'
 Version: 0.1.0
 Authors@R: 
   c(person(given = "Gyeongmin",
