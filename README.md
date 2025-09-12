@@ -65,7 +65,8 @@ n = 1000; d = 1
 rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-
+c
+#> function (...)  .Primitive("c")
 # model fitting - exact
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 
@@ -109,3 +110,103 @@ ggplot(data = data, aes("x" = new_x, "y" = new_y)) +
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+## OpenMP support on macOS
+
+### 1) Install OpenMP runtime (Homebrew)
+
+    # Ensure Command Line Tools (if not already installed)
+    xcode-select --install || true
+
+    # Install/update Homebrew libomp
+    brew update
+    brew install libomp
+
+### 2) Configure `~/.R/Makevars` (works for Apple Silicon & Intel)
+
+Copy the block below into `~/.R/Makevars` (create the file if it does
+not exist).
+
+    # OpenMP on macOS with Apple Clang 
+    # Try to detect Homebrew prefix; fallback covers both Apple Silicon & Intel.
+    HOMEBREW_PREFIX := $(shell brew --prefix 2>/dev/null)
+    ifeq ($(strip $(HOMEBREW_PREFIX)),)
+      HOMEBREW_PREFIX := /opt/homebrew
+    endif
+
+    # Include & lib paths (also add Intel path as extra fallback)
+    CPPFLAGS  += -I$(HOMEBREW_PREFIX)/opt/libomp/include -I/usr/local/opt/libomp/include
+    LDFLAGS   += -L$(HOMEBREW_PREFIX)/opt/libomp/lib     -L/usr/local/opt/libomp/lib
+
+    # Standard R variables for OpenMP
+    SHLIB_OPENMP_CFLAGS   = -Xpreprocessor -fopenmp
+    SHLIB_OPENMP_CXXFLAGS = -Xpreprocessor -fopenmp
+    SHLIB_OPENMP_FCFLAGS  = -fopenmp
+    SHLIB_OPENMP_FFLAGS   = -fopenmp
+    SHLIB_OPENMP_LIBS     = -lomp
+
+> Restart R after editing `~/.R/Makevars` so the flags are picked up.
+
+### 3) Install FastKRR
+
+``` r
+#pak::pak("kybak90/FastKRR")
+library(FastKRR)
+```
+
+### 4) Example & OpenMP confirmation (inside FastKRR)
+
+``` r
+# example data set
+set.seed(1)
+n = 1000; d = 1
+rho = 1
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
+y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+
+# model fitting - nystrom
+model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+
+model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
+#> [1] 4
+```
+
+### 5) Show that FastKRR links to libomp (macOS only)
+
+The following code chunk inspects the dynamic libraries linked to the
+compiled FastKRR shared object (`.so` or `.dylib`).
+
+- If the output of `otool -L` contains a line with **`libomp.dylib`**,  
+  then the package binary is linked against the OpenMP runtime and  
+  **parallelization via OpenMP is available**.  
+- If `libomp.dylib` is absent, the package was compiled without OpenMP
+  support.
+
+``` r
+is_macos = (Sys.info()[["sysname"]] == "Darwin")
+
+if (is_macos) {
+  so_dir = system.file("libs", .Platform$r_arch, package = "FastKRR")
+  if (so_dir == "") so_dir = system.file("libs", package = "FastKRR")
+  so_files = list.files(so_dir, pattern = "\\.(so|dylib)$", full.names = TRUE)
+
+  so = if (length(so_files)) so_files[[1]] else ""
+  cat("FastKRR shared object:", so, "\n")
+
+  if (nzchar(so)) {
+    cmd = paste("otool -L", shQuote(so))
+    cat(system(cmd, intern = TRUE), sep = "\n")
+  } else {
+    cat("No shared object found. Is FastKRR installed with compiled code?\n")
+  }
+} else {
+  cat("Skipping otool check (not macOS).\n")
+}
+```
+
+When you run this on macOS, a successful OpenMP build will show a line
+such as:
+
+    /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libomp.dylib
+
+This confirms that OpenMP is enabled for FastKRR on your system.
