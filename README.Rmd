@@ -60,7 +60,7 @@ n = 1000; d = 1
 rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-c
+
 # model fitting - exact
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 

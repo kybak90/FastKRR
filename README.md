@@ -65,8 +65,7 @@ n = 1000; d = 1
 rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-c
-#> function (...)  .Primitive("c")
+
 # model fitting - exact
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 
@@ -168,7 +167,7 @@ y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
-#> [1] 4
+#> [1] 1
 ```
 
 ### 5) Show that FastKRR links to libomp (macOS only)
