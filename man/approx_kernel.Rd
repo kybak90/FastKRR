@@ -14,7 +14,8 @@ approx_kernel(
   rho,
   eps = 1e-06,
   W = NULL,
-  b = NULL
+  b = NULL,
+  n_threads = 4
 )
 }
 \arguments{
@@ -53,6 +54,11 @@ for stopping criterion of the Pivoted Cholesky decomposition.}
 \item{W}{Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}}
 
 \item{b}{Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0,\,2\pi ]}.}
+
+\item{n_threads}{Number of parallel threads.
+The default is 4. If the system does not support 4 threads,
+it automatically falls back to 1 thread. It is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}
+, and for the Laplace kernel (\code{kernel = "laplace"}).}
 }
 \value{
 A list containing the results of the low-rank kernel approximation.
@@ -61,33 +67,37 @@ The exact structure depends on the chosen method:
 \describe{
   \item{\code{"nystrom"}}{
     \itemize{
-      \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n}).
-      \item \code{m}: Number of landmark points used.
+      \item \code{K_approx}: Approximated kernel matrix (\eqn{K \in \mathbb{R}^{n \times n}})
+      from the Nyström approximation.
+      \item \code{m}: Approximation rank used for the low-rank kernel approximation.
       \item \code{n_threads}: Number of threads used in the computation.
+      \item \code{method}: The kernel approximation method actually used. The string \code{"nystrom"}.
     }
   }
 
   \item{\code{"pivoted"}}{
     \itemize{
-      \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n})
+      \item \code{K_approx}: Approximated kernel matrix (\eqn{K \in \mathbb{R}^{n \times n}})
             from the Pivoted Cholesky decomposition.
-      \item \code{rank}: Effective rank achieved. This may be smaller
-            than the requested \code{m} if the tolerance \code{eps}
-            triggered early stopping.
+      \item \code{m}: Effective rank actually used.
+            This value is at most the requested \code{m} and
+            may be smaller if early stopping is triggered by \code{eps}
+      \item \code{method}: The kernel approximation method actually used. The string \code{"pivoted"}.
     }
   }
 
   \item{\code{"rff"}}{
     \itemize{
-      \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n}).
-      \item \code{method}: The string \code{"rff"}.
+      \item \code{K_approx}: Approximated kernel matrix (\eqn{K \in \mathbb{R}^{n \times n}}).
+      \item \code{method}: \item \code{method}: The kernel approximation method actually used. The string \code{"rff"}.
       \item \code{m}: Number of random features used.
-      \item \code{d}: Input dimension.
-      \item \code{rho}: Kernel scaling parameter.
+      \item \code{d}: Input design matrix's dimension.
+      \item \code{rho}: Scaling parameter of the kernel.
       \item \code{W}: Random frequency matrix (\eqn{m \times d}).
       \item \code{b}: Random phase vector (\eqn{m}).
       \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied
             \code{W}, \code{b} were used, \code{FALSE} otherwise.
+      \item \code{n_threads}: Number of threads used in the computation.
     }
   }
 }
@@ -123,8 +133,8 @@ Requirements and what to supply:
     \itemize{
       \item \eqn{K} must be \code{NULL} (not used) and \code{X} must be provided with \code{d = ncol(X)}.
       \item To pre-supply random features, provide both
-            \code{W} (random frequency matrix \eqn{\in \mathbb{R}^{m \times d}}) and
-            \code{b} (random phase vector \eqn{\in \mathbb{R}^{m}}); error if only one is supplied or shapes mismatch.
+            \code{W} (random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}) and
+            \code{b} (random phase vector \eqn{b \in \mathbb{R}^{m}}); error if only one is supplied or shapes mismatch.
       \item When \code{W} and \code{b} are supplied by \code{\link{rff_random}}.
     }
   }
@@ -144,11 +154,13 @@ K = make_kernel(X, kernel = "gaussian", rho = 1)
 rff_pars = rff_random(m = m, d = d, rho = 1, kernel = "gaussian")
 K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
                       m = m, d = d, rho = 1,
-                      W = rff_pars$W, b = rff_pars$b)
+                      W = rff_pars$W, b = rff_pars$b,
+                      n_threads = 1)
 
 # Exapmle: Nystrom approximation
 K_nystrom = approx_kernel(K = K, opt = "nystrom",
-                          m = m, d = d, rho = 1)
+                          m = m, d = d, rho = 1,
+                          n_threads = 1)
 
 # Example: Pivoted Cholesky approximation
 K_pivoted = approx_kernel(K = K, opt = "pivoted",

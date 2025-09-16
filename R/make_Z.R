@@ -9,10 +9,13 @@
 #' @param W  Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
 #'       (row \eqn{j} is \eqn{\omega_j^\top \in \mathbb{R}^d}), drawn i.i.d. from the spectral density of the chosen kernel:
 #'       \itemize{
-#'         \item Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).
-#'         \item Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
+#'         \item Gaussian: \eqn{\omega_{jk} \sim \text{i.i.d. } \mathcal{N}(0, 2\rho)}.
+#'         \item Laplace: \eqn{\omega_{jk} \sim\text{i.i.d. } \mathrm{Cauchy}(0, 1/2\rho)}
 #'       }
 #' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.
+#' @param n_threads Number of parallel threads.
+#'   The default is 4. If the system does not support 4 threads,
+#'   it automatically falls back to 1 thread.
 #'
 #' @return Random Fourier Feature matrix \eqn{Z}
 #'

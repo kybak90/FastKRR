@@ -96,7 +96,9 @@ Additional components depend on the value of \code{opt}:
 
 \subsection{opt = \dQuote{pivoted}}{
 \describe{
-  \item{\code{m}}{Approximation rank used for the low-rank kernel approximation.}
+  \item{\code{m}}{Effective rank actually used.
+  This value is at most the requested \code{m} and
+  may be smaller if early stopping is triggered by \code{eps}.}
   \item{\code{K}}{Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
     computed by \code{make_kernel(..., opt = "exact")}.}
   \item{\code{PR}}{The method provides a low-rank approximation to the kernel matrix

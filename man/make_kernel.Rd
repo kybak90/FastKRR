@@ -11,7 +11,7 @@ If omitted, \eqn{X' = X} and \eqn{n' = n}.}
 
 \item{kernel}{Kernel type; one of \code{"gaussian"} or \code{"laplace"}.}
 
-\item{rho}{Kernel width parameter (\eqn{\rho > 0}). Default \code{1}.}
+\item{rho}{Kernel width parameter (\eqn{\rho > 0}).}
 
 \item{n_threads}{Number of parallel threads.
 The default is 4. If the system does not support 4 threads,

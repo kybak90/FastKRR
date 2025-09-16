@@ -11,7 +11,7 @@
 #' @param X_new  Second matrix \eqn{X' \in \mathbb{R}^{n' \times d}} (rows  \eqn{x'_j \in \mathbb{R}^d}).
 #' If omitted, \eqn{X' = X} and \eqn{n' = n}.
 #' @param kernel Kernel type; one of \code{"gaussian"} or \code{"laplace"}.
-#' @param rho Kernel width parameter (\eqn{\rho > 0}). Default \code{1}.
+#' @param rho Kernel width parameter (\eqn{\rho > 0}).
 #' @param n_threads Number of parallel threads.
 #'   The default is 4. If the system does not support 4 threads,
 #'   it automatically falls back to 1 thread.
