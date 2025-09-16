@@ -64,6 +64,46 @@
 #'   }
 #' }
 #'
+#' @return
+#' A list containing the results of the low-rank kernel approximation.
+#' The exact structure depends on the chosen method:
+#'
+#' \describe{
+#'   \item{\code{"nystrom"}}{
+#'     \itemize{
+#'       \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n}).
+#'       \item \code{m}: Number of landmark points used.
+#'       \item \code{n_threads}: Number of threads used in the computation.
+#'     }
+#'   }
+#'
+#'   \item{\code{"pivoted"}}{
+#'     \itemize{
+#'       \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n})
+#'             from the Pivoted Cholesky decomposition.
+#'       \item \code{rank}: Effective rank achieved. This may be smaller
+#'             than the requested \code{m} if the tolerance \code{eps}
+#'             triggered early stopping.
+#'     }
+#'   }
+#'
+#'   \item{\code{"rff"}}{
+#'     \itemize{
+#'       \item \code{K_approx}: Approximated kernel matrix (\eqn{n \times n}).
+#'       \item \code{method}: The string \code{"rff"}.
+#'       \item \code{m}: Number of random features used.
+#'       \item \code{d}: Input dimension.
+#'       \item \code{rho}: Kernel scaling parameter.
+#'       \item \code{W}: Random frequency matrix (\eqn{m \times d}).
+#'       \item \code{b}: Random phase vector (\eqn{m}).
+#'       \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied
+#'             \code{W}, \code{b} were used, \code{FALSE} otherwise.
+#'     }
+#'   }
+#' }
+#'
+#'
+#'
 #' @examples
 #' # data setting
 #' set.seed(1)
