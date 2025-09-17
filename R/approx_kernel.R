@@ -97,7 +97,7 @@
 #'   \item{\code{"rff"}}{
 #'     \itemize{
 #'       \item \code{K_approx}: Approximated kernel matrix (\eqn{K \in \mathbb{R}^{n \times n}}).
-#'       \item \code{method}: \item \code{method}: The kernel approximation method actually used. The string \code{"rff"}.
+#'       \item \code{method}: The kernel approximation method actually used. The string \code{"rff"}.
 #'       \item \code{m}: Number of random features used.
 #'       \item \code{d}: Input design matrix's dimension.
 #'       \item \code{rho}: Scaling parameter of the kernel.
