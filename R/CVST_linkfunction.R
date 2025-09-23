@@ -292,18 +292,26 @@ fastkrr = function(x, y,
   # Select best hyper parameter via CVST
   if(is.vector(lambda)){
     data = CVST::constructData(x, y)
-    if(opt == "exact")
+    if(opt == "exact"){
       ojct = CVST::constructLearner(krr_fit_exact, krr_pred)
-    else if(opt == "pivoted")
+      param_sets = CVST::constructParams(kernel = kernel, rho = rho, lambda = lambda,
+                                         n_threads = n_threads, verbose = verbose)
+    }else if(opt == "pivoted"){
       ojct = CVST::constructLearner(krr_fit_pivoted, krr_pred)
-    else if (opt == "nystrom")
+      param_sets = CVST::constructParams(kernel = kernel, rate = rate, eps = eps,
+                                         rho = rho, lambda = lambda,
+                                         n_threads = n_threads, verbose = verbose)
+    }else if (opt == "nystrom"){
       ojct = CVST::constructLearner(krr_fit_nystrom, krr_pred)
-    else if(opt == "rff")
+      param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+                                         rho = rho, lambda = lambda,
+                                         n_threads = n_threads, verbose = verbose)
+    }else if(opt == "rff"){
       ojct = CVST::constructLearner(krr_fit_rff, krr_pred_rff)
-
-    param_sets = CVST::constructParams(kernel = kernel, rate = rate, eps = eps,
-                                       rho = rho, lambda = lambda,
-                                       n_threads = n_threads, verbose = verbose)
+      param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+                                         rho = rho, lambda = lambda,
+                                         n_threads = n_threads, verbose = verbose)
+    }
     best_param = CVSTmethod(data, ojct, param_sets)
     lambda = best_param[[1]]$lambda
   }
