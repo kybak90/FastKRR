@@ -35,8 +35,26 @@ This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
 
 ## Installation
 
-You can install the development version of FastKRR from
-[GitHub](https://github.com/kybak90/FastKRR) with:
+FastKRR is available both on CRAN (stable release) and GitHub
+(development version).
+
+### Option 1: Install from CRAN
+
+This installs the latest stable version. On macOS, CRAN binaries are
+built without OpenMP support. If you need OpenMP, see the note below
+about installing from source.
+
+``` r
+# CRAN binary (no OpenMP on macOS)
+install.packages("FastKRR")            
+
+# CRAN source build (enables OpenMP if configured)
+# install.packages("FastKRR", type="source")  
+```
+
+### Option 2: Install from GitHub
+
+This installs the development version (always built from source).
 
 ``` r
 # install.packages("pak")
@@ -61,10 +79,10 @@ library(FastKRR)
 
 # example data set
 set.seed(1)
-n = 1000; d = 1
+n = 1000
 rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+X = runif(n, 0, 1)
+y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
 # model fitting - exact
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
@@ -81,8 +99,7 @@ model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose =
 
 # prediction
 new_n = 500
-new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
-new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
+new_x = matrix(runif(new_n, 0, 1), nrow = new_n)
 
 pred_exact = pred_krr(model_exact, new_x)
 pred_pivoted = pred_krr(model_pivoted, new_x)
@@ -94,21 +111,24 @@ The visualization of the fitted results is shown below.
 
 ``` r
 library(ggplot2)
-data = data.frame(new_x, new_y)
+data = data.frame(new_x)
 data$pred_exact = as.numeric(pred_exact)
 data$pred_pivoted = as.numeric(pred_pivoted)
 data$pred_nystrom = as.numeric(pred_nystrom)
 data$pred_rff = as.numeric(pred_rff)
 
-ggplot(data = data, aes("x" = new_x, "y" = new_y)) +
-  geom_point("x" = new_x, "y" = new_y) +
+data_train = data.frame(x = X, y = y)
+
+ggplot(data = data) +
   geom_line(aes("x" = new_x, "y" = pred_exact, color = 'opt = "exact"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'),linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_nystrom, color = 'opt = "nystrom"'), linewidth=1.2) + 
-  geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2)
+  geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2) +
+  geom_point(data = data_train, aes(x = x, y = y), col = "gray", alpha = 0.2) +
+  theme_minimal()
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ## OpenMP support on macOS
 
@@ -148,9 +168,17 @@ not exist).
 
 ### 3) Install FastKRR
 
+By default, CRAN binary packages on macOS are built without OpenMP,
+because Apple’s toolchain does not enable it when CRAN compiles
+binaries. To enable OpenMP, you must install from source after setting
+up your system:
+
 ``` r
-#pak::pak("kybak90/FastKRR")
-library(FastKRR)
+# Install from CRAN source
+install.packages("FastKRR", type = "source")
+
+# Or install directly from GitHub (also source build)
+pak::pak("kybak90/FastKRR")
 ```
 
 ### 4) Example & OpenMP confirmation (inside FastKRR)
@@ -158,16 +186,16 @@ library(FastKRR)
 ``` r
 # example data set
 set.seed(1)
-n = 1000; d = 1
+n = 1000
 rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+X = runif(n, 0, 1)
+y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
 # model fitting - nystrom
 model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
-#> [1] 1
+#> [1] 4
 ```
 
 ### 5) Show that FastKRR links to libomp (macOS only)

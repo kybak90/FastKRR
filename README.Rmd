@@ -73,8 +73,8 @@ library(FastKRR)
 set.seed(1)
 n = 1000
 rho = 1
-X = matrix(runif(n, 0, 1), nrow = n)
-y = as.vector(sin(2*pi*X^3) + rnorm(n, 0, 0.1))
+X = runif(n, 0, 1)
+y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
 # model fitting - exact
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
@@ -181,8 +181,8 @@ pak::pak("kybak90/FastKRR")
 set.seed(1)
 n = 1000
 rho = 1
-X = matrix(runif(n, 0, 1), nrow = n)
-y = as.vector(sin(2*pi*X^3) + rnorm(n, 0, 0.1))
+X = runif(n, 0, 1)
+y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
 # model fitting - nystrom
 model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
