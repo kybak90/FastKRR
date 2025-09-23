@@ -114,7 +114,7 @@ data_train = data.frame(x = X, y = y)
 
 ggplot(data = data) +
   geom_line(aes("x" = new_x, "y" = pred_exact, color = 'opt = "exact"'), linewidth=1.2) + 
-  geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'),linewidth=1.2) + 
+  geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_nystrom, color = 'opt = "nystrom"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2) +
   geom_point(data = data_train, aes(x = x, y = y), col = "gray", alpha = 0.2) +
