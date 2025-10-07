@@ -209,7 +209,7 @@ approx_kernel = function(K = NULL, X = NULL,
     Z = make_Z(X, W, b, n_threads = n_threads )
     K_approx = tcrossprod(Z)
 
-    attr(result_values, "K_approx") = tcrossprod(Z)
+    attr(result_values, "K_approx") = K_approx
     class(attr(result_values, "K_approx")) = "kernel_matrix"
     attr(result_values, "m") = m_used
     attr(result_values, "d") = d
