@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // make_kernel
-arma::mat make_kernel(const arma::mat& X, Nullable<NumericMatrix> X_new, std::string kernel, double rho, int n_threads);
+Rcpp::NumericMatrix make_kernel(const arma::mat& X, Nullable<NumericMatrix> X_new, std::string kernel, double rho, int n_threads);
 RcppExport SEXP _FastKRR_make_kernel(SEXP XSEXP, SEXP X_newSEXP, SEXP kernelSEXP, SEXP rhoSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -100,18 +100,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// predict_rff
-arma::mat predict_rff(List model, arma::mat X_new);
-RcppExport SEXP _FastKRR_predict_rff(SEXP modelSEXP, SEXP X_newSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X_new(X_newSEXP);
-    rcpp_result_gen = Rcpp::wrap(predict_rff(model, X_new));
-    return rcpp_result_gen;
-END_RCPP
-}
 // make_Z
 arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b, int n_threads);
 RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP, SEXP n_threadsSEXP) {
@@ -168,7 +156,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 6},
     {"_FastKRR_pchol_kernel", (DL_FUNC) &_FastKRR_pchol_kernel, 4},
     {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
-    {"_FastKRR_predict_rff", (DL_FUNC) &_FastKRR_predict_rff, 2},
     {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 4},
     {"_FastKRR_get_num_procs", (DL_FUNC) &_FastKRR_get_num_procs, 0},
     {"_FastKRR_solve_chol", (DL_FUNC) &_FastKRR_solve_chol, 2},

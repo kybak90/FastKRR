@@ -8,7 +8,7 @@ using namespace Rcpp;
 using namespace arma;
 
 // [[Rcpp::export]]
-arma::mat make_kernel(const arma::mat& X,
+Rcpp::NumericMatrix make_kernel(const arma::mat& X,
                       Nullable<NumericMatrix> X_new = R_NilValue,
                       std::string kernel = "gaussian",
                       double rho = 0,
@@ -102,5 +102,9 @@ arma::mat make_kernel(const arma::mat& X,
     Rcpp::stop("Unsupported kernel: Please choose either 'gaussian' or 'laplace'");
   }
 
-  return K;
+  Rcpp::NumericMatrix K_out = Rcpp::wrap(K);
+  K_out.attr("class") = Rcpp::CharacterVector::create("kernel_matrix");
+
+
+  return K_out;
 }

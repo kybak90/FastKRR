@@ -143,8 +143,10 @@ approx_kernel = function(K = NULL, X = NULL,
                          kernel = c("gaussian", "laplace"),
                          m = NULL, d, rho, eps = 1e-6,
                          W = NULL, b = NULL, n_threads = 4) {
+  call   = match.call()
   opt    = match.arg(opt)
   kernel = match.arg(kernel)
+
 
   # Adjust number of threads only for heavy computation cases
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
@@ -160,6 +162,12 @@ approx_kernel = function(K = NULL, X = NULL,
   if (missing(d) || is.null(d))   stop("'d' must be provided and non-NULL.")
   if (missing(rho) || is.null(rho)) stop("'rho' must be provided and non-NULL.")
 
+
+  result_values = list()
+  class(result_values) = "approx_kernel"
+  attr(result_values, "call") = call
+  attr(result_values, "opt") = opt
+
   if (opt %in% c("nystrom", "pivoted")) {
     if (is.null(K)) stop("For opt='", opt, "', argument 'K' must be provided (not NULL).")
     n = nrow(K)
@@ -167,13 +175,20 @@ approx_kernel = function(K = NULL, X = NULL,
     m = as.integer(max(1, min(n, floor(m))))
 
     if (opt == "nystrom") {
-      out = nystrom_kernel(K, m, n_threads = n_threads)
-      out$method = "nystrom"
-      return(out)
+      rslt = nystrom_kernel(K, m, n_threads = n_threads)
+      attr(result_values, "K_approx") = rslt$K_approx
+      class(attr(result_values, "K_approx")) = "kernel_matrix"
+      attr(result_values, "m") = rslt$m
+      attr(result_values, "n_threads") = rslt$n_threads
+
+      return(result_values)
     } else {
-      out = pchol_kernel(K, m, eps = eps)
-      out$method = "pivoted"
-      return(out)
+      rslt = pchol_kernel(K, m, eps = eps)
+      attr(result_values, "K_approx") = rslt$K_approx
+      class(attr(result_values, "K_approx")) = "kernel_matrix"
+      attr(result_values, "m") = rslt$rank
+      attr(result_values, "eps") = rslt$eps
+      return(result_values)
     }
   }
 
@@ -192,10 +207,19 @@ approx_kernel = function(K = NULL, X = NULL,
 
     m_used = nrow(W)
     Z = make_Z(X, W, b, n_threads = n_threads )
-    K_approx = Z %*% t(Z)
-    return(list(K_approx = K_approx, method = "rff",
-                m = m_used, d = d, rho = rho, W = W, b = b,
-                used_supplied_Wb = TRUE, n_threads = n_threads))
+    K_approx = tcrossprod(Z)
+
+    attr(result_values, "K_approx") = tcrossprod(Z)
+    class(attr(result_values, "K_approx")) = "kernel_matrix"
+    attr(result_values, "m") = m_used
+    attr(result_values, "d") = d
+    attr(result_values, "rho") = rho
+    attr(result_values, "W") = W
+    attr(result_values, "b") = b
+    attr(result_values, "used_supplied_Wb") = TRUE
+    attr(result_values, "n_threads") = n_threads
+
+    return(result_values)
   }
 
   if (is.null(m)) m = n / 10 * log(d + 5)
@@ -209,9 +233,16 @@ approx_kernel = function(K = NULL, X = NULL,
   rb = rff_random(m = m, rho = rho, d = d, kernel = kernel)
   W = rb$W; b = rb$b
   Z = make_Z(X, W, b, n_threads = n_threads)
-  K_approx = Z %*% t(Z)
 
-  list(K_approx = K_approx, method = "rff",
-       m = m, d = d, rho = rho, W = W, b = b,
-       used_supplied_Wb = FALSE, n_threads = n_threads)
+  attr(result_values, "K_approx") = tcrossprod(Z)
+  class(attr(result_values, "K_approx")) = "kernel_matrix"
+  attr(result_values, "m") = m_used
+  attr(result_values, "d") = d
+  attr(result_values, "rho") = rho
+  attr(result_values, "W") = W
+  attr(result_values, "b") = b
+  attr(result_values, "used_supplied_Wb") = FALSE
+  attr(result_values, "n_threads") = n_threads
+
+  return(result_values)
 }
