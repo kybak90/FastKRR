@@ -25,10 +25,6 @@ rff <- function(X, y, W, b, lambda, n_threads = 4L) {
     .Call(`_FastKRR_rff`, X, y, W, b, lambda, n_threads)
 }
 
-predict_rff <- function(model, X_new) {
-    .Call(`_FastKRR_predict_rff`, model, X_new)
-}
-
 make_Z <- function(X, W, b, n_threads = 4L) {
     .Call(`_FastKRR_make_Z`, X, W, b, n_threads)
 }

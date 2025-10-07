@@ -222,6 +222,7 @@ Rcpp::List pchol_kernel(const arma::mat& A,
 
   return Rcpp::List::create(
     Rcpp::Named("K_approx") = PRtPR,
-    Rcpp::Named("rank") = rank
+    Rcpp::Named("rank") = rank,
+    Rcpp::Named("eps") = eps
   );
 }

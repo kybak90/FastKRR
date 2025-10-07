@@ -1,7 +1,7 @@
 Type: Package
 Package: FastKRR
 Title: Kernel Ridge Regression using 'RcppArmadillo'
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
   c(person(given = "Gyeongmin",
            family = "Kim",
@@ -23,7 +23,7 @@ Authors@R:
            role = c("aut", "cre", "cph"),
            email = "kybak@sungshin.ac.kr",
            comment = c(ORCID = "0000-0002-4541-160X", "Sungshin Women's University")))
-Description: Provides core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method tunable.krr_reg(), and the direct fitting helper fit_krr(). To understand the theoretical background, one can refer to Wainwright (2019) <doi:10.1017/9781108627771>.
+Description: Provides core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', and the S3 method tunable.krr_reg(). To understand the theoretical background, one can refer to Wainwright (2019) <doi:10.1017/9781108627771>.
 License: GPL (>= 2)
 URL: https://github.com/kybak90/FastKRR,
     https://www.tidymodels.org

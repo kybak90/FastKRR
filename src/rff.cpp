@@ -57,18 +57,6 @@ List rff(const arma::mat& X,
 }
 
 
-// [[Rcpp::export]]
-arma::mat predict_rff(List model, arma::mat X_new) {
-  arma::mat W = as<arma::mat>(model["W"]);
-  arma::vec b = as<arma::vec>(model["b"]);
-  arma::mat coef_hat = as<arma::mat>(model["coefficients"]);
-  int n_new = X_new.n_rows;
-  int m = W.n_rows;
-
-  arma::mat Z_new = arma::cos(X_new * W.t() + arma::repmat(b.t(), n_new, 1)) * std::sqrt(2.0/m);
-
-  return Z_new * coef_hat;
-}
 
 
 // [[Rcpp::export]]

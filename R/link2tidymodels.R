@@ -100,7 +100,7 @@
 #'
 #' # Finalized model spec using best parameter
 #' final_spec = finalize_model(krr_spec, best_params)
-#' final_wf <- workflow() %>%
+#' final_wf = workflow() %>%
 #'   add_recipe(rec) %>%
 #'   add_model(final_spec)
 #'
@@ -114,12 +114,12 @@
 #' }}
 #'
 #' @export
-krr_reg <- function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
+krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
                     n_threads = NULL, m = NULL, rho = NULL, penalty = NULL, fastcv = NULL) {
   if (mode != "regression") {
     rlang::abort("`mode` should be 'regression'.")
   }
-  args <- list(
+  args = list(
     kernel  = rlang::enquo(kernel),
     opt     = rlang::enquo(opt),
     m       = rlang::enquo(m),
@@ -154,7 +154,7 @@ krr_reg <- function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
 #' @importFrom generics tunable
 #' @importFrom tibble tibble
 #' @export
-tunable.krr_reg <- function(x, ...) {
+tunable.krr_reg = function(x, ...) {
   tibble::tibble(
     name = "penalty",
     call_info = list(list(pkg = "dials", fun = "penalty", range = c(-10, -3))),
@@ -168,10 +168,10 @@ tunable.krr_reg <- function(x, ...) {
 # ===================================================
 # helper: remove an existing parsnip model registration
 # ===================================================
-.reset_parsnip_model <- function(model) {
+.reset_parsnip_model = function(model) {
   if (!requireNamespace("parsnip", quietly = TRUE)) return(invisible())
-  get_model_env <- get("get_model_env", envir = asNamespace("parsnip"))
-  env <- get_model_env()
+  get_model_env = get("get_model_env", envir = asNamespace("parsnip"))
+  env = get_model_env()
   if (exists(model, envir = env, inherits = FALSE)) {
     rm(list = model, envir = env)
   }
@@ -182,8 +182,8 @@ tunable.krr_reg <- function(x, ...) {
 # =========================
 make_krr_reg = function(){
   # Idempotent guard: do nothing if already registered
-  get_model_env <- get("get_model_env", envir = asNamespace("parsnip"))
-  env <- get_model_env()
+  get_model_env = get("get_model_env", envir = asNamespace("parsnip"))
+  env = get_model_env()
   if (exists("krr_reg", envir = env, inherits = FALSE)) {
     return(invisible(NULL))
   }
@@ -202,7 +202,7 @@ make_krr_reg = function(){
     eng      = "fastkrr",
     parsnip  = "penalty",
     original = "lambda",
-    func     = list(pkg = "base", fun = "identity"),
+    func     = list(pkg = "dials", fun = "penalty"),# func     = list(pkg = "base", fun = "identity"),
     has_submodel = FALSE
   )
 
@@ -244,7 +244,7 @@ make_krr_reg = function(){
   )
 
   # 5) prediction function mapping
-  #    pred_krr(model, newdata) -> numeric vector
+  #    predict(model, newdata) -> numeric vector
   parsnip::set_pred(
     model = "krr_reg",
     eng   = "fastkrr",
@@ -253,9 +253,9 @@ make_krr_reg = function(){
     value = list(
       pre  = NULL,
       post = NULL,
-      func = c(pkg = "FastKRR", fun = "pred_krr"),
+      func = c(fun = "predict"),
       args = list(
-        model   = rlang::expr(object$fit),
+        object = rlang::expr(object$fit),  ### model   = rlang::expr(object$fit)
         newdata = rlang::expr(new_data)
       )
     )
@@ -278,7 +278,7 @@ make_krr_reg = function(){
 # =========================
 # package load hook — force reset and re-register on every load
 # =========================
-.onLoad <- function(libname, pkgname) {
+.onLoad = function(libname, pkgname) {
   if (!requireNamespace("parsnip", quietly = TRUE)) return(invisible())
 
 
@@ -295,7 +295,7 @@ make_krr_reg = function(){
 # =========================
 #' @importFrom stats update
 #' @exportS3Method update krr_reg
-update.krr_reg <- function(object, parameters = NULL,
+update.krr_reg = function(object, parameters = NULL,
                            kernel = NULL, opt = NULL, m = NULL, eps = NULL,
                            n_threads = NULL, rho = NULL, fastcv = NULL, penalty = NULL,
                            fresh = FALSE, ...) {
@@ -308,118 +308,17 @@ update.krr_reg <- function(object, parameters = NULL,
       parameters = parameters, fresh = fresh, ...
     ))
   }
-  args_new <- rlang::enquos(
+  args_new = rlang::enquos(
     kernel=kernel, opt=opt, m=m, eps=eps, n_threads=n_threads,
     rho=rho, fastcv=fastcv, penalty=penalty,
     .ignore_empty="all"
   )
-  object$args <- if (fresh) args_new else utils::modifyList(object$args, args_new)
+  object$args = if (fresh) args_new else utils::modifyList(object$args, args_new)
   object
 }
 
 
 
-# ===============================================
-# (optional) formula helper
-# ===============================================
-#' Fit Kernel Ridge Regression
-#'
-#' @description
-#' `fit_krr()` fits Kernel Ridge Regression (KRR) either from a
-#' design matrix (\code{x}) with a response (\code{y}), or via a formula interface.
-#' The function is designed to be used with the tidymodels stack.
-#' In particular, this package provides a \pkg{parsnip} model specification
-#' \code{krr_reg()} with the engine \code{"fastkrr"}, so you can fit KRR inside
-#' \pkg{recipes}/\pkg{workflows} pipelines just like any other tidymodels model.
-#'
-#' @section Tidymodels integration:
-#' \itemize{
-#' \item Use \code{krr_reg(mode = "regression", ...) \%>\% parsnip::set_engine("fastkrr")}
-#'   to select the FastKRR engine.
-#' \item Combine with \pkg{recipes} and \pkg{workflows} to build modular pipelines for
-#'   preprocessing, resampling, and evaluation.
-#' }
-#'
-#' @param x For the base method, a numeric design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
-#'   For the formula method, a model formula.
-#' @param y Response vector \eqn{y \in \mathbb{R}^n}.
-#' @param data A data frame (formula method).
-#' @param intercept If \code{FALSE}, the formula method removes the
-#'   intercept term by updating the terms to \code{.~.-1}. Default: \code{FALSE}.
-#' @param ... Additional arguments passed to the underlying engine
-#'   (e.g., \code{"kernel"}, \code{"rho"}, \code{"penalty"}, \code{"opt"},
-#'    \code{"m"}, \code{"fastcv"}, etc.).
-#'
-#' @seealso \code{\link{krr_reg}}, \pkg{parsnip}, \pkg{workflows},
-#'   \pkg{recipes}, \pkg{tidymodels}
-#'
-#' @return A fitted KRR object (class includes \code{"krr"}).
-#'
-#' @examples
-#' \donttest{
-#' if (all(vapply(
-#'   c("parsnip","stats","modeldata"),
-#'   requireNamespace, quietly = TRUE, FUN.VALUE = logical(1)
-#' ))) {
-#' library(modeldata)
-#' library(dplyr)
-#'
-#' # Example : matrix interface
-#' # Data analysis
-#' data(ames)
-#' ames = ames %>% mutate(Sale_Price = log10(Sale_Price))
-#'
-#' set.seed(502)
-#' x = as.matrix(ames[, c("Longitude", "Latitude")])
-#' y = ames[, "Sale_Price", drop = TRUE]
-#'
-#' fit1 = fit_krr(
-#'   x, y,
-#'   kernel = "gaussian",
-#'   opt    = "exact",
-#'   rho    = 1,
-#'   lambda = 1e-4
-#' )
-#'
-#' # Example : formula interface
-#' fit2 = fit_krr(
-#'   Sale_Price ~ .,
-#'   data   = ames,
-#'   kernel = "gaussian",
-#'   opt    = "exact",
-#'   rho    = 1,
-#'   lambda = 1e-4
-#' )
-#' }}
-#'
-#' @importFrom stats model.frame model.matrix model.response update
-#' @rdname fit_krr
-#' @export
-fit_krr = function(x, ...) UseMethod("fit_krr")
-
-#' @rdname fit_krr
-#' @exportS3Method fit_krr default
-fit_krr.default = function(x, y, ...) {
-  fastkrr(x, y, ...)
-}
-
-#' @rdname fit_krr
-#' @exportS3Method fit_krr formula
-fit_krr.formula = function(x, data, intercept = FALSE, ...) {
-  formula = x
-  mf  = model.frame(formula, data)
-  trm = attr(mf, "terms")
-  if (!intercept) trm = update(trm, . ~ . - 1)
-
-  y = model.response(mf)
-  x = model.matrix(trm, data)
-
-  fit = fastkrr(x, y, ...)
-  fit$terms = trm
-  fit$from_formula = TRUE
-  class(fit) = unique(c("krr", class(fit)))
-  fit
-}
 
 utils::globalVariables(c(
   "x","y","opt","m", "eps","n_threads","rho","penalty","fastcv","object","new_data"

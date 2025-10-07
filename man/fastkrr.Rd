@@ -169,6 +169,7 @@ The function performs several input checks and automatic adjustments:
 }
 }
 \examples{
+# Data setting
 set.seed(1)
 lambda = 1e-4
 d = 1

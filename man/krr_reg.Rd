@@ -124,7 +124,7 @@ best_params = select_best(tune_results, metric = "rmse")
 
 # Finalized model spec using best parameter
 final_spec = finalize_model(krr_spec, best_params)
-final_wf <- workflow() \%>\%
+final_wf = workflow() \%>\%
   add_recipe(rec) \%>\%
   add_model(final_spec)
 
