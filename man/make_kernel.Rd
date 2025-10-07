@@ -20,8 +20,11 @@ Parallelization (implemented in C++) is one of the main advantages
 of this package and is applied only for \code{"laplace"} kernels.}
 }
 \value{
-If \code{X_new} is \code{NULL}, a symmetric matrix \eqn{K_{ij} = \mathcal{K}(x_i,x_j), K \in \mathbb{R}^{n \times n}}.
-Otherwise, a matrix \eqn{K'_{ij} = \mathcal{K}(x_i,x'_j), K' \in \mathbb{R}^{n' \times n}}.
+An S3 object of class \code{"kernel_matrix"} that represents the computed
+kernel matrix. If \code{X_new} is \code{NULL}, the result is a symmetric matrix
+\eqn{K_{ij} = \mathcal{K}(x_i, x_j)}, with \eqn{K \in \mathbb{R}^{n \times n}}.
+Otherwise, the result is a rectangular matrix
+\eqn{K'_{ij} = \mathcal{K}(x_i, x'_j)}, with \eqn{K' \in \mathbb{R}^{n \times n'}}.
 }
 \description{
 Constructs a kernel matrix \eqn{K \in \mathbb{R}^{n \times n'}} given two
@@ -36,23 +39,23 @@ Gaussian: \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_2^2\big)}
 Laplace:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
 }
 \examples{
+# Data setting
 set.seed(1)
-lambda = 1e-4
 d = 1
 rho = 1
 n = 1000
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 
-# second matrix
+# New design matrix
 new_n = 1500
 new_X = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 
-# make kernel : Gaussian kernel
-K = make_kernel(X, kernel = "gaussian", rho = rho)
-new_K = make_kernel(X, new_X, kernel = "gaussian", rho = rho)
+# Make kernel : Gaussian kernel
+K = make_kernel(X, kernel = "gaussian", rho = rho) ## symmetric matrix
+new_K = make_kernel(X, new_X, kernel = "gaussian", rho = rho) ## rectangular matrix
 
-# make kernel : Laplace kernel
-K = make_kernel(X, kernel = "laplace", rho = rho, n_threads = 1)
-new_K = make_kernel(X, new_X, kernel = "laplace", rho = rho, n_threads = 1)
+# Make kernel : Laplace kernel
+K = make_kernel(X, kernel = "laplace", rho = rho, n_threads = 1) ## symmetric matrix
+new_K = make_kernel(X, new_X, kernel = "laplace", rho = rho, n_threads = 1) ## rectangular matrix
 
 }
