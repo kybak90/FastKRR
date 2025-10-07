@@ -4,6 +4,7 @@
 # FastKRR
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 The ‘FastKRR’ implements its core computational operations in C++ via
@@ -62,9 +63,13 @@ pak::pak("kybak90/FastKRR")
 ```
 
 <!-- ## Parallelization -->
+
 <!-- Some functions in **FastKRR** support parallel computation via OpenMP. -->
+
 <!-- - On Windows and most Linux systems, OpenMP is available by default, and computations will use multiple threads. -->
+
 <!-- - On macOS, if OpenMP is not installed, the package will run in single-threaded mode automatically. -->
+
 <!-- No special installation steps are required. -->
 
 ## Example
@@ -101,10 +106,10 @@ model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose =
 new_n = 500
 new_x = matrix(runif(new_n, 0, 1), nrow = new_n)
 
-pred_exact = pred_krr(model_exact, new_x)
-pred_pivoted = pred_krr(model_pivoted, new_x)
-pred_nystrom = pred_krr(model_nystrom, new_x)
-pred_rff = pred_krr(model_rff, new_x)
+pred_exact = predict(model_exact, new_x)
+pred_pivoted = predict(model_pivoted, new_x)
+pred_nystrom = predict(model_nystrom, new_x)
+pred_rff = predict(model_rff, new_x)
 ```
 
 The visualization of the fitted results is shown below.
@@ -195,7 +200,7 @@ y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
-#> [1] 4
+#> NULL
 ```
 
 ### 5) Show that FastKRR links to libomp (macOS only)

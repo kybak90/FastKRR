@@ -93,10 +93,10 @@ model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose =
 new_n = 500
 new_x = matrix(runif(new_n, 0, 1), nrow = new_n)
 
-pred_exact = pred_krr(model_exact, new_x)
-pred_pivoted = pred_krr(model_pivoted, new_x)
-pred_nystrom = pred_krr(model_nystrom, new_x)
-pred_rff = pred_krr(model_rff, new_x)
+pred_exact = predict(model_exact, new_x)
+pred_pivoted = predict(model_pivoted, new_x)
+pred_nystrom = predict(model_nystrom, new_x)
+pred_rff = predict(model_rff, new_x)
 ```
 
 
