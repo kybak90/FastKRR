@@ -73,56 +73,55 @@ results are printed to the console. If FALSE, suppresses
 intermediate output and only returns the final result.}
 }
 \value{
-An object of class \code{fastkrr}. The returned object is a list with components:
+An S3 object of class \code{"fastkrr"}, which is a list containing the
+results of the fitted Kernel Ridge Regression model.
 
-\describe{
-  \item{\code{coefficients}}{Estimated coefficient vector \eqn{\mathbb{R}^{n}}. Accessible via \code{model$coefficients}.}
-  \item{\code{fitted.values}}{Fitted values \eqn{\mathbb{R}^{n}}. Accessible via \code{model$fitted.values}.}
-  \item{\code{opt}}{Kernel approximation option. One of \code{"exact"}, \code{"pivoted"}, \code{"nystrom"}, \code{"rff"}.}
-  \item{\code{kernel}}{Kernel used (\code{"gaussian"} or \code{"laplace"}).}
-  \item{\code{x}}{Input design matrix.}
-  \item{\code{y}}{Response vector.}
-  \item{\code{lambda}}{Regularization parameter. If \code{NULL}, tuned by cross-validation via \pkg{CVST}.}
-  \item{\code{rho}}{Additional user-specified hyperparameter.}
-  \item{\code{n_threads}}{Number of threads used for parallelization.}
+\itemize{
+  \item{\code{coefficients}: Estimated coefficient vector \eqn{\mathbb{R}^{n}}. Accessible via \code{model$coefficients}.}
+  \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}. Accessible via \code{model$fitted.values}.}
+  \item{\code{opt}: Kernel approximation option. One of \code{"exact"}, \code{"pivoted"}, \code{"nystrom"}, \code{"rff"}.}
+  \item{\code{kernel}: Kernel used (\code{"gaussian"} or \code{"laplace"}).}
+  \item{\code{x}: Input design matrix.}
+  \item{\code{y}: Response vector.}
+  \item{\code{lambda}: Regularization parameter. If \code{NULL}, tuned by cross-validation via \pkg{CVST}.}
+  \item{\code{rho}: Additional user-specified hyperparameter.}
+  \item{\code{n_threads}: Number of threads used for parallelization.}
 }
 
 Additional components depend on the value of \code{opt}:
 
 \subsection{opt = \dQuote{exact}}{
-\describe{
-  \item{\code{K}}{The full kernel matrix.}
+\itemize{
+  \item{\code{K}: The full kernel matrix.}
 }}
 
-\subsection{opt = \dQuote{pivoted}}{
-\describe{
-  \item{\code{m}}{Effective rank actually used.
-  This value is at most the requested \code{m} and
-  may be smaller if early stopping is triggered by \code{eps}.}
-  \item{\code{K}}{Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-    computed by \code{make_kernel(..., opt = "exact")}.}
-  \item{\code{PR}}{The method provides a low-rank approximation to the kernel matrix
-    \eqn{PR \in \mathbb{R}^{ n \times m}} obtained via
-    Pivoted Cholesky decomposition; satisfies \eqn{K \approx PR\,(PR)^\top}.}
-}}
 
 \subsection{opt = \dQuote{nystrom}}{
-\describe{
-  \item{\code{m}}{Approximation rank used for the low-rank kernel approximation.}
-  \item{\code{K}}{Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-    computed by \code{make_kernel(..., opt = "exact")}.}
-  \item{\code{R}}{The method provides a low-rank approximation to the kernel matrix
+\itemize{
+  \item{\code{K}: Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
+  \item{\code{m}: Kernel pproximation degree.}
+  \item{\code{R}: The method provides a low-rank approximation to the kernel matrix
     \eqn{R \in \mathbb{R}^{n \times m}} obtained via
     Nyström approximation; satisfies \eqn{K \approx R R^\top}.}
 }}
 
+\subsection{opt = \dQuote{pivoted}}{
+\itemize{
+  \item{\code{K}: Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
+  \item{\code{m}: Kernel pproximation degree.}
+  \item{\code{PR}: The method provides a low-rank approximation to the kernel matrix
+    \eqn{PR \in \mathbb{R}^{ n \times m}} obtained via
+    Pivoted Cholesky decomposition; satisfies \eqn{K \approx PR\,(PR)^\top}.}
+  \item{\code{eps}: Numerical tolerance used for early stopping in the pivoted Cholesky decomposition.}
+}}
+
 \subsection{opt = \dQuote{rff}}{
-\describe{
-  \item{\code{m}}{Number of random features.}
-  \item{\code{z}}{Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
+\itemize{
+  \item{\code{m}: Number of random features.}
+  \item{\code{Z}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
     \eqn{Z_{ij} = z_j(x_i) = \sqrt{2/m}\cos(\omega_j^\top x_i + b_j), \quad j = 1, \cdots, m,}
     so that \eqn{K \approx Z Z^\top}.}
-  \item{\code{w}}{Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
+  \item{\code{W}: Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
       (row \eqn{j} is \eqn{\omega_j^\top \in \mathbb{R}^d}), drawn i.i.d. from the spectral density of the chosen kernel:
       \itemize{
         \item Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).
