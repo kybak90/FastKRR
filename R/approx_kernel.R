@@ -236,7 +236,7 @@ approx_kernel = function(K = NULL, X = NULL,
 
   attr(result_values, "K_approx") = tcrossprod(Z)
   class(attr(result_values, "K_approx")) = "kernel_matrix"
-  attr(result_values, "m") = m_used
+  attr(result_values, "m") = m
   attr(result_values, "d") = d
   attr(result_values, "rho") = rho
   attr(result_values, "W") = W

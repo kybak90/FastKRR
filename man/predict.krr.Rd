@@ -7,35 +7,28 @@
 \method{predict}{krr}(object, newdata, ...)
 }
 \arguments{
+\item{object}{A S3 object of class \code{krr} created by \code{\link{fastkrr}}.}
+
 \item{newdata}{New design matrix or data frame containing new observations
 for which predictions are to be made.}
-
-\item{model}{A fitted KRR model object returned by \code{\link{fastkrr}}.}
 }
 \value{
-A numeric vector of predicted values corresponding to 'newdata'.
+A numeric vector of predicted values corresponding to \code{newdata}.
 }
 \description{
-`predict.krr()` generates predictions from a fitted Kernel Ridge Regression (KRR) model
+Generates predictions from a fitted Kernel Ridge Regression (KRR) model
 for new data.
 }
-\details{
-The kernel matrix between training data and new data is explicitly
-computed using \code{\link{make_kernel}}, and predictions are obtained by
-multiplying this kernel matrix with the fitted coefficients.
-
-Mathematically, predictions are given by
-\deqn{\hat{y}_{new} = K_{new} \hat{\alpha}}
-where \eqn{K_{new}} is the kernel matrix and \eqn{\hat{\alpha}} are the estimated coefficients.
-}
 \examples{
-# Fitting model: pivoted
+# Data setting
 n = 30
 d = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 lambda = 1e-4
 rho = 1
+
+# Fitting model: pivoted
 model = fastkrr(X, y, kernel = "gaussian", rho = rho, lambda = lambda, opt = "pivoted")
 
 # Predict
@@ -43,7 +36,7 @@ new_n = 50
 new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 
-pred = predict.krr(model, new_x)
+pred = predict(model, new_x)
 crossprod(pred, new_y) / new_n
 }
 \seealso{

@@ -1,33 +1,27 @@
 #' Predict responses for new data using fitted KRR model
 #'
-#' `predict.krr()` generates predictions from a fitted Kernel Ridge Regression (KRR) model
+#' Generates predictions from a fitted Kernel Ridge Regression (KRR) model
 #' for new data.
 #'
-#' @param model A fitted KRR model object returned by \code{\link{fastkrr}}.
+#' @param object A S3 object of class \code{krr} created by \code{\link{fastkrr}}.
 #' @param newdata New design matrix or data frame containing new observations
 #'                for which predictions are to be made.
 #'
-#' @details
-#' The kernel matrix between training data and new data is explicitly
-#' computed using \code{\link{make_kernel}}, and predictions are obtained by
-#' multiplying this kernel matrix with the fitted coefficients.
 #'
-#' Mathematically, predictions are given by
-#' \deqn{\hat{y}_{new} = K_{new} \hat{\alpha}}
-#' where \eqn{K_{new}} is the kernel matrix and \eqn{\hat{\alpha}} are the estimated coefficients.
-#'
-#' @return A numeric vector of predicted values corresponding to 'newdata'.
+#' @return A numeric vector of predicted values corresponding to \code{newdata}.
 #'
 #' @seealso \code{\link{fastkrr}}, \code{\link{make_kernel}}
 #'
 #' @examples
-#' # Fitting model: pivoted
+#' # Data setting
 #' n = 30
 #' d = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #' lambda = 1e-4
 #' rho = 1
+#'
+#' # Fitting model: pivoted
 #' model = fastkrr(X, y, kernel = "gaussian", rho = rho, lambda = lambda, opt = "pivoted")
 #'
 #' # Predict
@@ -35,7 +29,7 @@
 #' new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 #' new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 #'
-#' pred = predict.krr(model, new_x)
+#' pred = predict(model, new_x)
 #' crossprod(pred, new_y) / new_n
 #' @importFrom stats predict
 #' @export
@@ -205,6 +199,7 @@ predict.krr = function(object, newdata, ...){
 #'
 #'
 #' @examples
+#' # Data setting
 #' set.seed(1)
 #' lambda = 1e-4
 #' d = 1
