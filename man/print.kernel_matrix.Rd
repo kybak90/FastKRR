@@ -4,10 +4,10 @@
 \alias{print.kernel_matrix}
 \title{Print method for kernel matrices}
 \usage{
-\method{print}{kernel_matrix}(ker_mat, ...)
+\method{print}{kernel_matrix}(x, ...)
 }
 \arguments{
-\item{ker_mat}{An object of class \code{kernel_matrix}, which may represent
+\item{x}{An object of class \code{kernel_matrix}, which may represent
 either an exact kernel matrix (from \code{\link{make_kernel}} or
 \code{\link{fastkrr}}) or an approximated kernel matrix (from
 \code{\link{approx_kernel}}).}
@@ -26,12 +26,15 @@ for quick inspection.
 set.seed(1)
 n = 1000 ; d = 1
 m = 100
+rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*X^3) + rnorm(n, 0, 0.1))
 
 
 # Example for fastkrr
-fit_pivoted = fastkrr(X, y, kernel = "gaussian", opt = "pivoted", m = 100, fastcv = TRUE, verbose = FALSE)
+fit_pivoted = fastkrr(X, y,
+                      kernel = "gaussian", opt = "pivoted",
+                      m = 100, fastcv = TRUE, verbose = FALSE)
 
 class(attr(fit_pivoted, "K"))
 print(class(attr(fit_pivoted, "K")))
@@ -41,7 +44,7 @@ print(class(attr(fit_pivoted, "K_approx")))
 
 
 # Example for make_kernel
-K = make_kernel(X, kernel = "gaussian", rho = 1)
+K = make_kernel(X, kernel = "gaussian", rho = rho)
 
 class(K)
 print(K)
@@ -49,11 +52,11 @@ print(K)
 
 # Example for make_kernel
 K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-                      d = d, rho = 1, n_threads = 1, m = 100)
+                      d = d, rho = rho, n_threads = 1, m = 100)
 
 class(attr(K_rff, "K_approx"))
 print(attr(K_rff, "K_approx"))
 }
 \seealso{
-\code{\link{approx_kernel}, \link{fastkrr}, \code{\link{print.approx_kernel}, \link{print.krr}}}
+\code{\link{approx_kernel}}, \code{\link{fastkrr}}, \code{\link{print.approx_kernel}}, \code{\link{print.krr}}
 }

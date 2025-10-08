@@ -15,7 +15,7 @@
 #' @importFrom stats model.frame model.matrix model.response update
 #' @seealso \CRANpkg{CVST}, \CRANpkg{Rcpp}, \CRANpkg{RcppArmadillo}, \CRANpkg{parsnip}, \CRANpkg{tidymodels}
 #' @useDynLib FastKRR, .registration = TRUE
-#' @importFrom Rcpp evalCpp
+#' @importFrom Rcpp sourceCpp
 #' @name FastKRR-package
 #' @aliases FastKRR
 #' @docType package

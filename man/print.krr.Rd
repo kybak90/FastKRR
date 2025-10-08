@@ -4,10 +4,10 @@
 \alias{print.krr}
 \title{Print method for fitted Kernel Ridge Regression models}
 \usage{
-\method{print}{krr}(model, ...)
+\method{print}{krr}(x, ...)
 }
 \arguments{
-\item{model}{An S3 object of class \code{krr}, typically returned by
+\item{x}{An S3 object of class \code{krr}, typically returned by
 \code{\link{fastkrr}}.}
 
 \item{...}{Additional arguments (currently ignored).}
@@ -26,11 +26,14 @@ set.seed(1)
 lambda = 1e-4
 d = 1
 n = 50
+rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 
 # Example: exact
-model = fastkrr(X, y, kernel = "gaussian", opt = "exact", rho = rho, lambda = 1e-4)
+model = fastkrr(X, y,
+                kernel = "gaussian", opt = "exact",
+                rho = rho, lambda = 1e-4)
 class(model)
 
 print(model)

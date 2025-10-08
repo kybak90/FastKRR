@@ -4,10 +4,10 @@
 \alias{print.approx_kernel}
 \title{Print method for approximated kernel matrices}
 \usage{
-\method{print}{approx_kernel}(approx_object, ...)
+\method{print}{approx_kernel}(x, ...)
 }
 \arguments{
-\item{approx_object}{An S3 object created by \code{\link{approx_kernel}}.}
+\item{x}{An S3 object created by \code{\link{approx_kernel}}.}
 
 \item{...}{Additional arguments (currently ignored).}
 }
@@ -28,11 +28,13 @@ set.seed(1)
 d = 1
 n = 1000
 m = 50
+rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+K = make_kernel(X, kernel = "gaussian", rho = rho)
 
 # Example: nystrom
-K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = 1, n_threads = 1)
+K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = rho, n_threads = 1)
 class(K_nystrom)
 
 print(K_nystrom)

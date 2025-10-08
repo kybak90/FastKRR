@@ -11,6 +11,8 @@
 
 \item{newdata}{New design matrix or data frame containing new observations
 for which predictions are to be made.}
+
+\item{...}{Additional arguments (currently ignored).}
 }
 \value{
 A numeric vector of predicted values corresponding to \code{newdata}.

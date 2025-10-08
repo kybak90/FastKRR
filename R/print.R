@@ -5,7 +5,7 @@
 #' including the original call, first few coefficients, a 6×6 block of the
 #' kernel (or approximated kernel) matrix, and the main kernel options.
 #'
-#' @param model An S3 object of class \code{krr}, typically returned by
+#' @param x An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
@@ -20,16 +20,20 @@
 #' lambda = 1e-4
 #' d = 1
 #' n = 50
+#' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #'
 #' # Example: exact
-#' model = fastkrr(X, y, kernel = "gaussian", opt = "exact", rho = rho, lambda = 1e-4)
+#' model = fastkrr(X, y,
+#'                 kernel = "gaussian", opt = "exact",
+#'                 rho = rho, lambda = 1e-4)
 #' class(model)
 #'
 #' print(model)
 #' @export
-print.krr = function(model, ...){
+print.krr = function(x, ...){
+  model = x
   cat("Call:\n")
   print(attributes(model)$call)
   cat("\n")
@@ -79,7 +83,7 @@ print.krr = function(model, ...){
 #' and summarizes options such as the approximation method (\code{opt}), approximaion degree (\code{m}),
 #' numerical tolerance (\code{eps}), and number of threads used (\code{n_threads}).
 #'
-#' @param approx_object An S3 object created by \code{\link{approx_kernel}}.
+#' @param x An S3 object created by \code{\link{approx_kernel}}.
 #' @param ... Additional arguments (currently ignored).
 #'
 #' @return An approximated kernel matrix and its associated options.
@@ -92,16 +96,19 @@ print.krr = function(model, ...){
 #' d = 1
 #' n = 1000
 #' m = 50
+#' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+#' K = make_kernel(X, kernel = "gaussian", rho = rho)
 #'
 #' # Example: nystrom
-#' K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = 1, n_threads = 1)
+#' K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = rho, n_threads = 1)
 #' class(K_nystrom)
 #'
 #' print(K_nystrom)
 #' @export
-print.approx_kernel = function(approx_object, ...){
+print.approx_kernel = function(x, ...){
+  approx_object = x
   cat("Call:\n")
   print(attributes(approx_object)$call)
   cat("\n")
@@ -124,7 +131,7 @@ print.approx_kernel = function(approx_object, ...){
 #' Displays the top-left 6×6 portion of a kernel or approximated kernel matrix
 #' for quick inspection.
 #'
-#' @param ker_mat An object of class \code{kernel_matrix}, which may represent
+#' @param x An object of class \code{kernel_matrix}, which may represent
 #'   either an exact kernel matrix (from \code{\link{make_kernel}} or
 #'   \code{\link{fastkrr}}) or an approximated kernel matrix (from
 #'   \code{\link{approx_kernel}}).
@@ -132,19 +139,22 @@ print.approx_kernel = function(approx_object, ...){
 #'
 #' @return A top-left 6x6 block of the kernel matrix to the console.
 #'
-#' @seealso \code{\link{approx_kernel}, \link{fastkrr}, \code{\link{print.approx_kernel}, \link{print.krr}}}
+#' @seealso \code{\link{approx_kernel}}, \code{\link{fastkrr}}, \code{\link{print.approx_kernel}}, \code{\link{print.krr}}
 #'
 #' @examples
 #' # data setting
 #' set.seed(1)
 #' n = 1000 ; d = 1
 #' m = 100
+#' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*X^3) + rnorm(n, 0, 0.1))
 #'
 #'
 #' # Example for fastkrr
-#' fit_pivoted = fastkrr(X, y, kernel = "gaussian", opt = "pivoted", m = 100, fastcv = TRUE, verbose = FALSE)
+#' fit_pivoted = fastkrr(X, y,
+#'                       kernel = "gaussian", opt = "pivoted",
+#'                       m = 100, fastcv = TRUE, verbose = FALSE)
 #'
 #' class(attr(fit_pivoted, "K"))
 #' print(class(attr(fit_pivoted, "K")))
@@ -154,7 +164,7 @@ print.approx_kernel = function(approx_object, ...){
 #'
 #'
 #' # Example for make_kernel
-#' K = make_kernel(X, kernel = "gaussian", rho = 1)
+#' K = make_kernel(X, kernel = "gaussian", rho = rho)
 #'
 #' class(K)
 #' print(K)
@@ -162,12 +172,13 @@ print.approx_kernel = function(approx_object, ...){
 #'
 #' # Example for make_kernel
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                       d = d, rho = 1, n_threads = 1, m = 100)
+#'                       d = d, rho = rho, n_threads = 1, m = 100)
 #'
 #' class(attr(K_rff, "K_approx"))
 #' print(attr(K_rff, "K_approx"))
 #' @export
-print.kernel_matrix = function(ker_mat, ...){
+print.kernel_matrix = function(x, ...){
+  ker_mat = x
   cat("Showing top-left 6x6:\n")
   print(ker_mat[1:6, 1:6])
 }

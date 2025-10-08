@@ -6,6 +6,7 @@
 #' @param object A S3 object of class \code{krr} created by \code{\link{fastkrr}}.
 #' @param newdata New design matrix or data frame containing new observations
 #'                for which predictions are to be made.
+#' @param ... Additional arguments (currently ignored).
 #'
 #'
 #' @return A numeric vector of predicted values corresponding to \code{newdata}.
@@ -133,10 +134,12 @@ predict.krr = function(object, newdata, ...){
 #'          \code{fastcv = TRUE}).
 #'       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
 #'         via \pkg{CVST} cross-validation (sequential testing if \code{fastcv = TRUE}).}
+#'
 #'   \item \code{n_threads}: Number of threads for parallel computation.
 #'     Default is \code{4}. If the system has <= 3 available processors,
 #'     it uses \code{1}.
-#' }
+#'}
+#'
 #'
 #' @return
 #' An S3 object of class \code{"fastkrr"}, which is a list containing the
@@ -165,7 +168,7 @@ predict.krr = function(object, newdata, ...){
 #' \subsection{opt = \dQuote{nystrom}}{
 #' \itemize{
 #'   \item{\code{K}: Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
-#'   \item{\code{m}: Kernel pproximation degree.}
+#'   \item{\code{m}: Kernel approximation degree.}
 #'   \item{\code{R}: The method provides a low-rank approximation to the kernel matrix
 #'     \eqn{R \in \mathbb{R}^{n \times m}} obtained via
 #'     Nyström approximation; satisfies \eqn{K \approx R R^\top}.}
@@ -190,10 +193,10 @@ predict.krr = function(object, newdata, ...){
 #'   \item{\code{W}: Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
 #'       (row \eqn{j} is \eqn{\omega_j^\top \in \mathbb{R}^d}), drawn i.i.d. from the spectral density of the chosen kernel:
 #'       \itemize{
-#'         \item Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).
-#'         \item Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
-#'       }}
-#'   \item{\code{b}}{Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
+#'         \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).}
+#'         \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
+#'       }}}
+#'   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 #' }}
 #'
 #'
