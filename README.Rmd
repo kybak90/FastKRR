@@ -36,7 +36,7 @@ FastKRR is available both on CRAN (stable release) and GitHub (development versi
 
 ### Option 1: Install from CRAN
 
-This installs the latest stable version. On macOS, CRAN binaries are built without OpenMP support. If you need OpenMP, see the note below about installing from source.
+This installs the latest stable version. On macOS (with Clang compiler), CRAN binaries are built without OpenMP support. If you need OpenMP, see the note below about installing from source.
 
 ```{r eval=FALSE}
 # CRAN binary (no OpenMP on macOS)
@@ -122,7 +122,7 @@ ggplot(data = data) +
 ```
 
 
-## OpenMP support on macOS
+## OpenMP support on macOS with Clang compiler
 
 ### 1) Install OpenMP runtime (Homebrew)
 

@@ -4,7 +4,6 @@
 # FastKRR
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The ‘FastKRR’ implements its core computational operations in C++ via
@@ -41,9 +40,9 @@ FastKRR is available both on CRAN (stable release) and GitHub
 
 ### Option 1: Install from CRAN
 
-This installs the latest stable version. On macOS, CRAN binaries are
-built without OpenMP support. If you need OpenMP, see the note below
-about installing from source.
+This installs the latest stable version. On macOS (with Clang compiler),
+CRAN binaries are built without OpenMP support. If you need OpenMP, see
+the note below about installing from source.
 
 ``` r
 # CRAN binary (no OpenMP on macOS)
@@ -63,13 +62,9 @@ pak::pak("kybak90/FastKRR")
 ```
 
 <!-- ## Parallelization -->
-
 <!-- Some functions in **FastKRR** support parallel computation via OpenMP. -->
-
 <!-- - On Windows and most Linux systems, OpenMP is available by default, and computations will use multiple threads. -->
-
 <!-- - On macOS, if OpenMP is not installed, the package will run in single-threaded mode automatically. -->
-
 <!-- No special installation steps are required. -->
 
 ## Example
@@ -135,7 +130,7 @@ ggplot(data = data) +
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-## OpenMP support on macOS
+## OpenMP support on macOS with Clang compiler
 
 ### 1) Install OpenMP runtime (Homebrew)
 
