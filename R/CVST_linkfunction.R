@@ -5,11 +5,11 @@
 #'
 #' @param object A S3 object of class \code{krr} created by \code{\link{fastkrr}}.
 #' @param newdata New design matrix or data frame containing new observations
-#'                for which predictions are to be made.
+#'                for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.
 #' @param ... Additional arguments (currently ignored).
 #'
 #'
-#' @return A numeric vector of predicted values corresponding to \code{newdata}.
+#' @return A numeric vector of predicted values corresponding to \code{newdata} or fitted values.
 #'
 #' @seealso \code{\link{fastkrr}}, \code{\link{make_kernel}}
 #'
@@ -31,7 +31,9 @@
 #' new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 #'
 #' pred = predict(model, new_x)
-#' crossprod(pred, new_y) / new_n
+#' crossprod(pred - new_y) / new_n
+#'
+#' predict(model) == attributes(model)$fitted.values
 #' @importFrom stats predict
 #' @export
 predict.krr = function(object, newdata, ...){
