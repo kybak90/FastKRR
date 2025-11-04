@@ -35,6 +35,8 @@
 #' @importFrom stats predict
 #' @export
 predict.krr = function(object, newdata, ...){
+  if(missing(newdata)) return(attributes(object)$fitted.values)
+
   if(attributes(object)$opt == "rff"){
     x_new = newdata
     W = attributes(object)$W
@@ -333,7 +335,7 @@ fastkrr = function(x, y,
     rslt = rff(x, y, rand_set$W, rand_set$b, lambda = lambda, n_threads = n_threads)
 
     attr(result_values, "coefficients") = rslt$coefficients
-    attr(result_values, "fitted.values") = rslt$coefficients
+    attr(result_values, "fitted.values") = as.vector(rslt$coefficients)
     attr(result_values, "opt") = opt
     attr(result_values, "kernel") = kernel
     attr(result_values, "x") = x
