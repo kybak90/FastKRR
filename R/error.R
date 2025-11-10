@@ -1,9 +1,7 @@
-if (!exists("error", mode = "function") || !is.generic("error")) {
-  error <- function(x, ...) UseMethod("error")
-}
-
 #' @export
-error
+error = function(x, ...) {
+  UseMethod("error")
+}
 
 #' Compute Model Error for Kernel Ridge Regression Models
 #'
