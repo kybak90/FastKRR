@@ -10,12 +10,12 @@
 \item{object}{A S3 object of class \code{krr} created by \code{\link{fastkrr}}.}
 
 \item{newdata}{New design matrix or data frame containing new observations
-for which predictions are to be made.}
+for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.}
 
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-A numeric vector of predicted values corresponding to \code{newdata}.
+A numeric vector of predicted values corresponding to \code{newdata} or fitted values.
 }
 \description{
 Generates predictions from a fitted Kernel Ridge Regression (KRR) model
@@ -39,7 +39,9 @@ new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 
 pred = predict(model, new_x)
-crossprod(pred, new_y) / new_n
+crossprod(pred - new_y) / new_n
+
+predict(model) == attributes(model)$fitted.values
 }
 \seealso{
 \code{\link{fastkrr}}, \code{\link{make_kernel}}
