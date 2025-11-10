@@ -1,0 +1,40 @@
+if (!exists("error", mode = "function") || !is.generic("error")) {
+  error <- function(x, ...) UseMethod("error")
+}
+
+#' @export
+error
+
+#' Compute Model Error for Kernel Ridge Regression Models
+#'
+#' @description
+#' Computes the model error for kernel ridge regression (\code{"krr"}) objects.
+#' Returns the mean squared error (MSE) between the observed responses
+#' and the fitted values stored in the object.
+#'
+#' @param x An object of class \code{"krr"}.
+#' @param ... Additional arguments (ignored).
+#'
+#' @return A numeric value giving the mean squared error (MSE).
+#'
+#' @details
+#' This method computes:
+#' \deqn{\text{MSE} = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2}
+#' where \code{y} and \code{fitted.values} are stored in the \code{"krr"} object attributes.
+#'
+#' @seealso \code{\link{summary.krr}}, \code{\link{plot.krr}}, \code{\link{predict.krr}}
+#'
+#' @examples
+#' \dontrun{
+#' model = fastkrr(x, y, kernel = "rbf", lambda = 0.1)
+#' error(model)
+#' }
+#'
+#' @export
+error.krr = function(x, ...) {
+  model = x
+  as.numeric(
+    crossprod(attributes(model)$y - attributes(model)$fitted.values) /
+      length(attr(model, "y"))
+  )
+}
