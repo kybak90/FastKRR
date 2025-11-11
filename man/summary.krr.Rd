@@ -4,10 +4,10 @@
 \alias{summary.krr}
 \title{Summary method for fitted Kernel Ridge Regression models}
 \usage{
-\method{summary}{krr}(x, ...)
+\method{summary}{krr}(object, ...)
 }
 \arguments{
-\item{x}{An S3 object of class \code{krr}, typically returned by
+\item{object}{An S3 object of class \code{krr}, typically returned by
 \code{\link{fastkrr}}.}
 
 \item{...}{Additional arguments (currently ignored).}

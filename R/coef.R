@@ -5,7 +5,7 @@
 #' including the original call, first few coefficients, a 6×6 block of the
 #' kernel (or approximated kernel) matrix, and the main kernel options.
 #'
-#' @param x An S3 object of class \code{krr}, typically returned by
+#' @param object An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
@@ -38,8 +38,8 @@
 #'
 #' coef(model)
 #' @export
-coef.krr = function(x, ...){
-  model = x
+coef.krr = function(object, ...){
+  model = object
   cat("Call:\n")
   print(attributes(model)$call)
   cat("\n")

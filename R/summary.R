@@ -5,14 +5,13 @@
 #' including the original call, first few coefficients, a 6×6 block of the
 #' kernel (or approximated kernel) matrix, and the main kernel options.
 #'
-#' @param x An S3 object of class \code{krr}, typically returned by
+#' @param object An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
 #' @return A human-readable summary of the fitted KRR model to the console.
 #'
-#' @seealso \code{\link{fastkrr}}, \code{\link{summary.approx_kernel}},
-#'   \code{\link{summary.kernel_matrix}}
+#' @seealso \code{\link{fastkrr}}
 #'
 #' @examples
 #' # Data setting
@@ -33,8 +32,8 @@
 #' summary(model)
 #'
 #' @export
-summary.krr = function(x, ...){
-  model = x
+summary.krr = function(object, ...){
+  model = object
   cat("Call:\n")
   print(attributes(model)$call)
   cat("\n")
