@@ -18,12 +18,6 @@ param(x, ...)
 A named list of hyperparameters (invisibly); may print side effects.
 }
 \description{
-`param()` is a generic S3 function that displays (and invisibly returns)
-model hyperparameters. Methods are provided for `krr` objects.
-}
-\examples{
-\dontrun{
-# fit <- fastkrr(X, y, ...)
-# param(fit)
-}
+\code{"param()"} is a generic S3 function that displays (and invisibly returns)
+model hyperparameters. Methods are provided for \code{"krr"} objects.
 }

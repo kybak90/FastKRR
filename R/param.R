@@ -1,17 +1,12 @@
 #' Extract/print hyperparameters of fitted models
 #'
 #' @description
-#' `param()` is a generic S3 function that displays (and invisibly returns)
-#' model hyperparameters. Methods are provided for `krr` objects.
+#' \code{"param()"} is a generic S3 function that displays (and invisibly returns)
+#' model hyperparameters. Methods are provided for \code{"krr"} objects.
 #'
 #' @param x An object.
 #' @param ... Additional arguments passed to methods.
 #' @return A named list of hyperparameters (invisibly); may print side effects.
-#' @examples
-#' \dontrun{
-#' # fit <- fastkrr(X, y, ...)
-#' # param(fit)
-#' }
 #' @export
 param = function(x, ...) UseMethod("param")
 
@@ -37,13 +32,15 @@ param.default = function(x, ...) {
 #' that you set, please see the printed \emph{Call} (the original function
 #' call shows your input arguments).
 #'
-#' @param x An S3 object. For FastKRR fits, an object of class \code{krr}
-#'   typically returned by \code{\link{fastkrr}}.
+#' @param x An object of class \code{"krr"}, typically returned by
+#'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments.
 #'
 #' @return
 #' Prints a human-readable panel and returns (invisibly) a named list
 #' of hyperparameters.
+#'
+#' @seealso \code{\link{fastkrr}}
 #'
 #' @examples
 #' # Data setting

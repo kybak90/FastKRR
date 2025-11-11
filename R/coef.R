@@ -29,12 +29,6 @@
 #' model = fastkrr(X, y,
 #'                 kernel = "gaussian", opt = "exact",
 #'                 rho = rho, lambda = 1e-4)
-#' model = fastkrr(X, y,
-#'                 kernel = "gaussian", opt = "nystrom",
-#'                 rho = rho, lambda = 1e-4)
-#' model = fastkrr(X, y,
-#'                 kernel = "gaussian", opt = "rff",
-#'                 rho = rho, lambda = 1e-4)
 #' class(model)
 #'
 #' coef(model)

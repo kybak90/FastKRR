@@ -139,17 +139,17 @@ krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
   )
 }
 
-#' Expose tunable parameters for `krr_reg`
+#' Expose tunable parameters for \code{"krr_reg"}
 #'
 #' @description
-#' Supplies a tibble of tunable arguments for `krr_reg()`.
+#' Supplies a tibble of tunable arguments for \code{"krr_reg()"}.
 #'
-#' @param x A `krr_reg` model specification.
+#' @param x A \code{"krr_reg"} model specification.
 #' @param ... Not used; included for S3 method compatibility.
 #'
 #' @return A tibble (one row per tunable parameter)
-#'    with columns 'name', 'call_info', 'source',
-#'   'component', and 'component_id'.
+#'    with columns \code{"name"}, \code{"call_info"}, \code{"source"},
+#'   \code{"component"}, and \code{"component_id"}.
 #'
 #' @importFrom generics tunable
 #' @importFrom tibble tibble

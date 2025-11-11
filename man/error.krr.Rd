@@ -7,7 +7,8 @@
 \method{error}{krr}(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{"krr"}.}
+\item{x}{An object of class \code{"krr"}, typically returned by
+\code{\link{fastkrr}}.}
 
 \item{...}{Additional arguments (ignored).}
 }

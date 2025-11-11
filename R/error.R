@@ -26,7 +26,8 @@ error.default = function(x, ...) {
 #' Returns the mean squared error (MSE) between the observed responses
 #' and the fitted values stored in the object.
 #'
-#' @param x An object of class \code{"krr"}.
+#' @param x An object of class \code{"krr"}, typically returned by
+#'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (ignored).
 #'
 #' @return A numeric value giving the mean squared error (MSE).

@@ -7,8 +7,8 @@
 \method{param}{krr}(x, ...)
 }
 \arguments{
-\item{x}{An S3 object. For FastKRR fits, an object of class \code{krr}
-typically returned by \code{\link{fastkrr}}.}
+\item{x}{An object of class \code{"krr"}, typically returned by
+\code{\link{fastkrr}}.}
 
 \item{...}{Additional arguments.}
 }
@@ -47,4 +47,7 @@ model = fastkrr(X, y, kernel="gaussian", opt="nystrom",
 class(model)
 param(model)
 
+}
+\seealso{
+\code{\link{fastkrr}}
 }
