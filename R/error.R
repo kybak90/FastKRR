@@ -12,6 +12,13 @@ error = function(x, ...) {
   UseMethod("error")
 }
 
+#' @rdname error
+#' @export
+error.default = function(x, ...) {
+  stop(sprintf("No 'error' method for objects of class: %s",
+               paste(class(x), collapse = ", ")))
+}
+
 #' Compute Model Error for Kernel Ridge Regression Models
 #'
 #' @description

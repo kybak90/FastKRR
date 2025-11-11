@@ -1,3 +1,26 @@
+#' Extract/print hyperparameters of fitted models
+#'
+#' @description
+#' `param()` is a generic S3 function that displays (and invisibly returns)
+#' model hyperparameters. Methods are provided for `krr` objects.
+#'
+#' @param x An object.
+#' @param ... Additional arguments passed to methods.
+#' @return A named list of hyperparameters (invisibly); may print side effects.
+#' @examples
+#' \dontrun{
+#' # fit <- fastkrr(X, y, ...)
+#' # param(fit)
+#' }
+#' @export
+param = function(x, ...) UseMethod("param")
+
+#' @rdname param
+#' @export
+param.default = function(x, ...) {
+  stop(sprintf("No 'param' method for objects of class: %s", paste(class(x), collapse=", ")))
+}
+
 #' Param method for fitted Kernel Ridge Regression models
 #'
 #' @description
@@ -35,20 +58,10 @@
 #' model = fastkrr(X, y, kernel="gaussian", opt="nystrom",
 #'               rho=1, lambda=1e-4, m=200, n_threads=4, fastcv=FALSE)
 #'
-#' # Inspect hyperparameters actually used in `fit`
+#'
 #' class(model)
 #' param(model)
 #'
-#' @export
-param = function(x, ...) {
-  UseMethod("param")
-}
-
-#' @export
-param.default = function(x, ...) {
-  stop(sprintf("No 'param' method for objects of class: %s", paste(class(x), collapse=", ")))
-}
-
 #' @export
 param.krr = function(x, ...) {
   model = x

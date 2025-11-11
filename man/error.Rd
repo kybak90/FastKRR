@@ -2,9 +2,12 @@
 % Please edit documentation in R/error.R
 \name{error}
 \alias{error}
+\alias{error.default}
 \title{Compute Model Error (Generic)}
 \usage{
 error(x, ...)
+
+\method{error}{default}(x, ...)
 }
 \arguments{
 \item{x}{An object to compute model error for.}

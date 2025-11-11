@@ -2,49 +2,28 @@
 % Please edit documentation in R/param.R
 \name{param}
 \alias{param}
-\title{Param method for fitted Kernel Ridge Regression models}
+\alias{param.default}
+\title{Extract/print hyperparameters of fitted models}
 \usage{
 param(x, ...)
+
+\method{param}{default}(x, ...)
 }
 \arguments{
-\item{x}{An S3 object. For FastKRR fits, an object of class \code{krr}
-typically returned by \code{\link{fastkrr}}.}
+\item{x}{An object.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
-Prints a human-readable panel and returns (invisibly) a named list
-of hyperparameters.
+A named list of hyperparameters (invisibly); may print side effects.
 }
 \description{
-Displays (and invisibly returns) the hyperparameters actually used by a
-fitted object. For \code{krr} objects returned by \code{\link{fastkrr}},
-this prints a concise hyperparameter panel (e.g., \code{rho}, \code{lambda},
-\code{m}, \code{eps}, \code{n_threads}, \code{d}).
-}
-\details{
-\strong{Pivoted approximation note}: When \code{opt = "pivoted"}, the
-effective number of pivots \code{m} used during the approximation may be
-smaller than the user-specified \code{m} because the algorithm can stop
-early based on \code{eps}. If you want to confirm the initial \code{m}
-that you set, please see the printed \emph{Call} (the original function
-call shows your input arguments).
+`param()` is a generic S3 function that displays (and invisibly returns)
+model hyperparameters. Methods are provided for `krr` objects.
 }
 \examples{
-# Data setting
-set.seed(1)
-lambda = 1e-4
-d = 1
-n = 50
-rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-
-model = fastkrr(X, y, kernel="gaussian", opt="nystrom",
-              rho=1, lambda=1e-4, m=200, n_threads=4, fastcv=FALSE)
-
-# Inspect hyperparameters actually used in `fit`
-class(model)
-param(model)
-
+\dontrun{
+# fit <- fastkrr(X, y, ...)
+# param(fit)
+}
 }
