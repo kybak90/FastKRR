@@ -25,10 +25,18 @@ This method computes:
 where \code{y} and \code{fitted.values} are stored in the \code{"krr"} object attributes.
 }
 \examples{
-\dontrun{
-model = fastkrr(x, y, kernel = "rbf", lambda = 0.1)
+# Data setting
+set.seed(1)
+lambda = 1e-4
+d = 1
+n = 50
+rho = 1
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
+y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+
+model = fastkrr(X, y, kernel = "gaussian", lambda = 0.001)
 error(model)
-}
+
 
 }
 \seealso{

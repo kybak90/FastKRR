@@ -45,6 +45,7 @@ model = fastkrr(X, y,
 class(model)
 
 coef(model)
+
 }
 \seealso{
 \code{\link{fastkrr}}

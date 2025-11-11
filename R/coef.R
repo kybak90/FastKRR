@@ -38,6 +38,9 @@
 #' class(model)
 #'
 #' coef(model)
+#'
+#' @rdname coef.krr
+#' @method coef krr
 #' @export
 coef.krr = function(object, ...){
   model = object

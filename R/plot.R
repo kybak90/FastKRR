@@ -1,3 +1,5 @@
+utils::globalVariables(c("yhat", "x", "y"))
+
 #' Plot method for fitted Kernel Ridge Regression (KRR) models
 #'
 #' @description
@@ -21,6 +23,7 @@
 #' @seealso \code{\link{fastkrr}}, \code{\link{predict.krr}}
 #'
 #' @examples
+#' \donttest{
 #' set.seed(1)
 #' n = 1000
 #' rho = 1
@@ -29,12 +32,11 @@
 #'
 #' model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 #' plot(model_exact)
+#' }
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot geom_point geom_line labs theme_minimal theme element_text aes
 #' @export
-
 plot.krr = function(x, show_points = TRUE, ...) {
-  library(ggplot2)
 
   if (!inherits(x, "krr"))
     stop("Input must be a fitted model of class 'krr'.")
@@ -70,3 +72,5 @@ plot.krr = function(x, show_points = TRUE, ...) {
 
   return(p)
 }
+
+

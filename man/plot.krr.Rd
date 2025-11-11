@@ -29,6 +29,7 @@ all but one variable. For example, in 2D, one can plot
 while holding \eqn{x_2} at its mean.
 }
 \examples{
+\donttest{
 set.seed(1)
 n = 1000
 rho = 1
@@ -37,6 +38,7 @@ y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
 model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 plot(model_exact)
+}
 
 }
 \seealso{

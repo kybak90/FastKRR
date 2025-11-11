@@ -1,3 +1,12 @@
+#' Compute Model Error (Generic)
+#'
+#' @description
+#' Generic function for computing model error.
+#'
+#' @param x An object to compute model error for.
+#' @param ... Additional arguments passed to methods.
+#'
+#' @return A numeric value or class-specific result.
 #' @export
 error = function(x, ...) {
   UseMethod("error")
@@ -23,10 +32,18 @@ error = function(x, ...) {
 #' @seealso \code{\link{summary.krr}}, \code{\link{plot.krr}}, \code{\link{predict.krr}}
 #'
 #' @examples
-#' \dontrun{
-#' model = fastkrr(x, y, kernel = "rbf", lambda = 0.1)
+#' # Data setting
+#' set.seed(1)
+#' lambda = 1e-4
+#' d = 1
+#' n = 50
+#' rho = 1
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
+#' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+#'
+#' model = fastkrr(X, y, kernel = "gaussian", lambda = 0.001)
 #' error(model)
-#' }
+#'
 #'
 #' @export
 error.krr = function(x, ...) {
