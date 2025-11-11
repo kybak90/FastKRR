@@ -23,6 +23,7 @@
 #' @examples
 #' set.seed(1)
 #' n = 1000
+#' rho = 1
 #' X = runif(n, 0, 1)
 #' y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 #'
