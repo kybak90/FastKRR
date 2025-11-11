@@ -40,6 +40,5 @@ summary(model)
 
 }
 \seealso{
-\code{\link{fastkrr}}, \code{\link{summary.approx_kernel}},
-  \code{\link{summary.kernel_matrix}}
+\code{\link{fastkrr}}
 }
