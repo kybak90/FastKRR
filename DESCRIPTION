@@ -34,7 +34,8 @@ Imports:
     parsnip,
     Rcpp,
     rlang,
-    tibble
+    tibble,
+    ggplot2
 LinkingTo: 
     Rcpp,
     RcppArmadillo
