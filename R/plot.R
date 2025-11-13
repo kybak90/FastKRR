@@ -62,7 +62,7 @@ plot.krr = function(x, show_points = TRUE, ...) {
       geom_point(data = df_train, aes(x = x, y = y),
                  alpha = 0.25, color = "gray")} +
     geom_line(data = df_pred, aes(x = x, y = yhat),
-              color = "#0072B2", size = 1) +
+              color = "#0072B2", linewidth = 1) +
     labs(
       title = paste0("FastKRR Fit (opt = '", attr(x, "opt"), "')"),
       x = "x", y = "Predicted f(x)"
