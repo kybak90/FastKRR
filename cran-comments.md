@@ -1,17 +1,15 @@
 ## Resubmission
 
-* In this resubmission, we have corrected minor issues in the README, refined the print output, and improved the prediction interface by adding a new S3 generic function `predict.krr()`.
+* In this resubmission, we have added S3 method functions for a more consistent and idiomatic interface in R. 
 
 ## CRAN comments
 
-This is a new version of an existing package. It updates the package to 0.1.1 with minor documentation and interface improvements.
+This is a new version of an existing package. It updates the package to 0.1.2 with minor documentation and interface improvements.
 
-## Changes in version 0.1.1
+## Changes in version 0.1.2
 
-- Fixed minor issues in the README.  
-- Improved and standardized print output for better readability.  
-- The functions `fastkrr()`, `approx_kernel()`, and `make_kernel()` now return S3 class objects.  
-- Replaced the previous `pred_krr()` function with the new S3 generic `predict.krr()` for a more consistent and idiomatic interface in R. 
+- Added S3 method functions such as `plot()`, `summary()`, and `param()` associated with the `krr` class for a more consistent and idiomatic interface in R. 
+- Updated the manuals accordingly.
 
 None of these changes alter the functionality of the package.
 
