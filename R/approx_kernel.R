@@ -156,8 +156,8 @@ approx_kernel = function(K = NULL, X = NULL,
 
   result_values = list()
   class(result_values) = "approx_kernel"
-  attr(result_values, "call") = call
-  attr(result_values, "opt") = opt
+  result_values$call = call
+  result_values$opt = opt
 
   if (opt %in% c("nystrom", "pivoted")) {
     if (is.null(K)) stop("For opt='", opt, "', argument 'K' must be provided (not NULL).")
@@ -175,10 +175,9 @@ approx_kernel = function(K = NULL, X = NULL,
       return(result_values)
     } else {
       rslt = pchol_kernel(K, m, eps = eps)
-      attr(result_values, "K_approx") = rslt$K_approx
-      class(attr(result_values, "K_approx")) = "kernel_matrix"
-      attr(result_values, "m") = rslt$rank
-      attr(result_values, "eps") = rslt$eps
+      result_values$factor = rslt$PR
+      result_values$m = rslt$rank
+      result_values$eps = rslt$eps
       return(result_values)
     }
   }

@@ -37,22 +37,22 @@
 #' @importFrom stats predict
 #' @export
 predict.krr = function(object, newdata, ...){
-  if(missing(newdata)) return(attributes(object)$fitted.values)
+  if(missing(newdata)) return(object$fitted.values)
 
-  if(attributes(object)$opt == "rff"){
+  if(object$opt == "rff"){
     x_new = newdata
-    W = attributes(object)$W
-    b = attributes(object)$b
-    coef = attributes(object)$coefficients
+    W = object$W
+    b = object$b
+    coef = object$coefficients
     Z_new = make_Z(x_new, W = W, b = b)
 
     return(as.vector(Z_new %*% coef))
   }else{
     x_new = newdata
-    x = attributes(object)$x
-    kernel = attributes(object)$kernel
-    rho = attributes(object)$rho
-    coef = attributes(object)$coefficients
+    x = object$x
+    kernel = object$kernel
+    rho = object$rho
+    coef = object$coefficients
 
     K_new = make_kernel(x, x_new, kernel = kernel, rho = rho)
 
@@ -380,25 +380,20 @@ fastkrr = function(x, y,
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
     rslt = pchol(K, y, m = m, lambda, eps = eps, verbose = verbose)
 
-    attr(result_values, "coefficients") = rslt$coefficients
-    attr(result_values, "fitted.values") = as.vector(K %*% rslt$coefficients)
-    attr(result_values, "opt") = opt
-    attr(result_values, "kernel") = kernel
-    attr(result_values, "x") = x
-    attr(result_values, "y") = y
-    attr(result_values, "lambda") = lambda
-    attr(result_values, "rho") = rho
-    attr(result_values, "n_threads") = n_threads
-    attr(result_values, "fastcv") = fastcv
-    attr(result_values, "call") = call
-
-    attr(result_values, "K_approx") = tcrossprod(rslt$PR)
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "K") = K
-    class(attr(result_values, "K")) = "kernel_matrix"
-    attr(result_values, "m") = rslt$m
-    attr(result_values, "PR") = rslt$PR
-    attr(result_values, "eps") = eps
+    result_values$coefficients = rslt$coefficients
+    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
+    result_values$opt = opt
+    result_values$kernel = kernel
+    result_values$x = x
+    result_values$y = y
+    result_values$lambda = lambda
+    result_values$rho = rho
+    result_values$n_threads = n_threads
+    result_values$fastcv = fastcv
+    result_values$call = call
+    result_values$m = rslt$m
+    result_values$PR = rslt$PR
+    result_values$eps = eps
     return(result_values)
 
   }else if(opt == "nystrom"){
