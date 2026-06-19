@@ -59,7 +59,7 @@
 #' ames_test  = testing(ames_split) # dim (588, 74)
 #'
 #' # Model spec
-#' krr_spec = krr_reg(kernel = "gaussian", opt = "exact",
+#' krr_spec = krr_reg(kernel = "gaussian", opt = "nystrom",
 #'                    m = 50, eps = 1e-6, n_threads = 4,
 #'                    rho = 1, penalty = tune()) %>%
 #'  set_engine("fastkrr") %>%
@@ -346,7 +346,7 @@ update.krr_reg = function(object, parameters = NULL,
     args_new$penalty = rlang::enquo(penalty)
   }
 
-  args <- if (isTRUE(fresh)) {
+  args = if (isTRUE(fresh)) {
     args_new
   } else {
     object$args[names(args_new)] = args_new

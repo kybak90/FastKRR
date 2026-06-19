@@ -168,7 +168,6 @@ approx_kernel = function(K = NULL, X = NULL,
     if (opt == "nystrom") {
       rslt = nystrom_kernel(K, m, n_threads = n_threads)
       result_values$K_approx = rslt$K_approx
-      class(attr(result_values, "K_approx")) = "kernel_matrix"
       result_values$m = rslt$m
       result_values$n_threads = rslt$n_threads
 
