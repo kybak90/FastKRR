@@ -417,12 +417,12 @@ fastkrr = function(x, y,
     result_values$fastcv = fastcv
     result_values$call = call
 
-    attr(result_values, "K_approx") = tcrossprod(rslt$R)
+    result_values$K_approx = tcrossprod(rslt$R)
     class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "K") = K
+    result_values$K = K
     class(attr(result_values, "K")) = "kernel_matrix"
-    attr(result_values, "m") = rslt$m
-    attr(result_values, "R") = rslt$R
+    result_values$m = rslt$m
+    result_values$R = rslt$R
     return(result_values)
   }
 }
