@@ -156,8 +156,8 @@ approx_kernel = function(K = NULL, X = NULL,
 
   result_values = list()
   class(result_values) = "approx_kernel"
-  attr(result_values, "call") = call
-  attr(result_values, "opt") = opt
+  result_values$call = call
+  result_values$opt = opt
 
   if (opt %in% c("nystrom", "pivoted")) {
     if (is.null(K)) stop("For opt='", opt, "', argument 'K' must be provided (not NULL).")
