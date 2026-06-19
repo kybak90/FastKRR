@@ -210,7 +210,7 @@ predict.krr = function(object, newdata, ...){
 #' lambda = 1e-4
 #' d = 1
 #' rho = 1
-#' n = 50
+#' n = 10000
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #'
@@ -417,8 +417,6 @@ fastkrr = function(x, y,
     result_values$fastcv = fastcv
     result_values$call = call
 
-    result_values$K_approx = tcrossprod(rslt$R)
-    result_values$K = K
     result_values$m = rslt$m
     result_values$R = rslt$R
     return(result_values)
