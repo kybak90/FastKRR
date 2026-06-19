@@ -26,6 +26,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nystrom_kernel
+Rcpp::List nystrom_kernel(const arma::mat& K, Rcpp::Nullable<int> m_in, int n_threads);
+RcppExport SEXP _FastKRR_nystrom_kernel(SEXP KSEXP, SEXP m_inSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<int> >::type m_in(m_inSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(nystrom_kernel(K, m_in, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nystrom
 Rcpp::List nystrom(const arma::mat& K, const arma::vec& y, int m, double lambda, int n_threads);
 RcppExport SEXP _FastKRR_nystrom(SEXP KSEXP, SEXP ySEXP, SEXP mSEXP, SEXP lambdaSEXP, SEXP n_threadsSEXP) {
@@ -38,19 +51,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(nystrom(K, y, m, lambda, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nystrom_kernel
-Rcpp::List nystrom_kernel(const arma::mat& K, Rcpp::Nullable<int> m_in, int n_threads);
-RcppExport SEXP _FastKRR_nystrom_kernel(SEXP KSEXP, SEXP m_inSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<int> >::type m_in(m_inSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(nystrom_kernel(K, m_in, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -151,8 +151,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_make_kernel", (DL_FUNC) &_FastKRR_make_kernel, 5},
-    {"_FastKRR_nystrom", (DL_FUNC) &_FastKRR_nystrom, 5},
     {"_FastKRR_nystrom_kernel", (DL_FUNC) &_FastKRR_nystrom_kernel, 3},
+    {"_FastKRR_nystrom", (DL_FUNC) &_FastKRR_nystrom, 5},
     {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 6},
     {"_FastKRR_pchol_kernel", (DL_FUNC) &_FastKRR_pchol_kernel, 4},
     {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
