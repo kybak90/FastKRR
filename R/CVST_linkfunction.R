@@ -37,22 +37,22 @@
 #' @importFrom stats predict
 #' @export
 predict.krr = function(object, newdata, ...){
-  if(missing(newdata)) return(attributes(object)$fitted.values)
+  if(missing(newdata)) return(object$fitted.values)
 
-  if(attributes(object)$opt == "rff"){
+  if(object$opt == "rff"){
     x_new = newdata
-    W = attributes(object)$W
-    b = attributes(object)$b
-    coef = attributes(object)$coefficients
+    W = object$W
+    b = object$b
+    coef = object$coefficients
     Z_new = make_Z(x_new, W = W, b = b)
 
     return(as.vector(Z_new %*% coef))
   }else{
     x_new = newdata
-    x = attributes(object)$x
-    kernel = attributes(object)$kernel
-    rho = attributes(object)$rho
-    coef = attributes(object)$coefficients
+    x = object$x
+    kernel = object$kernel
+    rho = object$rho
+    coef = object$coefficients
 
     K_new = make_kernel(x, x_new, kernel = kernel, rho = rho)
 
@@ -418,9 +418,7 @@ fastkrr = function(x, y,
     result_values$call = call
 
     result_values$K_approx = tcrossprod(rslt$R)
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
     result_values$K = K
-    class(attr(result_values, "K")) = "kernel_matrix"
     result_values$m = rslt$m
     result_values$R = rslt$R
     return(result_values)
