@@ -208,7 +208,7 @@ predict.krr = function(object, newdata, ...){
 #' # Data setting
 #' set.seed(1)
 #' lambda = 1e-4
-#' d = 1
+#' d = 3
 #' rho = 1
 #' n = 10000
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
