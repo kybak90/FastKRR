@@ -39,11 +39,11 @@
 coef.krr = function(object, ...){
   model = object
   cat("Call:\n")
-  print(attributes(model)$call)
+  print(model$call)
   cat("\n")
 
   cat("Coefficients:\n")
-  coefs = as.vector(attr(model, "coefficients"))
+  coefs = as.vector(model$coefficients)
   n_show = min(6, length(coefs))
   cat("  ")
   cat(coefs[1:n_show])

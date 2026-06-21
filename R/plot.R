@@ -41,8 +41,8 @@ plot.krr = function(x, show_points = TRUE, ...) {
   if (!inherits(x, "krr"))
     stop("Input must be a fitted model of class 'krr'.")
 
-  X = attr(x, "x")
-  y = as.vector(attr(x, "y"))
+  X = x$x
+  y = as.vector(x$y)
   d = if (is.matrix(X)) ncol(X) else 1
   if (d != 1)
     stop("plot.krr() currently supports only 1D input.")
@@ -64,7 +64,7 @@ plot.krr = function(x, show_points = TRUE, ...) {
     geom_line(data = df_pred, aes(x = x, y = yhat),
               color = "#0072B2", linewidth = 1) +
     labs(
-      title = paste0("FastKRR Fit (opt = '", attr(x, "opt"), "')"),
+      title = paste0("FastKRR Fit (opt = '", x$opt, "')"),
       x = "x", y = "Predicted f(x)"
     ) +
     theme_minimal(base_size = 13) +
