@@ -174,10 +174,9 @@ approx_kernel = function(K = NULL, X = NULL,
       return(result_values)
     } else {
       rslt = pchol_kernel(K, m, eps = eps)
-      attr(result_values, "K_approx") = rslt$K_approx
-      class(attr(result_values, "K_approx")) = "kernel_matrix"
-      attr(result_values, "m") = rslt$rank
-      attr(result_values, "eps") = rslt$eps
+      result_values$factor = rslt$PR
+      result_values$m = rslt$rank
+      result_values$eps = rslt$eps
       return(result_values)
     }
   }

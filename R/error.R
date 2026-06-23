@@ -57,7 +57,6 @@ error.default = function(x, ...) {
 error.krr = function(x, ...) {
   model = x
   as.numeric(
-    crossprod(attributes(model)$y - attributes(model)$fitted.values) /
-      length(attr(model, "y"))
+    crossprod(model$y - model$fitted.values) / length(model$y)
   )
 }

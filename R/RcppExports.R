@@ -21,12 +21,16 @@ pchol_kernel <- function(A, m = NULL, eps = 1e-6, verbose = TRUE) {
     .Call(`_FastKRR_pchol_kernel`, A, m, eps, verbose)
 }
 
-rff <- function(X, y, W, b, lambda, n_threads = 4L) {
-    .Call(`_FastKRR_rff`, X, y, W, b, lambda, n_threads)
+pchol <- function(A, y, lambda, m = NULL, eps = 1e-6, verbose = TRUE) {
+    .Call(`_FastKRR_pchol`, A, y, lambda, m, eps, verbose)
 }
 
 make_Z <- function(X, W, b, n_threads = 4L) {
     .Call(`_FastKRR_make_Z`, X, W, b, n_threads)
+}
+
+rff <- function(X, y, W, b, lambda, n_threads = 4L) {
+    .Call(`_FastKRR_rff`, X, y, W, b, lambda, n_threads)
 }
 
 get_num_procs <- function() {

@@ -336,24 +336,21 @@ fastkrr = function(x, y,
     rand_set = rff_random(m = m, rho = rho, d = d, kernel = kernel)
     rslt = rff(x, y, rand_set$W, rand_set$b, lambda = lambda, n_threads = n_threads)
 
-    attr(result_values, "coefficients") = rslt$coefficients
-    attr(result_values, "fitted.values") = as.vector(rslt$coefficients)
-    attr(result_values, "opt") = opt
-    attr(result_values, "kernel") = kernel
-    attr(result_values, "x") = x
-    attr(result_values, "y") = y
-    attr(result_values, "lambda") = lambda
-    attr(result_values, "rho") = rho
-    attr(result_values, "n_threads") = n_threads
-    attr(result_values, "fastcv") = fastcv
-    attr(result_values, "call") = call
-
-    attr(result_values, "K_approx") = tcrossprod(rslt$Z)
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "m") = m
-    attr(result_values, "Z") = rslt$Z
-    attr(result_values, "W") = rslt$W
-    attr(result_values, "b") = rslt$b
+    result_values$coefficients = rslt$coefficients
+    result_values$fitted.values = as.vector(rslt$coefficients)
+    result_values$opt = opt
+    result_values$kernel = kernel
+    result_values$x = x
+    result_values$y = y
+    result_values$lambda = lambda
+    result_values$rho = rho
+    result_values$n_threads = n_threads
+    result_values$fastcv = fastcv
+    result_values$call = call
+    result_values$m = m
+    result_values$Z = rslt$Z
+    result_values$W = rslt$W
+    result_values$b = rslt$b
     return(result_values)
 
   }else if(opt == "exact"){
@@ -361,45 +358,38 @@ fastkrr = function(x, y,
 
     coefficients = solve_chol(K + diag(n * lambda, n), y)
 
-    attr(result_values, "coefficients") = coefficients
-    attr(result_values, "fitted.values") = as.vector(K %*% coefficients)
-    attr(result_values, "opt") = opt
-    attr(result_values, "kernel") = kernel
-    attr(result_values, "x") = x
-    attr(result_values, "y") = y
-    attr(result_values, "lambda") = lambda
-    attr(result_values, "rho") = rho
-    attr(result_values, "n_threads") = n_threads
-    attr(result_values, "fastcv") = fastcv
-    attr(result_values, "call") = call
-
-    attr(result_values, "K") = K
-    class(attr(result_values, "K")) = "kernel_matrix"
+    result_values$coefficients = coefficients
+    result_values$fitted.values = as.vector(K %*% coefficients)
+    result_values$opt = opt
+    result_values$kernel = kernel
+    result_values$x = x
+    result_values$y = y
+    result_values$lambda = lambda
+    result_values$rho = rho
+    result_values$n_threads = n_threads
+    result_values$fastcv = fastcv
+    result_values$call = call
+    result_values$K = K
     return(result_values)
 
   }else if(opt == "pivoted"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
     rslt = pchol(K, y, m = m, lambda, eps = eps, verbose = verbose)
 
-    attr(result_values, "coefficients") = rslt$coefficients
-    attr(result_values, "fitted.values") = as.vector(K %*% rslt$coefficients)
-    attr(result_values, "opt") = opt
-    attr(result_values, "kernel") = kernel
-    attr(result_values, "x") = x
-    attr(result_values, "y") = y
-    attr(result_values, "lambda") = lambda
-    attr(result_values, "rho") = rho
-    attr(result_values, "n_threads") = n_threads
-    attr(result_values, "fastcv") = fastcv
-    attr(result_values, "call") = call
-
-    attr(result_values, "K_approx") = tcrossprod(rslt$PR)
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "K") = K
-    class(attr(result_values, "K")) = "kernel_matrix"
-    attr(result_values, "m") = rslt$m
-    attr(result_values, "PR") = rslt$PR
-    attr(result_values, "eps") = eps
+    result_values$coefficients = rslt$coefficients
+    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
+    result_values$opt = opt
+    result_values$kernel = kernel
+    result_values$x = x
+    result_values$y = y
+    result_values$lambda = lambda
+    result_values$rho = rho
+    result_values$n_threads = n_threads
+    result_values$fastcv = fastcv
+    result_values$call = call
+    result_values$m = rslt$m
+    result_values$PR = rslt$PR
+    result_values$eps = eps
     return(result_values)
 
   }else if(opt == "nystrom"){

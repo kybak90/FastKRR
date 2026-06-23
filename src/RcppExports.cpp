@@ -54,6 +54,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pchol_kernel
+Rcpp::List pchol_kernel(const arma::mat& A, Rcpp::Nullable<int> m, double eps, bool verbose);
+RcppExport SEXP _FastKRR_pchol_kernel(SEXP ASEXP, SEXP mSEXP, SEXP epsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<int> >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(pchol_kernel(A, m, eps, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // pchol
 List pchol(const arma::mat& A, const arma::vec& y, double lambda, Rcpp::Nullable<int> m, double eps, bool verbose);
 RcppExport SEXP _FastKRR_pchol(SEXP ASEXP, SEXP ySEXP, SEXP lambdaSEXP, SEXP mSEXP, SEXP epsSEXP, SEXP verboseSEXP) {
@@ -70,17 +84,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// pchol_kernel
-Rcpp::List pchol_kernel(const arma::mat& A, Rcpp::Nullable<int> m, double eps, bool verbose);
-RcppExport SEXP _FastKRR_pchol_kernel(SEXP ASEXP, SEXP mSEXP, SEXP epsSEXP, SEXP verboseSEXP) {
+// make_Z
+arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b, int n_threads);
+RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<int> >::type m(mSEXP);
-    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(pchol_kernel(A, m, eps, verbose));
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_Z(X, W, b, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -97,20 +111,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(rff(X, y, W, b, lambda, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
-// make_Z
-arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b, int n_threads);
-RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(make_Z(X, W, b, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -155,8 +155,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_nystrom", (DL_FUNC) &_FastKRR_nystrom, 5},
     {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 6},
     {"_FastKRR_pchol_kernel", (DL_FUNC) &_FastKRR_pchol_kernel, 4},
-    {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
+    {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 6},
     {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 4},
+    {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
     {"_FastKRR_get_num_procs", (DL_FUNC) &_FastKRR_get_num_procs, 0},
     {"_FastKRR_solve_chol", (DL_FUNC) &_FastKRR_solve_chol, 2},
     {"_FastKRR_SOLVE_sympd", (DL_FUNC) &_FastKRR_SOLVE_sympd, 2},
