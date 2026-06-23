@@ -13,12 +13,12 @@ nystrom_kernel <- function(K, m_in = NULL, n_threads = 4L) {
     .Call(`_FastKRR_nystrom_kernel`, K, m_in, n_threads)
 }
 
-pchol <- function(A, y, lambda, m = NULL, eps = 1e-6, verbose = TRUE) {
-    .Call(`_FastKRR_pchol`, A, y, lambda, m, eps, verbose)
-}
-
 pchol_kernel <- function(A, m = NULL, eps = 1e-6, verbose = TRUE) {
     .Call(`_FastKRR_pchol_kernel`, A, m, eps, verbose)
+}
+
+pchol <- function(A, y, lambda, m = NULL, eps = 1e-6, verbose = TRUE) {
+    .Call(`_FastKRR_pchol`, A, y, lambda, m, eps, verbose)
 }
 
 rff <- function(X, y, W, b, lambda, n_threads = 4L) {

@@ -115,7 +115,7 @@
 #'
 #' @export
 krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
-                    n_threads = NULL, m = NULL, rho = NULL, penalty = NULL, fastcv = NULL) {
+                   n_threads = NULL, m = NULL, rho = NULL, penalty = NULL, fastcv = NULL) {
   if (mode != "regression") {
     rlang::abort("`mode` should be 'regression'.")
   }
@@ -296,23 +296,62 @@ make_krr_reg = function(){
 #' @importFrom stats update
 #' @exportS3Method update krr_reg
 update.krr_reg = function(object, parameters = NULL,
-                           kernel = NULL, opt = NULL, m = NULL, eps = NULL,
-                           n_threads = NULL, rho = NULL, fastcv = NULL, penalty = NULL,
-                           fresh = FALSE, ...) {
-  if (requireNamespace("parsnip", quietly = TRUE) &&
-      "update.model_spec" %in% getNamespaceExports("parsnip")) {
-    return(stats::update(
-      object,
-      kernel = kernel, opt = opt, m = m, eps = eps, n_threads = n_threads,
-      rho = rho, fastcv = fastcv, penalty = penalty,
-      parameters = parameters, fresh = fresh, ...
-    ))
+                          kernel = NULL, opt = NULL,
+                          m = NULL, eps = NULL,
+                          n_threads = NULL, rho = NULL,
+                          fastcv = NULL, penalty = NULL,
+                          fresh = FALSE, ...) {
+
+  # if (requireNamespace("parsnip", quietly = TRUE) &&
+  #     "update.model_spec" %in% getNamespaceExports("parsnip")) {
+  #   return(stats::update(
+  #     object,
+  #     kernel = kernel, opt = opt, m = m, eps = eps, n_threads = n_threads,
+  #     rho = rho, fastcv = fastcv, penalty = penalty,
+  #     parameters = parameters, fresh = fresh, ...
+  #   ))
+  # }
+
+  args_new = list()
+
+  if (!missing(kernel)) {
+    args_new$kernel = rlang::enquo(kernel)
   }
-  args_new = rlang::enquos(
-    kernel=kernel, opt=opt, m=m, eps=eps, n_threads=n_threads,
-    rho=rho, fastcv=fastcv, penalty=penalty,
-    .ignore_empty="all"
-  )
+
+  if (!missing(opt)) {
+    args_new$opt = rlang::enquo(opt)
+  }
+
+  if (!missing(m)) {
+    args_new$m = rlang::enquo(m)
+  }
+
+  if (!missing(eps)) {
+    args_new$eps = rlang::enquo(eps)
+  }
+
+  if (!missing(n_threads)) {
+    args_new$n_threads = rlang::enquo(n_threads)
+  }
+
+  if (!missing(rho)) {
+    args_new$rho = rlang::enquo(rho)
+  }
+
+  if (!missing(fastcv)) {
+    args_new$fastcv = rlang::enquo(fastcv)
+  }
+
+  if (!missing(penalty)) {
+    args_new$penalty = rlang::enquo(penalty)
+  }
+
+  args <- if (isTRUE(fresh)) {
+    args_new
+  } else {
+    object$args[names(args_new)] = args_new
+    object$args
+  }
   object$args = if (fresh) args_new else utils::modifyList(object$args, args_new)
   object
 }
