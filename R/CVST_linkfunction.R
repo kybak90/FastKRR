@@ -208,9 +208,9 @@ predict.krr = function(object, newdata, ...){
 #' # Data setting
 #' set.seed(1)
 #' lambda = 1e-4
-#' d = 1
+#' d = 3
 #' rho = 1
-#' n = 50
+#' n = 100
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #'
@@ -355,6 +355,7 @@ fastkrr = function(x, y,
 
   }else if(opt == "exact"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
+
     coefficients = solve_chol(K + diag(n * lambda, n), y)
 
     result_values$coefficients = coefficients
@@ -395,24 +396,20 @@ fastkrr = function(x, y,
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
     rslt = nystrom(K, m = m, y, lambda = lambda, n_threads = n_threads)
 
-    attr(result_values, "coefficients") = rslt$coefficients
-    attr(result_values, "fitted.values") = as.vector(K %*% rslt$coefficients)
-    attr(result_values, "opt") = opt
-    attr(result_values, "kernel") = kernel
-    attr(result_values, "x") = x
-    attr(result_values, "y") = y
-    attr(result_values, "lambda") = lambda
-    attr(result_values, "rho") = rho
-    attr(result_values, "n_threads") = n_threads
-    attr(result_values, "fastcv") = fastcv
-    attr(result_values, "call") = call
+    result_values$coefficients = rslt$coefficients
+    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
+    result_values$opt = opt
+    result_values$kernel = kernel
+    result_values$x = x
+    result_values$y = y
+    result_values$lambda = lambda
+    result_values$rho = rho
+    result_values$n_threads = n_threads
+    result_values$fastcv = fastcv
+    result_values$call = call
 
-    attr(result_values, "K_approx") = tcrossprod(rslt$R)
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "K") = K
-    class(attr(result_values, "K")) = "kernel_matrix"
-    attr(result_values, "m") = rslt$m
-    attr(result_values, "R") = rslt$R
+    result_values$m = rslt$m
+    # result_values$R = rslt$R
     return(result_values)
   }
 }
