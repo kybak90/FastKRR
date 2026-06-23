@@ -418,7 +418,7 @@ fastkrr = function(x, y,
     result_values$call = call
 
     result_values$m = rslt$m
-    result_values$R = rslt$R
+    # result_values$R = rslt$R
     return(result_values)
   }
 }
