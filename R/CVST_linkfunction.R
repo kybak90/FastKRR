@@ -210,7 +210,7 @@ predict.krr = function(object, newdata, ...){
 #' lambda = 1e-4
 #' d = 3
 #' rho = 1
-#' n = 10000
+#' n = 100
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #'
