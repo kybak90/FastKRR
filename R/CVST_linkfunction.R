@@ -358,6 +358,7 @@ fastkrr = function(x, y,
 
   }else if(opt == "exact"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
+
     coefficients = solve_chol(K + diag(n * lambda, n), y)
 
     attr(result_values, "coefficients") = coefficients
@@ -403,7 +404,8 @@ fastkrr = function(x, y,
 
   }else if(opt == "nystrom"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
-    rslt = nystrom(K, m = m, y, lambda = lambda, n_threads = n_threads)
+    K_nystrom = K[, 1:m, drop = FALSE]
+    rslt = nystrom(K_nystrom, m = m, y, lambda = lambda, n_threads = n_threads)
 
     result_values$coefficients = rslt$coefficients
     result_values$fitted.values = as.vector(K %*% rslt$coefficients)
@@ -469,7 +471,8 @@ krr_fit_nystrom = function(data, param) {
   lambda = as.numeric(param$lambda)
 
   K = make_kernel(x, kernel = param$kernel, rho = param$rho, n_threads = param$n_threads)
-  rslt = nystrom(K, m = as.integer(n * param$rate), y, lambda = lambda, n_threads = param$n_threads)
+  K_nystrom = K[, 1:m, drop = FALSE]
+  rslt = nystrom(K_nystrom, m = as.integer(n * param$rate), y, lambda = lambda, n_threads = param$n_threads)
   coefficients = rslt$coefficients
 
   return(list(data = data, kernel = param$kernel,
