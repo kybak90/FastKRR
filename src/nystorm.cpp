@@ -93,8 +93,9 @@ Rcpp::List nystrom(const arma::mat& K_mm,
 
 
   return Rcpp::List::create(
-    // Rcpp::Named("R") = R,
+    Rcpp::Named("R") = R,
     Rcpp::Named("m") = m,
+    Rcpp::Named("fitted.values") =  R * R.t() * coef_hat,
     Rcpp::Named("coefficients") = coef_hat,
     Rcpp::Named("n_threads") = used_threads
   );

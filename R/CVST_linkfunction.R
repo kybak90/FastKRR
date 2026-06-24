@@ -210,7 +210,7 @@ predict.krr = function(object, newdata, ...){
 #' lambda = 1e-4
 #' d = 3
 #' rho = 1
-#' n = 100
+#' n = 10000
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
 #'
@@ -218,7 +218,11 @@ predict.krr = function(object, newdata, ...){
 #' model = fastkrr(X, y, kernel = "gaussian", opt = "pivoted", rho = rho, lambda = 1e-4)
 #'
 #' # Example: nystrom
+#' s = Sys.time()
 #' model = fastkrr(X, y, kernel = "gaussian", opt = "nystrom", rho = rho, lambda = 1e-4)
+#' end =Sys.time()
+#'
+#' end - s
 #'
 #' # Example: random fourier features
 #' model = fastkrr(X, y, kernel = "gaussian", opt = "rff", rho = rho, lambda = 1e-4)
@@ -302,7 +306,7 @@ fastkrr = function(x, y,
   rate = round(m / n, 5) # Approximation rate for train and test data
 
   # Select best hyper parameter via CVST
-  if(is.vector(lambda)){
+  if(length(lambda) > 1){
     data = CVST::constructData(x, y)
     if(opt == "exact"){
       ojct = CVST::constructLearner(krr_fit_exact, krr_pred)
@@ -398,14 +402,14 @@ fastkrr = function(x, y,
     K_nm = make_kernel(X[idx_ny, , drop = FALSE], X,
                        kernel = kernel, rho = rho, n_threads = n_threads)
 
-    K_mm = make_kernel(X[idx_ny, , drop = FALSE], X[idx_ny, , drop = FALSE],
+    K_mm = make_kernel(X[idx_ny, , drop = FALSE],
                        kernel = kernel, rho = rho, n_threads = n_threads)
 
     rslt = nystrom(K_nm = K_nm, K_mm = K_mm, m = m, y = y,
                    lambda = lambda, n_threads = n_threads)
 
-    result_values$coefficients = rslt$coefficients
-    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
+    result_values$coefficients = as.vector(rslt$coefficients)
+    result_values$fitted.values = as.vector(rslt$fitted.values)
     result_values$opt = opt
     result_values$kernel = kernel
     result_values$x = x
@@ -417,7 +421,7 @@ fastkrr = function(x, y,
     result_values$call = call
 
     result_values$m = rslt$m
-    # result_values$R = rslt$R
+    result_values$approx_factor = rslt$R
     return(result_values)
   }
 }
@@ -472,10 +476,10 @@ krr_fit_nystrom = function(data, param) {
   idx_ny = sample(n, m)
 
   K_nm = make_kernel(x[idx_ny, , drop = FALSE], x,
-                     kernel = param$kernel, rho = param$rho,, n_threads = param$n_threads)
+                     kernel = param$kernel, rho = param$rho, n_threads = param$n_threads)
 
   K_mm = make_kernel(x[idx_ny, , drop = FALSE], x[idx_ny, , drop = FALSE],
-                     kernel = param$kernel, rho = param$rho,, n_threads = param$n_threads)
+                     kernel = param$kernel, rho = param$rho, n_threads = param$n_threads)
 
   rslt = nystrom(K_nm = K_nm, K_mm = K_mm, m = m, y = y,
                  lambda = lambda, n_threads = param$n_threads)
