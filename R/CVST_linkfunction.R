@@ -393,8 +393,16 @@ fastkrr = function(x, y,
     return(result_values)
 
   }else if(opt == "nystrom"){
-    K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
-    rslt = nystrom(K, m = m, y, lambda = lambda, n_threads = n_threads)
+    idx_ny = sample(seq_len(nrow(X)), m)
+
+    K_nm = make_kernel(X[idx_ny, , drop = FALSE], X,
+                       kernel = kernel, rho = rho, n_threads = n_threads)
+
+    K_mm = make_kernel(X[idx_ny, , drop = FALSE], X[idx_ny, , drop = FALSE],
+                       kernel = kernel, rho = rho, n_threads = n_threads)
+
+    rslt = nystrom(K_nm = K_nm, K_mm = K_mm, m = m, y = y,
+                   lambda = lambda, n_threads = n_threads)
 
     result_values$coefficients = rslt$coefficients
     result_values$fitted.values = as.vector(K %*% rslt$coefficients)
@@ -457,10 +465,21 @@ krr_fit_nystrom = function(data, param) {
   n = nrow(x)
   d = ncol(x)
 
+  m = as.integer(n * param$rate)
+
   lambda = as.numeric(param$lambda)
 
-  K = make_kernel(x, kernel = param$kernel, rho = param$rho, n_threads = param$n_threads)
-  rslt = nystrom(K, m = as.integer(n * param$rate), y, lambda = lambda, n_threads = param$n_threads)
+  idx_ny = sample(seq_len(nrow(X)), m)
+
+  K_nm = make_kernel(X[idx_ny, , drop = FALSE], X,
+                     kernel = param$kernel, rho = param$rho,, n_threads = param$n_threads)
+
+  K_mm = make_kernel(X[idx_ny, , drop = FALSE], X[idx_ny, , drop = FALSE],
+                     kernel = param$kernel, rho = param$rho,, n_threads = param$n_threads)
+
+  rslt = nystrom(K_nm = K_nm, K_mm = K_mm, m = m, y = y,
+                 lambda = lambda, n_threads = param$n_threads)
+
   coefficients = rslt$coefficients
 
   return(list(data = data, kernel = param$kernel,
