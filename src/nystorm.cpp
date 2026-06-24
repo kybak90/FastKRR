@@ -8,8 +8,7 @@ using namespace Rcpp;
 using namespace arma;
 
 // [[Rcpp::export]]
-Rcpp::List nystrom_kernel(const arma::mat& K_mm,
-                          const arma::mat& K_nm,
+Rcpp::List nystrom_kernel(const arma::mat& K,
                           Rcpp::Nullable<int> m_in = R_NilValue,
                           int n_threads = 4)
 {
@@ -23,7 +22,7 @@ Rcpp::List nystrom_kernel(const arma::mat& K_mm,
     n_threads = std::min(n_threads, max_threads - 1);
 
 
-  int n = K_nm.n_rows;
+  int n = K.n_rows;
   int m;
   if (m_in.isNull()) {
     m = std::max(1, n / 10); // 최소 1 이상
@@ -40,7 +39,7 @@ Rcpp::List nystrom_kernel(const arma::mat& K_mm,
   arma::mat V;
   arma::vec s;
 
-  bool success = arma::svd(U, s, V, K_mm);
+  bool success = arma::svd(U, s, V, K(span(0, m - 1), span(0, m - 1)));
   if(!success){
     Rcpp::stop("Singular value decomposition failed");
   }
@@ -51,7 +50,7 @@ Rcpp::List nystrom_kernel(const arma::mat& K_mm,
 #endif
   for(int j = 0; j < n; j++){
     for(int i = 0; i < m; i ++){
-      R(j, i) = arma::dot(K_nm.row(j), U.col(i)) / sqrt(s(i));
+      R(j, i) = arma::dot(K.row(j).subvec(0, m - 1), U.col(i)) / sqrt(s(i));
     }
   }
 
@@ -66,15 +65,13 @@ Rcpp::List nystrom_kernel(const arma::mat& K_mm,
 
 
 // [[Rcpp::export]]
-Rcpp::List nystrom(const arma::mat& K_mm,
-                   const arma::mat& K_nm,
-                   const arma::vec& y,
+Rcpp::List nystrom(const arma::mat& K, const arma::vec& y,
                    int m, double lambda, int n_threads = 4)
 {
-  int n = K_nm.n_rows;
+  int n = K.n_rows;
 
   Rcpp::List rslt = nystrom_kernel(
-    K_mm,K_nm,
+    K,
     Rcpp::Nullable<int>(Rcpp::wrap(m)),
     n_threads
   );
@@ -96,6 +93,6 @@ Rcpp::List nystrom(const arma::mat& K_mm,
     // Rcpp::Named("R") = R,
     Rcpp::Named("m") = m,
     Rcpp::Named("coefficients") = coef_hat,
-    Rcpp::Named("n_threads") = used_threads
+    Rcpp::Named("n_threads") = n_threads
   );
 }
