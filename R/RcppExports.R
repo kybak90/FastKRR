@@ -5,12 +5,12 @@ make_kernel <- function(X, X_new = NULL, kernel = "gaussian", rho = 0, n_threads
     .Call(`_FastKRR_make_kernel`, X, X_new, kernel, rho, n_threads)
 }
 
-nystrom_kernel <- function(K_mm, K_nm, m_in = NULL, n_threads = 4L) {
-    .Call(`_FastKRR_nystrom_kernel`, K_mm, K_nm, m_in, n_threads)
+nystrom_kernel <- function(K, m_in = NULL, n_threads = 4L) {
+    .Call(`_FastKRR_nystrom_kernel`, K, m_in, n_threads)
 }
 
-nystrom <- function(K_mm, K_nm, y, m, lambda, n_threads = 4L) {
-    .Call(`_FastKRR_nystrom`, K_mm, K_nm, y, m, lambda, n_threads)
+nystrom <- function(K, y, m, lambda, n_threads = 4L) {
+    .Call(`_FastKRR_nystrom`, K, y, m, lambda, n_threads)
 }
 
 pchol_kernel <- function(A, m = NULL, eps = 1e-6, verbose = TRUE) {
