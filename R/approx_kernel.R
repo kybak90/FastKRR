@@ -121,15 +121,15 @@
 #'                       n_threads = 1)
 #'
 #' # Exapmle: Nystrom approximation
-#' K_nystrom = approx_kernel(K = K, opt = "nystrom",
+#' K_nystrom = approx_kernel(X = X, opt = "nystrom",
 #'                           m = m, d = d, rho = 1,
 #'                           n_threads = 1)
 #'
 #' # Example: Pivoted Cholesky approximation
-#' K_pivoted = approx_kernel(K = K, opt = "pivoted",
+#' K_pivoted = approx_kernel(X = X, opt = "pivoted",
 #'                           m = m, d = d, rho = 1)
 #' @export
-approx_kernel = function(K = NULL, X = NULL,
+approx_kernel = function(X = NULL,
                          opt = c("nystrom", "pivoted", "rff"),
                          kernel = c("gaussian", "laplace"),
                          m = NULL, d, rho, eps = 1e-6,
@@ -160,15 +160,24 @@ approx_kernel = function(K = NULL, X = NULL,
   result_values$opt = opt
 
   if (opt %in% c("nystrom", "pivoted")) {
-    if (is.null(K)) stop("For opt='", opt, "', argument 'K' must be provided (not NULL).")
-    n = nrow(K)
 
+    n = nrow(X)
     if (is.null(m)) m = n / 10 * log(d + 5)
     m = as.integer(max(1, min(n, floor(m))))
 
     if (opt == "nystrom") {
-      rslt = nystrom_kernel(K, m, n_threads = n_threads)
-      result_values$R = rslt$R
+      idx_ny = sample(seq_len(nrow(X)), m)
+
+      K_nm = make_kernel(X[idx_ny, , drop = FALSE], X,
+                         kernel = kernel, rho = rho, n_threads = n_threads)
+
+      K_mm = make_kernel(X[idx_ny, , drop = FALSE], X[idx_ny, , drop = FALSE],
+                         kernel = kernel, rho = rho, n_threads = n_threads)
+
+      rslt = nystrom_kernel(K_nm = K_nm, K_mm = K_mm, m, n_threads = n_threads)
+
+      result_values$K_approx = tcrossprod(rslt$R)
+      result_values$approx_factor = rslt$R
       result_values$m = rslt$m
       result_values$n_threads = rslt$n_threads
 
@@ -176,7 +185,7 @@ approx_kernel = function(K = NULL, X = NULL,
     } else {
       K = make_kernel(X, kernel = kernel, rho = rho, n_threads = n_threads)
       rslt = pchol_kernel(K, m, eps = eps)
-      result_values$factor = rslt$PR
+      result_values$approx_factor = rslt$PR
       result_values$m = rslt$rank
       result_values$eps = rslt$eps
       return(result_values)
