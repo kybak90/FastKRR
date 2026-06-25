@@ -397,12 +397,12 @@ fastkrr = function(x, y,
     return(result_values)
 
   }else if(opt == "nystrom"){
-    idx_ny = sample(seq_len(nrow(X)), m)
+    idx_ny = sample(seq_len(nrow(x)), m)
 
-    K_nm = make_kernel(X[idx_ny, , drop = FALSE], X,
+    K_nm = make_kernel(x[idx_ny, , drop = FALSE], x,
                        kernel = kernel, rho = rho, n_threads = n_threads)
 
-    K_mm = make_kernel(X[idx_ny, , drop = FALSE],
+    K_mm = make_kernel(x[idx_ny, , drop = FALSE],
                        kernel = kernel, rho = rho, n_threads = n_threads)
 
     rslt = nystrom(K_nm = K_nm, K_mm = K_mm, m = m, y = y,
