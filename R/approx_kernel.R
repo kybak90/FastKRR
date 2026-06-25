@@ -192,6 +192,8 @@ approx_kernel = function(X = NULL,
     }
   }
 
+  if (!is.null(K)) stop("For opt='rff', argument 'K' must be NULL (not used).")
+
   if (is.null(X))  stop("For opt='rff', argument 'X' must be provided (not NULL).")
 
   n   = nrow(X)
@@ -208,15 +210,15 @@ approx_kernel = function(X = NULL,
     Z = make_Z(X, W, b, n_threads = n_threads )
     K_approx = tcrossprod(Z)
 
-    attr(result_values, "K_approx") = K_approx
-    class(attr(result_values, "K_approx")) = "kernel_matrix"
-    attr(result_values, "m") = m_used
-    attr(result_values, "d") = d
-    attr(result_values, "rho") = rho
-    attr(result_values, "W") = W
-    attr(result_values, "b") = b
-    attr(result_values, "used_supplied_Wb") = TRUE
-    attr(result_values, "n_threads") = n_threads
+    result_values$Z = Z
+    result_values$K_approx = K_approx
+    result_values$m = m_used
+    result_values$d = d
+    result_values$rho = rho
+    result_values$W = W
+    result_values$b = b
+    result_values$used_supplied_Wb = TRUE
+    result_values$n_threads = n_threads
 
     return(result_values)
   }
@@ -233,15 +235,15 @@ approx_kernel = function(X = NULL,
   W = rb$W; b = rb$b
   Z = make_Z(X, W, b, n_threads = n_threads)
 
-  attr(result_values, "K_approx") = tcrossprod(Z)
-  class(attr(result_values, "K_approx")) = "kernel_matrix"
-  attr(result_values, "m") = m
-  attr(result_values, "d") = d
-  attr(result_values, "rho") = rho
-  attr(result_values, "W") = W
-  attr(result_values, "b") = b
-  attr(result_values, "used_supplied_Wb") = FALSE
-  attr(result_values, "n_threads") = n_threads
+  result_values$Z = Z
+  result_values$K_approx = tcrossprod(Z)
+  result_values$m = m
+  result_values$d = d
+  result_values$rho = rho
+  result_values$W = W
+  result_values$b = b
+  result_values$used_supplied_Wb = FALSE
+  result_values$n_threads = n_threads
 
   return(result_values)
 }
