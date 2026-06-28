@@ -341,7 +341,7 @@ fastkrr = function(x, y,
     rslt = rff(x, y, rand_set$W, rand_set$b, lambda = lambda, n_threads = n_threads)
 
     result_values$coefficients = rslt$coefficients
-    result_values$fitted.values = as.vector(rslt$coefficients)
+    result_values$fitted.values = as.vector(rslt$fitted.values)
     result_values$opt = opt
     result_values$kernel = kernel
     result_values$x = x
