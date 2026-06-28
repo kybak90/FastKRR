@@ -377,11 +377,11 @@ fastkrr = function(x, y,
     return(result_values)
 
   }else if(opt == "pivoted"){
-    K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
-    rslt = pchol(K, y, m = m, lambda, eps = eps, verbose = verbose)
+    rslt = pchol(x, y, lambda = lambda, rho = rho,
+                 kernel = kernel, m = m, verbose = verbose)
 
     result_values$coefficients = rslt$coefficients
-    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
+    result_values$fitted.values = as.vector(rslt$fitted.values)
     result_values$opt = opt
     result_values$kernel = kernel
     result_values$x = x
@@ -392,7 +392,7 @@ fastkrr = function(x, y,
     result_values$fastcv = fastcv
     result_values$call = call
     result_values$m = rslt$m
-    result_values$PR = rslt$PR
+    result_values$approx_factor = rslt$PR
     result_values$eps = eps
     return(result_values)
 
@@ -447,11 +447,12 @@ krr_fit_pivoted = function(data, param) {
   x = data$x
   y = data$y
   n = nrow(x)
-
+  m = as.integer(n * param$rate)
   lambda = as.numeric(param$lambda)
 
-  K = make_kernel(x, kernel = param$kernel, rho = param$rho)
-  rslt = pchol(K, y, lambda, m = as.integer(n * param$rate), eps = param$eps, verbose = FALSE)
+  rslt = pchol(x, y, lambda = lambda, rho = param$rho,
+               kernel = param$kernel, m = m,
+               eps = param$eps, verbose = FALSE)
   coefficients = rslt$coefficients
 
   return(list(data = data, kernel = param$kernel,

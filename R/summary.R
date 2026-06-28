@@ -35,7 +35,7 @@
 summary.krr = function(object, ...){
   model = object
   cat("Call:\n")
-  print(attributes(model)$call)
+  print(model$call)
   cat("\n")
 
   cat("Coefficients:\n")
@@ -46,13 +46,13 @@ summary.krr = function(object, ...){
   if (length(coefs) > n_show) cat(" ...")
 
   cat("\n\n")
-  if(attributes(model)$opt == "exact"){
+  if(model$opt == "exact"){
     cat("Kernel matrix\n")
-    print(attributes(model)$K) ## print.kernel_matrix()
+    print(model$K) ## print.kernel_matrix()
     cat("\n")
 
-    idx = names(attributes(model)) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(attributes(model)[idx])
+    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
+    df = as.data.frame(model[idx])
     row.names(df) = ""
 
     cat("Options:\n")
@@ -60,11 +60,11 @@ summary.krr = function(object, ...){
 
   }else{
     cat("Approximated kernel matrix\n")
-    print(attributes(model)$K_approx) ## summary.kernel_matrix()
+    print(model$K_approx) ## summary.kernel_matrix()
     cat("\n")
 
-    idx = names(attributes(model)) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(attributes(model)[idx])
+    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
+    df = as.data.frame(model[idx])
     row.names(df) = ""
 
     cat("Options:\n")
