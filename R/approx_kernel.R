@@ -158,6 +158,7 @@ approx_kernel = function(X = NULL,
   class(result_values) = "approx_kernel"
   result_values$call = call
   result_values$opt = opt
+  result_values$kernel = kernel
 
   if (opt %in% c("nystrom", "pivoted")) {
 
@@ -183,8 +184,9 @@ approx_kernel = function(X = NULL,
 
       return(result_values)
     } else {
-      K = make_kernel(X, kernel = kernel, rho = rho, n_threads = n_threads)
-      rslt = pchol_kernel(K, m, eps = eps)
+      rslt = pchol_kernel(X, rho = rho, kernel = kernel, m = m)
+
+      result_values$K_approx = tcrossprod(rslt$PR)
       result_values$approx_factor = rslt$PR
       result_values$m = rslt$rank
       result_values$eps = rslt$eps
@@ -192,7 +194,7 @@ approx_kernel = function(X = NULL,
     }
   }
 
-  if (!is.null(K)) stop("For opt='rff', argument 'K' must be NULL (not used).")
+  #if (!is.null(K)) stop("For opt='rff', argument 'K' must be NULL (not used).")
 
   if (is.null(X))  stop("For opt='rff', argument 'X' must be provided (not NULL).")
 

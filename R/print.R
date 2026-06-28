@@ -35,40 +35,23 @@
 print.krr = function(x, ...){
   model = x
   cat("Call:\n")
-  print(attributes(model)$call)
+  print(model$call)
   cat("\n")
 
-  cat("Coefficients:\n")
-  coefs = as.vector(attr(model, "coefficients"))
-  n_show = min(6, length(coefs))
-  cat("  ")
-  cat(coefs[1:n_show])
-  if (length(coefs) > n_show) cat(" ...")
-
-  cat("\n\n")
-  if(attributes(model)$opt == "exact"){
-    cat("Kernel matrix\n")
-    print(attributes(model)$K) ## print.kernel_matrix()
-    cat("\n")
-
-    idx = names(attributes(model)) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(attributes(model)[idx])
-    row.names(df) = ""
+  cat("\n")
+  if(model$opt == "exact"){
+    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
+    df = as.data.frame(model[idx])
 
     cat("Options:\n")
-    print(df)
+    print(df, row.names = FALSE)
 
   }else{
-    cat("Approximated kernel matrix\n")
-    print(attributes(model)$K_approx) ## print.kernel_matrix()
-    cat("\n")
-
-    idx = names(attributes(model)) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(attributes(model)[idx])
-    row.names(df) = ""
+    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
+    df = as.data.frame(model[idx])
 
     cat("Options:\n")
-    print(df)
+    print(df, row.names = FALSE)
   }
 }
 
@@ -110,18 +93,19 @@ print.krr = function(x, ...){
 print.approx_kernel = function(x, ...){
   approx_object = x
   cat("Call:\n")
-  print(attributes(approx_object)$call)
-  cat("\n")
-  print(attributes(approx_object)$K_approx) ## print.kernel_matrix()
-  cat("\n")
+  print(approx_object$call)
 
-
-  idx = names(attributes(approx_object)) %in% c("opt", "m", "eps", "n_threads")
-  df = as.data.frame(attributes(approx_object)[idx])
+  cat("\n")
+  idx = names(approx_object) %in% c("opt", "kernel", "m", "eps", "n_threads")
+  df = as.data.frame(approx_object[idx])
   row.names(df) = ""
-
   cat("Options:\n")
   print(df)
+
+
+  cat("\n")
+  cat("Showing top-left 6x6 K_approx:\n")
+  print(approx_object$K_approx[1:6, 1:6])
 }
 
 
@@ -179,6 +163,6 @@ print.approx_kernel = function(x, ...){
 #' @export
 print.kernel_matrix = function(x, ...){
   ker_mat = x
-  cat("Showing top-left 6x6:\n")
+  cat("Showing top-left 6x6 kernel matrix:\n")
   print(ker_mat[1:6, 1:6])
 }

@@ -13,12 +13,12 @@ nystrom <- function(K_mm, K_nm, y, m, lambda, n_threads = 4L) {
     .Call(`_FastKRR_nystrom`, K_mm, K_nm, y, m, lambda, n_threads)
 }
 
-pchol_kernel <- function(A, m = NULL, eps = 1e-6, verbose = TRUE) {
-    .Call(`_FastKRR_pchol_kernel`, A, m, eps, verbose)
+pchol_kernel <- function(X, rho = 1.0, kernel = "gaussian", m = NULL, eps = 1e-6, verbose = TRUE) {
+    .Call(`_FastKRR_pchol_kernel`, X, rho, kernel, m, eps, verbose)
 }
 
-pchol <- function(A, y, lambda, m = NULL, eps = 1e-6, verbose = TRUE) {
-    .Call(`_FastKRR_pchol`, A, y, lambda, m, eps, verbose)
+pchol <- function(X, y, lambda, rho = 1.0, kernel = "gaussian", m = NULL, eps = 1e-6, verbose = TRUE) {
+    .Call(`_FastKRR_pchol`, X, y, lambda, rho, kernel, m, eps, verbose)
 }
 
 make_Z <- function(X, W, b, n_threads = 4L) {

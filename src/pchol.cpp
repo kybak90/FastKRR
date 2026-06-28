@@ -3,138 +3,119 @@
 using namespace Rcpp;
 using namespace arma;
 
+// K(i,j) = exp(-rho * ||x_i - x_j||^2)
+inline double gaussian_entry(const arma::mat& X, int i, int j, double rho) {
+  arma::rowvec diff = X.row(i) - X.row(j);
+  return std::exp(-rho * arma::accu(diff % diff));
+}
+
+// K(i,j) = exp(-rho * ||x_i - x_j||_1)
+inline double laplace_entry(const arma::mat& X, int i, int j, double rho) {
+  arma::rowvec diff = X.row(i) - X.row(j);
+  return std::exp(-rho * arma::accu(arma::abs(diff)));
+}
+
+inline double kernel_entry(const arma::mat& X, int i, int j,
+                           double rho, const std::string& kernel) {
+  if (kernel == "gaussian") return gaussian_entry(X, i, j, rho);
+  if (kernel == "laplace")  return laplace_entry(X, i, j, rho);
+  Rcpp::stop("Unknown kernel: use 'gaussian' or 'laplace'");
+  return 0.0;
+}
+
 // [[Rcpp::export]]
-Rcpp::List pchol_kernel(const arma::mat& A,
+Rcpp::List pchol_kernel(const arma::mat& X,
+                        double rho = 1.0,
+                        std::string kernel = "gaussian",
                         Rcpp::Nullable<int> m = R_NilValue,
                         double eps = 1e-6,
-                        bool verbose = true){
-
-  int n = A.n_rows;
+                        bool verbose = true) {
+  int n = X.n_rows;
   int r = m.isNull() ? n : Rcpp::as<int>(m);
-  if (!m.isNull() && (r <= 0 || r > static_cast<int>(n))) {
-    Rcpp::Rcout << "Reset m=n, since argument 'm' must be in the range [1, nrow(A)]\n";
+  if (!m.isNull() && (r <= 0 || r > n)) {
+    Rcpp::Rcout << "Reset m=n\n";
     r = n;
   }
 
-
-
   arma::mat R(n, r, arma::fill::zeros);
-  arma::mat B = A;
-  arma::mat P = arma::eye<arma::mat>(n, n);
+  arma::ivec piv(n);
+  for (int i = 0; i < n; ++i) piv(i) = i;
 
-  arma::vec diag_B = B.diag();
-  arma::vec schur_diags = arma::sqrt(diag_B);
+  // K(i,i) = exp(0) = 1
+  arma::vec schur_diag(n, arma::fill::ones);
+  int rank = 0;
 
-  // 1st column pivot
-  arma::uword max_idx = diag_B.index_max();
-  double max_diag = diag_B(max_idx);
+  for (int i = 0; i < r; ++i) {
+    double sqsum = arma::accu(schur_diag.subvec(i, n - 1));
+    if (sqsum <= eps) break;
 
-  if(max_idx != 0){
-    B.swap_cols(0, max_idx);
-    B.swap_rows(0, max_idx);
-    P.swap_cols(0, max_idx);
-  }
-
-  R(0, 0) = std::sqrt(max_diag);
-  R.col(0).subvec(1, n - 1) = B.col(0).subvec(1, n - 1) / R(0, 0);
-  int rank = 1;
-
-  for(int i = 1; i < r; ++i){
-    for(int j = i; j < n; ++j){
-
-      double sumsq = 0.0;
-      for(int k = 0; k < i; ++k) {
-        double v = R(j, k);
-        sumsq += v * v;
-      }
-
-      double tmp = B(j, j) - sumsq;
-      schur_diags[j] = std::sqrt(std::max(tmp, 0.0));
-    }
-
-    double sqsum = 0.0;
-    for (int j = i; j < n; ++j) {
-      sqsum += schur_diags[j] * schur_diags[j];
-    }
-
-    if (sqsum <= eps) {
-      //Rcout << "Schur complement trace-norm <= eps at rank = " << rank << "\n";
-      break;
-    }
-
-    max_idx = i + schur_diags.subvec(i, n - 1).index_max();
-    max_diag = schur_diags[max_idx];
-
-    R(i, i) = max_diag;
-
-    rank += 1;
-
-    if(max_idx != static_cast<arma::uword>(i)){
-      for (int k = 0; k < i; ++k) {
+    arma::uword max_idx = i + schur_diag.subvec(i, n - 1).index_max();
+    if (max_idx != static_cast<arma::uword>(i)) {
+      std::swap(piv(i), piv(max_idx));
+      std::swap(schur_diag(i), schur_diag(max_idx));
+      for (int k = 0; k < i; ++k)
         std::swap(R(i, k), R(max_idx, k));
-      }
-
-
-      B.swap_cols(i, max_idx);
-      B.swap_rows(i, max_idx);
-      P.swap_cols(i, max_idx);
     }
 
+    double pivot_val = schur_diag(i);
+    if (pivot_val <= 0.0) break;
+    R(i, i) = std::sqrt(pivot_val);
+    rank++;
 
-    if (i < n) {
-      arma::rowvec Ri_prev = R.row(i).cols(0, i - 1);
-      for (int j = i + 1; j < n; ++j) {
-        arma::rowvec Rj_prev = R.row(j).cols(0, i - 1);
-        R(j, i) = (B(j, i) - arma::accu(Ri_prev % Rj_prev)) / R(i, i);
-      }
+    for (int j = i + 1; j < n; ++j) {
+      double kij = kernel_entry(X, piv(j), piv(i), rho, kernel);
+
+      double dot = 0.0;
+      for (int k = 0; k < i; ++k)
+        dot += R(j, k) * R(i, k);
+
+      R(j, i) = (kij - dot) / R(i, i);
+      schur_diag(j) -= R(j, i) * R(j, i);
+      schur_diag(j)  = std::max(schur_diag(j), 0.0);
     }
   }
 
   arma::mat R_final = R.cols(0, rank - 1);
-  arma::mat PR = P * R_final;
+  arma::mat PR(n, rank);
+  for (int i = 0; i < n; ++i)
+    PR.row(piv(i)) = R_final.row(i);
 
-  std::string note = "";
-  if (!m.isNull() && rank < r) {
-    note = "m truncated at " + std::to_string(rank) + " due to early termination";
-    if (verbose)
-      Rcpp::Rcout << "Note: " << note << std::endl;
-  }
+  if (!m.isNull() && rank < r && verbose)
+    Rcpp::Rcout << "Note: m truncated at " << rank << " due to early termination\n";
 
   return Rcpp::List::create(
-    Rcpp::Named("PR")       = PR,
-    Rcpp::Named("rank")     = rank,
-    Rcpp::Named("eps")      = eps
+    Rcpp::Named("PR")     = PR,
+    Rcpp::Named("rank")   = rank,
+    Rcpp::Named("eps")    = eps,
+    Rcpp::Named("kernel") = kernel
   );
 }
 
-
 // [[Rcpp::export]]
-List pchol(const arma::mat& A,
-           const arma::vec& y,
-           double lambda,
-           Rcpp::Nullable<int> m = R_NilValue,
-           double eps = 1e-6,
-           bool verbose = true){
-
-  int n = A.n_rows;
-
-  Rcpp::List kernel_res = pchol_kernel(A, m, eps, verbose);
+Rcpp::List pchol(const arma::mat& X,
+                 const arma::vec& y,
+                 double lambda,
+                 double rho = 1.0,
+                 std::string kernel = "gaussian",
+                 Rcpp::Nullable<int> m = R_NilValue,
+                 double eps = 1e-6,
+                 bool verbose = true) {
+  int n = X.n_rows;
+  Rcpp::List kernel_res = pchol_kernel(X, rho, kernel, m, eps, verbose);
   arma::mat PR = kernel_res["PR"];
   int rank     = kernel_res["rank"];
 
-
-  // fit coef vector
   arma::mat PRtPR = PR.t() * PR;
   PRtPR.diag() += lambda * n;
-  arma::mat L = chol(PRtPR);
-
   arma::vec tmp = arma::solve(PRtPR, PR.t() * y, solve_opts::likely_sympd);
   arma::vec coef_hat = y / (n * lambda) - PR * tmp / (n * lambda);
 
-
   return Rcpp::List::create(
-    Rcpp::Named("PR")           = PR,
-    Rcpp::Named("m")            = rank,
-    Rcpp::Named("coefficients") = coef_hat
+    Rcpp::Named("PR")            = PR,
+    Rcpp::Named("m")             = rank,
+    Rcpp::Named("coefficients")  = coef_hat,
+    Rcpp::Named("fitted.values") = PR * PR.t() * coef_hat,
+    Rcpp::Named("eps")           = eps,
+    Rcpp::Named("kernel")        = kernel
   );
 }
