@@ -65,9 +65,11 @@ List rff(const arma::mat& X,
 
   arma::vec tmp = solve(trimatl(R.t()), Z.t() * y);
   arma::vec beta_hat = solve(trimatu(R), tmp);
+  arma::vec fitted = Z * beta_hat;
 
   return List::create(
     Named("coefficients") = beta_hat,
+    Named("fitted.values") = fitted,
     Named("Z") = Z,
     Named("m") = m,
     Named("W") = W,
