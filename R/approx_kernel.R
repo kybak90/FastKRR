@@ -163,7 +163,7 @@ approx_kernel = function(X = NULL,
   if (opt %in% c("nystrom", "pivoted")) {
 
     n = nrow(X)
-    if (is.null(m)) m = n / 10 * log(d + 5)
+    if (is.null(m)) m = n^(1/3) * log(d + 5)
     m = as.integer(max(1, min(n, floor(m))))
 
     if (opt == "nystrom") {
@@ -225,7 +225,7 @@ approx_kernel = function(X = NULL,
     return(result_values)
   }
 
-  if (is.null(m)) m = n / 10 * log(d + 5)
+  if (is.null(m)) m = n^(1/3) * log(d + 5)
   m = as.integer(max(1, floor(m)))
 
   old_d_exists = exists("d", envir = .GlobalEnv, inherits = FALSE)

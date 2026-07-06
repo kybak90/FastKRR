@@ -27,7 +27,7 @@ rff_kernel = function(X,
   d = ncol(X)
 
   # m default: n/10 (min: 1)
-  if (is.null(m)) m = n / 10 * log(d + 5)
+  if (is.null(m)) m = n^(1/3) * log(d + 5)
   m = as.integer(max(1, floor(m)))
 
   if (is.null(W) || is.null(b)) {
