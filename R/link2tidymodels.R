@@ -226,7 +226,7 @@ make_krr_reg = function(){
     value = list(
       interface = "matrix",
       protect   = c("x", "y"),
-      func      = c(pkg = "FastKRR", fun = "fastkrr"),
+      func      = c(pkg = "FastKRR", fun = "fastkrr_fit_bridge"),
       args      = list(
         x      = rlang::expr(x),
         y      = rlang::expr(y),
@@ -356,6 +356,41 @@ update.krr_reg = function(object, parameters = NULL,
   object
 }
 
+#' Internal bridge for parsnip fit interface
+#' @keywords internal
+#' @export
+fastkrr_fit_bridge = function(x, y,
+                              kernel    = "gaussian",
+                              opt       = "exact",
+                              m         = NULL,
+                              eps       = 1e-6,
+                              rho       = 1,
+                              lambda    = NULL,
+                              fastcv    = FALSE,
+                              n_threads = 4,
+                              verbose   = FALSE) {
+  df = as.data.frame(x)
+
+  resp_name = ".outcome"
+  while (resp_name %in% names(df)) {
+    resp_name = paste0(resp_name, "_")
+  }
+  df[[resp_name]] = y
+
+  fastkrr(
+    data      = df,
+    response  = resp_name,
+    kernel    = kernel,
+    opt       = opt,
+    m         = m,
+    eps       = eps,
+    rho       = rho,
+    lambda    = lambda,
+    fastcv    = fastcv,
+    n_threads = n_threads,
+    verbose   = verbose
+  )
+}
 
 
 

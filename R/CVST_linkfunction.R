@@ -231,7 +231,8 @@ predict.krr = function(object, newdata, ...){
 #' model = fastkrr(X, y, kernel = "laplace", opt = "nystrom", n_threads = 1, rho = rho)
 #'
 #' @export
-fastkrr = function(x, y,
+fastkrr = function(data,
+                   response,
                    kernel = "gaussian", # c(gaussian, laplace)
                    opt = "exact",  # c(exact, pivoted, nystrom, rff)
                    m = NULL,
@@ -243,21 +244,27 @@ fastkrr = function(x, y,
                    verbose =  TRUE)
 {
   call = match.call()
-  if (is.vector(x))
-    x = matrix(x, ncol = 1)
-  else if(!is.matrix(x))
-    stop("x must be a matrix or vector")
+  # Data frame
+  if(!is.data.frame(data)) stop("x must be a data.frame")
+  if (anyNA(data)){
+    na_cols = names(data)[colSums(is.na(data)) > 0]
+    stop("Missing values (NA) found in: ",
+         paste(na_cols, collapse = ", "), call. = FALSE)
+  }
+  if(!(length(response) == 1 && is.character(response) &&
+       response %in% colnames(data)))
+    stop("response must be a single column name in data.")
 
-  if (!is.vector(y))
-    stop("y must be a vector")
-  if (nrow(x) != length(y))
-    stop("nrow(x) must match length(y)")
-
+  # Kernel and approximation option
   if (!kernel %in% c("gaussian", "laplace"))
     stop("kernel must be one of 'gaussian', 'laplace'")
   if (!opt %in% c("exact", "pivoted", "nystrom", "rff"))
     stop("opt must be one of 'exact', 'pivoted', 'nystrom', 'rff'")
 
+  y = data[[response]]
+  x = as.matrix(data[, setdiff(names(data), response), drop = FALSE])
+
+  # Parameter setting
   if (eps <= 0)
     stop("eps must be a positive real number")
   if (is.null(m))
@@ -268,6 +275,7 @@ fastkrr = function(x, y,
     stop("rho must be a positive real number")
 
 
+  # Complexity parameter setting
   if(is.null(lambda)){
     lambda = if (kernel == "gaussian") seq(1e-10, 1e-3, len = 100) else seq(1e-5, 1e-2, len = 100) # vector
   }else if(is.vector(lambda) && all(lambda > 0) && length(lambda) >= 3){
