@@ -18,14 +18,18 @@ int get_num_procs() {
 
 
 // [[Rcpp::export]]
-arma::vec solve_chol(const arma::mat& A,
-                     const arma::vec& b)
+Rcpp::List solve_chol(const arma::mat& A,
+                      const arma::vec& b)
 {
   arma::mat L = arma::chol(A, "lower");
 
-  arma::vec tmp = arma::solve(arma::trimatl(L), b); //Lz = b
+  arma::vec tmp = arma::solve(arma::trimatl(L), b);
+  arma::vec x   = arma::solve(arma::trimatu(L.t()), tmp);
 
-  return arma::solve(arma::trimatu(L.t()), tmp); // arma L^Tx = z
+  return Rcpp::List::create(
+    Rcpp::Named("coefficients") = x,
+    Rcpp::Named("chol_factor")  = L
+  );
 }
 
 

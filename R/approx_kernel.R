@@ -95,6 +95,7 @@
 #' \strong{rff}
 #'
 #' \itemize{
+#'   \item \code{approx_factor}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} such that \eqn{K \approx Z Z^\top}.
 #'   \item \code{d}: Input design matrix's dimension.
 #'   \item \code{rho}: Scaling parameter of the kernel.
 #'   \item \code{W}: \eqn{m \times d} Random frequency matrix.
@@ -212,7 +213,7 @@ approx_kernel = function(X = NULL,
     Z = make_Z(X, W, b, n_threads = n_threads )
     K_approx = tcrossprod(Z)
 
-    result_values$Z = Z
+    result_values$approx_factor = Z
     result_values$K_approx = K_approx
     result_values$m = m_used
     result_values$d = d
@@ -237,7 +238,7 @@ approx_kernel = function(X = NULL,
   W = rb$W; b = rb$b
   Z = make_Z(X, W, b, n_threads = n_threads)
 
-  result_values$Z = Z
+  result_values$approx_factor = Z
   result_values$K_approx = tcrossprod(Z)
   result_values$m = m
   result_values$d = d

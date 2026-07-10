@@ -107,9 +107,14 @@ predict.krr = function(object, newdata, ...){
 #'   Parallelization (implemented in C++) is one of the main advantages
 #'   of this package and is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
 #'   Laplace kernel (\code{kernel = "laplace"}).
-#' @param fastcv If \code{TRUE}, accelerated cross-validation is
-#'   performed via sequential testing (early stopping) as implemented in the \pkg{CVST} package.
-#'   The default is \code{FALSE}.
+#' @param selection_method Method used to select \eqn{\lambda} when a grid or \code{NULL} is
+#'   passed. One of:
+#'   \describe{
+#'     \item{\code{"exactCV"}}{Full cross-validation via \pkg{CVST} (default).}
+#'     \item{\code{"fastCV"}}{Accelerated sequential-testing CV via \pkg{CVST}.}
+#'     \item{\code{"REML"}}{Restricted Maximum Likelihood: minimises the profiled
+#'       marginal log-likelihood over the supplied \code{lambda} grid.}
+#'   }
 #' @param verbose If TRUE, detailed progress and cross-validation
 #' results are printed to the console. If FALSE, suppresses
 #' intermediate output and only returns the final result.
@@ -165,7 +170,9 @@ predict.krr = function(object, newdata, ...){
 #'
 #' \subsection{opt = \dQuote{exact}}{
 #' \itemize{
-#'   \item{\code{K}: The full kernel matrix.}
+#'   \item{\code{K}: The full kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
+#'   \item{\code{chol_factor}: Lower triangular Cholesky factor \eqn{L \in \mathbb{R}^{n \times n}}
+#'     of \eqn{K + n\lambda I}; satisfies \eqn{K + n\lambda I = L L^\top}.}
 #' }}
 #'
 #'
@@ -191,7 +198,7 @@ predict.krr = function(object, newdata, ...){
 #' \subsection{opt = \dQuote{rff}}{
 #' \itemize{
 #'   \item{\code{m}: Number of random features.}
-#'   \item{\code{Z}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
+#'   \item{\code{approx_factor}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
 #'     \eqn{Z_{ij} = z_j(x_i) = \sqrt{2/m}\cos(\omega_j^\top x_i + b_j), \quad j = 1, \cdots, m,}
 #'     so that \eqn{K \approx Z Z^\top}.}
 #'   \item{\code{W}: Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
@@ -238,7 +245,7 @@ fastkrr = function(x, y,
                    eps = 1e-6,
                    rho = 1,
                    lambda = NULL,
-                   fastcv = FALSE,
+                   selection_method = "exactCV",  # c(exactCV, fastCV, REML)
                    n_threads = 4,
                    verbose =  TRUE)
 {
@@ -257,6 +264,8 @@ fastkrr = function(x, y,
     stop("kernel must be one of 'gaussian', 'laplace'")
   if (!opt %in% c("exact", "pivoted", "nystrom", "rff"))
     stop("opt must be one of 'exact', 'pivoted', 'nystrom', 'rff'")
+  if (!selection_method %in% c("exactCV", "fastCV", "REML"))
+    stop("selection_method must be one of 'exactCV', 'fastCV', 'REML'")
 
   if (eps <= 0)
     stop("eps must be a positive real number")
@@ -279,8 +288,8 @@ fastkrr = function(x, y,
   }
 
 
-  # Adjust number of threads only for heavy computation cases
-  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
+  # Adjust number of threads
+  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace") || (selection_method == "REML")){
     max_threads = get_num_procs()
     if (max_threads <= 3)
       n_threads = 1
@@ -290,46 +299,67 @@ fastkrr = function(x, y,
     n_threads = 1
   }
 
-
-
-  if(fastcv)
-    CVSTmethod = function(...) CVST::fastCV(...,
-                                            setup = CVST::constructCVSTModel(),
-                                            verbose = verbose)
-  else
-    CVSTmethod = function(...) CVST::CV(..., verbose = verbose)
-
-
   n = nrow(x)
   d = ncol(x)
   m = as.integer(m)
-  rate = round(m / n, 5) # Approximation rate for train and test data
+  rate = round(m / n, 5)
+  idx_ny = NULL  # will be set during REML nystrom selection; reused in fitting
 
-  # Select best hyper parameter via CVST
+  # Lambda selection
   if(length(lambda) > 1){
-    data = CVST::constructData(x, y)
-    if(opt == "exact"){
-      ojct = CVST::constructLearner(krr_fit_exact, krr_pred)
-      param_sets = CVST::constructParams(kernel = kernel, rho = rho, lambda = lambda,
-                                         n_threads = n_threads, verbose = verbose)
-    }else if(opt == "pivoted"){
-      ojct = CVST::constructLearner(krr_fit_pivoted, krr_pred)
-      param_sets = CVST::constructParams(kernel = kernel, rate = rate, eps = eps,
-                                         rho = rho, lambda = lambda,
-                                         n_threads = n_threads, verbose = verbose)
-    }else if (opt == "nystrom"){
-      ojct = CVST::constructLearner(krr_fit_nystrom, krr_pred)
-      param_sets = CVST::constructParams(kernel = kernel, rate = rate,
-                                         rho = rho, lambda = lambda,
-                                         n_threads = n_threads, verbose = verbose)
-    }else if(opt == "rff"){
-      ojct = CVST::constructLearner(krr_fit_rff, krr_pred_rff)
-      param_sets = CVST::constructParams(kernel = kernel, rate = rate,
-                                         rho = rho, lambda = lambda,
-                                         n_threads = n_threads, verbose = verbose)
+    if(selection_method == "REML"){
+      lambda = if(opt == "exact"){
+        K_tmp = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
+        reml_exact(K_tmp, y, lambda, n_threads = n_threads)
+      }else if(opt == "pivoted"){
+        PR_tmp = pchol_kernel(x, rho = rho, kernel = kernel, m = m, eps = eps, verbose = FALSE)$PR
+        reml_lowrank(PR_tmp, y, lambda, n_threads = n_threads)
+      }else if(opt == "nystrom"){
+        idx_ny = sample(seq_len(n), m)
+        K_nm_tmp = make_kernel(x[idx_ny, , drop = FALSE], x,
+                               kernel = kernel, rho = rho, n_threads = n_threads)
+        K_mm_tmp = make_kernel(x[idx_ny, , drop = FALSE],
+                               kernel = kernel, rho = rho, n_threads = n_threads)
+        R_tmp = nystrom_kernel(K_mm_tmp, K_nm_tmp, m_in = m, n_threads = n_threads)$R
+        reml_lowrank(R_tmp, y, lambda, n_threads = n_threads)
+      }else if(opt == "rff"){
+        rand_tmp = rff_random(m = m, rho = rho, d = d, kernel = kernel)
+        Z_tmp = make_Z(x, rand_tmp$W, rand_tmp$b, n_threads = n_threads)
+        reml_lowrank(Z_tmp, y, lambda, n_threads = n_threads)
+      }
+
+    }else{
+      if(selection_method == "fastCV")
+        CVSTmethod = function(...) CVST::fastCV(...,
+                                                setup = CVST::constructCVSTModel(),
+                                                verbose = verbose)
+      else
+        CVSTmethod = function(...) CVST::CV(..., verbose = verbose)
+
+      data = CVST::constructData(x, y)
+      if(opt == "exact"){
+        ojct = CVST::constructLearner(krr_fit_exact, krr_pred)
+        param_sets = CVST::constructParams(kernel = kernel, rho = rho, lambda = lambda,
+                                           n_threads = n_threads, verbose = verbose)
+      }else if(opt == "pivoted"){
+        ojct = CVST::constructLearner(krr_fit_pivoted, krr_pred)
+        param_sets = CVST::constructParams(kernel = kernel, rate = rate, eps = eps,
+                                           rho = rho, lambda = lambda,
+                                           n_threads = n_threads, verbose = verbose)
+      }else if(opt == "nystrom"){
+        ojct = CVST::constructLearner(krr_fit_nystrom, krr_pred)
+        param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+                                           rho = rho, lambda = lambda,
+                                           n_threads = n_threads, verbose = verbose)
+      }else if(opt == "rff"){
+        ojct = CVST::constructLearner(krr_fit_rff, krr_pred_rff)
+        param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+                                           rho = rho, lambda = lambda,
+                                           n_threads = n_threads, verbose = verbose)
+      }
+      best_param = CVSTmethod(data, ojct, param_sets)
+      lambda = best_param[[1]]$lambda
     }
-    best_param = CVSTmethod(data, ojct, param_sets)
-    lambda = best_param[[1]]$lambda
   }
 
 
@@ -349,10 +379,10 @@ fastkrr = function(x, y,
     result_values$lambda = lambda
     result_values$rho = rho
     result_values$n_threads = n_threads
-    result_values$fastcv = fastcv
+    result_values$selection_method = selection_method
     result_values$call = call
     result_values$m = m
-    result_values$Z = rslt$Z
+    result_values$approx_factor = rslt$Z
     result_values$W = rslt$W
     result_values$b = rslt$b
     return(result_values)
@@ -360,10 +390,10 @@ fastkrr = function(x, y,
   }else if(opt == "exact"){
     K = make_kernel(x, kernel = kernel, rho = rho, n_threads = n_threads)
 
-    coefficients = solve_chol(K + diag(n * lambda, n), y)
+    rslt = solve_chol(K + diag(n * lambda, n), y)
 
-    result_values$coefficients = coefficients
-    result_values$fitted.values = as.vector(K %*% coefficients)
+    result_values$coefficients = rslt$coefficients
+    result_values$fitted.values = as.vector(K %*% rslt$coefficients)
     result_values$opt = opt
     result_values$kernel = kernel
     result_values$x = x
@@ -371,9 +401,10 @@ fastkrr = function(x, y,
     result_values$lambda = lambda
     result_values$rho = rho
     result_values$n_threads = n_threads
-    result_values$fastcv = fastcv
+    result_values$selection_method = selection_method
     result_values$call = call
     result_values$K = K
+    result_values$chol_factor = rslt$chol_factor
     return(result_values)
 
   }else if(opt == "pivoted"){
@@ -389,7 +420,7 @@ fastkrr = function(x, y,
     result_values$lambda = lambda
     result_values$rho = rho
     result_values$n_threads = n_threads
-    result_values$fastcv = fastcv
+    result_values$selection_method = selection_method
     result_values$call = call
     result_values$m = rslt$m
     result_values$approx_factor = rslt$PR
@@ -397,7 +428,7 @@ fastkrr = function(x, y,
     return(result_values)
 
   }else if(opt == "nystrom"){
-    idx_ny = sample(seq_len(nrow(x)), m)
+    if(is.null(idx_ny)) idx_ny = sample(seq_len(n), m)
 
     K_nm = make_kernel(x[idx_ny, , drop = FALSE], x,
                        kernel = kernel, rho = rho, n_threads = n_threads)
@@ -417,7 +448,7 @@ fastkrr = function(x, y,
     result_values$lambda = lambda
     result_values$rho = rho
     result_values$n_threads = n_threads
-    result_values$fastcv = fastcv
+    result_values$selection_method = selection_method
     result_values$call = call
 
     result_values$m = rslt$m
@@ -434,10 +465,10 @@ krr_fit_exact = function(data, param) {
   lambda = as.numeric(param$lambda)
 
   K = make_kernel(x, kernel = param$kernel, rho = param$rho, n_threads = param$n_threads)
-  coefficients = solve_chol(K + diag(n * lambda, n), y)
+  rslt <- solve_chol(K + diag(n * lambda, n), y)
 
   return(list(data = data, kernel = param$kernel,
-              coefficients = coefficients,
+              coefficients = rslt$coefficients,
               rho = param$rho, lambda = param$lambda,
               n_threads = param$n_threads))
 
