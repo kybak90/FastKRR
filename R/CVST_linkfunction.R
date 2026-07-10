@@ -261,7 +261,7 @@ fastkrr = function(x, y,
   if (eps <= 0)
     stop("eps must be a positive real number")
   if (is.null(m))
-    m = as.integer(max(1, ceiling(nrow(x) * log(ncol(x) + 5) / 10)))
+    m = as.integer(max(1, ceiling(nrow(x)^(1/3) * log(ncol(x) + 5))))
   else if(m <= 0)
     stop("m must be a positive integer")
   if (rho <= 0)
