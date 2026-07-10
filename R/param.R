@@ -62,26 +62,24 @@ param.default = function(x, ...) {
 #' @export
 param.krr = function(x, ...) {
   model = x
-  at = attributes(model)
 
-  keys = c("rho","lambda","m","eps", "n_threads")
-  present = intersect(keys, names(at))
+  keys = c("kernel", "opt", "selection_method",
+           "rho", "lambda", "m", "eps", "n_threads")
+  present = intersect(keys, names(model))
 
-  out = at[present]
+  out = model[present]
   class(out) = c("krr_params", "list")
 
   # Call
   cat("Call:\n")
-  print(at$call)
+  print(model$call)
   cat("\n")
 
-  # core options -> table
-  core_keys = c("rho","lambda", "eps", "m", "n_threads")
-  core_keys = intersect(core_keys, present)
-  if (length(core_keys) > 0) {
-    df = as.data.frame(at[core_keys], optional = TRUE)
-    row.names(df) <- ""
-    cat("Parameters :\n")
+  # Parameters
+  if (length(present) > 0) {
+    df = as.data.frame(model[present], optional = TRUE)
+    row.names(df) = ""
+    cat("Parameters:\n")
     print(df)
     cat("\n")
   }

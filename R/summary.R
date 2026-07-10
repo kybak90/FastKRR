@@ -34,40 +34,9 @@
 #' @export
 summary.krr = function(object, ...){
   model = object
-  cat("Call:\n")
-  print(model$call)
-  cat("\n")
 
-  cat("Coefficients:\n")
-  coefs = as.vector(attr(model, "coefficients"))
-  n_show = min(6, length(coefs))
-  cat("  ")
-  cat(coefs[1:n_show])
-  if (length(coefs) > n_show) cat(" ...")
+  invisible(param(model))
 
-  cat("\n\n")
-  if(model$opt == "exact"){
-    cat("Kernel matrix\n")
-    print(model$K) ## print.kernel_matrix()
-    cat("\n")
-
-    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(model[idx])
-    row.names(df) = ""
-
-    cat("Options:\n")
-    print(df)
-
-  }else{
-    cat("Approximated kernel matrix\n")
-    print(model$K_approx) ## summary.kernel_matrix()
-    cat("\n")
-
-    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(model[idx])
-    row.names(df) = ""
-
-    cat("Options:\n")
-    print(df)
-  }
+  cat("Training error:\n")
+  print(error(model))
 }

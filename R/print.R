@@ -32,27 +32,26 @@
 #'
 #' print(model)
 #' @export
-print.krr = function(x, ...){
+print.krr = function(x, ...) {
   model = x
+
   cat("Call:\n")
   print(model$call)
   cat("\n")
 
-  cat("\n")
-  if(model$opt == "exact"){
-    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(model[idx])
+  keys = c("kernel", "opt", "selection_method",
+           "rho", "lambda", "m", "eps", "n_threads")
+  present = intersect(keys, names(model))
 
-    cat("Options:\n")
+  if (length(present) > 0) {
+    df = as.data.frame(model[present], optional = TRUE)
+
+    cat("Parameters:\n")
     print(df, row.names = FALSE)
-
-  }else{
-    idx = names(model) %in% c("kernel", "opt", "rho", "fastcv", "n_threads", "m")
-    df = as.data.frame(model[idx])
-
-    cat("Options:\n")
-    print(df, row.names = FALSE)
+    cat("\n")
   }
+
+  invisible(model)
 }
 
 
@@ -96,73 +95,9 @@ print.approx_kernel = function(x, ...){
   print(approx_object$call)
 
   cat("\n")
-  idx = names(approx_object) %in% c("opt", "kernel", "m", "eps", "n_threads")
+  idx = names(approx_object) %in% c("opt", "kernel", "d", "rho", "m", "eps", "n_threads")
   df = as.data.frame(approx_object[idx])
   row.names(df) = ""
   cat("Options:\n")
   print(df)
-
-
-  cat("\n")
-  cat("Showing top-left 6x6 K_approx:\n")
-  print(approx_object$K_approx[1:6, 1:6])
-}
-
-
-#' Print method for kernel matrices
-#'
-#' @description
-#' Displays the top-left 6×6 portion of a kernel or approximated kernel matrix
-#' for quick inspection.
-#'
-#' @param x An object of class \code{kernel_matrix}, which may represent
-#'   either an exact kernel matrix (from \code{\link{make_kernel}} or
-#'   \code{\link{fastkrr}}) or an approximated kernel matrix (from
-#'   \code{\link{approx_kernel}}).
-#' @param ... Additional arguments (currently ignored).
-#'
-#' @return A top-left 6x6 block of the kernel matrix to the console.
-#'
-#' @seealso \code{\link{approx_kernel}}, \code{\link{fastkrr}}, \code{\link{print.approx_kernel}}, \code{\link{print.krr}}
-#'
-#' @examples
-#' # data setting
-#' set.seed(1)
-#' n = 1000 ; d = 1
-#' m = 100
-#' rho = 1
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-#' y = as.vector(sin(2*pi*X^3) + rnorm(n, 0, 0.1))
-#'
-#'
-#' # Example for fastkrr
-#' fit_pivoted = fastkrr(X, y,
-#'                       kernel = "gaussian", opt = "pivoted",
-#'                       m = 100, fastcv = TRUE, verbose = FALSE)
-#'
-#' class(attr(fit_pivoted, "K"))
-#' print(class(attr(fit_pivoted, "K")))
-#'
-#' class(attr(fit_pivoted, "K_approx"))
-#' print(class(attr(fit_pivoted, "K_approx")))
-#'
-#'
-#' # Example for make_kernel
-#' K = make_kernel(X, kernel = "gaussian", rho = rho)
-#'
-#' class(K)
-#' print(K)
-#'
-#'
-#' # Example for make_kernel
-#' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                       d = d, rho = rho, n_threads = 1, m = 100)
-#'
-#' class(attr(K_rff, "K_approx"))
-#' print(attr(K_rff, "K_approx"))
-#' @export
-print.kernel_matrix = function(x, ...){
-  ker_mat = x
-  cat("Showing top-left 6x6 kernel matrix:\n")
-  print(ker_mat[1:6, 1:6])
 }
