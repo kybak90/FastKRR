@@ -310,7 +310,7 @@ fastkrr = function(data, response,
   n = nrow(x)
   d = ncol(x)
   m = as.integer(m)
-  rate = round(m / n, 5)
+  #rate = round(m / n, 5)
   idx_ny = NULL  # will be set during REML nystrom selection; reused in fitting
 
   # Lambda selection
@@ -351,17 +351,17 @@ fastkrr = function(data, response,
                                            n_threads = n_threads, verbose = verbose)
       }else if(opt == "pivoted"){
         ojct = CVST::constructLearner(krr_fit_pivoted, krr_pred)
-        param_sets = CVST::constructParams(kernel = kernel, rate = rate, eps = eps,
+        param_sets = CVST::constructParams(kernel = kernel, m = m, eps = eps,
                                            rho = rho, lambda = lambda,
                                            n_threads = n_threads, verbose = verbose)
       }else if(opt == "nystrom"){
         ojct = CVST::constructLearner(krr_fit_nystrom, krr_pred)
-        param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+        param_sets = CVST::constructParams(kernel = kernel, m = m,
                                            rho = rho, lambda = lambda,
                                            n_threads = n_threads, verbose = verbose)
       }else if(opt == "rff"){
         ojct = CVST::constructLearner(krr_fit_rff, krr_pred_rff)
-        param_sets = CVST::constructParams(kernel = kernel, rate = rate,
+        param_sets = CVST::constructParams(kernel = kernel, m = m,
                                            rho = rho, lambda = lambda,
                                            n_threads = n_threads, verbose = verbose)
       }
@@ -486,7 +486,7 @@ krr_fit_pivoted = function(data, param) {
   x = data$x
   y = data$y
   n = nrow(x)
-  m = as.integer(n * param$rate)
+  m = as.integer(min(n, param$m))  # as.integer(n * param$rate)
   lambda = as.numeric(param$lambda)
 
   rslt = pchol(x, y, lambda = lambda, rho = param$rho,
@@ -509,7 +509,7 @@ krr_fit_nystrom = function(data, param) {
   n = nrow(x)
   d = ncol(x)
 
-  m = as.integer(n * param$rate)
+  m = as.integer(min(n, param$m))  # as.integer(n * param$rate)
 
   lambda = as.numeric(param$lambda)
 
@@ -540,7 +540,7 @@ krr_fit_rff = function(data, param) {
   d = ncol(x)
 
   lambda = as.numeric(param$lambda)
-  rand_set = rff_random(m = as.integer(n * param$rate), d = d, param$rho, kernel = param$kernel)
+  rand_set = rff_random(m = as.integer(min(n, param$m)), d = d, param$rho, kernel = param$kernel)
 
   rslt = rff(x, y, rand_set$W, rand_set$b, lambda = lambda, n_threads = param$n_threads)
   coefficients = rslt$coefficients
