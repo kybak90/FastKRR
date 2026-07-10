@@ -54,9 +54,27 @@ error.default = function(x, ...) {
 #'
 #'
 #' @export
-error.krr = function(x, ...) {
+error.krr = function(x, data_new = NULL, ...) {
   model = x
-  as.numeric(
-    crossprod(model$y - model$fitted.values) / length(model$y)
-  )
+
+  if (is.null(data_new)){ # Training MSE
+    return(as.numeric(
+      crossprod(model$y - model$fitted.values) / length(model$y)
+    ))
+  }else{ # Prediction MSE
+    if (!is.data.frame(data_new)) stop("data_new must be a data.frame")
+    if (anyNA(data_new)) stop("data_new contains missing values (NA).")
+    if (!model$call$response %in% names(data_new)) stop("Response variable not found in data_new.")
+
+    y_new = data_new[[model$call$response]]
+    x_new = as.matrix(
+      data_new[, setdiff(names(data_new), model$call$response), drop = FALSE]
+    )
+
+    pred = predict(model, newdata = x_new)
+
+    as.numeric(
+      crossprod(y_new - pred) / length(y_new)
+    )
+  }
 }
