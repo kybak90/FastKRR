@@ -204,7 +204,7 @@ make_krr_reg = function(){
     eng      = "fastkrr",
     parsnip  = "penalty",
     original = "lambda",
-    func     = list(pkg = "dials", fun = "penalty"),# func     = list(pkg = "base", fun = "identity"),
+    func     = list(pkg = "dials", fun = "penalty"),# func = list(pkg = "base", fun = "identity"),
     has_submodel = FALSE
   )
 
@@ -228,7 +228,7 @@ make_krr_reg = function(){
     value = list(
       interface = "matrix",
       protect   = c("x", "y"),
-      func      = c(pkg = "FastKRR", fun = "fastkrr"),
+      func      = c(pkg = "FastKRR", fun = "fastkrr_fit_wrapper"),
       args      = list(
         x      = rlang::expr(x),
         y      = rlang::expr(y),
@@ -357,6 +357,55 @@ update.krr_reg = function(object, parameters = NULL,
   object$args = if (fresh) args_new else utils::modifyList(object$args, args_new)
   object
 }
+
+
+
+
+
+#' Internal bridge for parsnip fit interface
+#' @keywords internal
+#' @export
+fastkrr_fit_wrapper = function(x, y,
+                               kernel = "gaussian",
+                               opt = "exact",
+                               m = NULL,
+                               eps = 1e-6,
+                               rho = 1,
+                               lambda = NULL,
+                               selection_method = "exactCV",
+                               n_threads = 4,
+                               verbose = FALSE) {
+
+  df = as.data.frame(x)
+
+  response_col = ".outcome"
+  while (response_col %in% names(df)) {
+    response_col = paste0(response_col, "_")
+  }
+  df[[response_col]] = y
+
+  fastkrr(
+    data              = df,
+    response          = response_col,
+    kernel            = kernel,
+    opt               = opt,
+    m                 = m,
+    eps               = eps,
+    rho               = rho,
+    lambda            = lambda,
+    selection_method  = selection_method,
+    n_threads         = n_threads,
+    verbose           = verbose
+  )
+}
+
+
+
+
+
+
+
+
 
 
 
