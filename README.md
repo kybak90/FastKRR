@@ -11,15 +11,16 @@ The ‘FastKRR’ implements its core computational operations in C++ via
 numerical stability, and parallel execution with OpenMP where available.
 On systems without OpenMP support, the package automatically falls back
 to single-threaded execution with no user configuration required. For
-efficient model selection, it integrates with ‘CVST’ to provide
-sequential-testing cross-validation that identifies competitive
-hyperparameters without exhaustive grid search. The package offers a
-unified interface for exact kernel ridge regression and three scalable
-approximations—Nyström, Pivoted Cholesky, and Random Fourier
-Features—allowing analyses with substantially larger sample sizes than
-are feasible with exact KRR. It also integrates with the ‘tidymodels’
-ecosystem via the ‘parsnip’ model specification ‘krr_reg’, the S3 method
-‘tunable.krr_reg()’, and the direct fitting helper ‘fit_krr()’.
+efficient model selection, it integrates with ‘CVST’ to provide full and
+sequential-testing cross-validation and additionally supports restricted
+maximum likelihood (REML) for continuous optimization of the
+regularization parameter. The package offers a unified interface for
+exact kernel ridge regression and three scalable approximations—Nyström,
+Pivoted Cholesky, and Random Fourier Features—allowing analyses with
+substantially larger sample sizes than are feasible with exact KRR. It
+also integrates with the ‘tidymodels’ ecosystem via the ‘parsnip’ model
+specification ‘krr_reg’, the S3 method ‘tunable.krr_reg()’, and the
+direct fitting helper ‘fit_krr()’.
 
 **Dependencies:** Rcpp, RcppArmadillo, CVST, parsnip  
 This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
