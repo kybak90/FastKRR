@@ -84,17 +84,19 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
+data = data.frame(X, y = y)
+
 # model fitting - exact
-model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
+model_exact = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 
 # model fitting - pivoted
-model_pivoted = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "pivoted", verbose = FALSE)
+model_pivoted = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "pivoted", verbose = FALSE)
 
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 # model fitting - rff
-model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
+model_rff = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
 
 
 # prediction
@@ -111,20 +113,19 @@ The visualization of the fitted results is shown below.
 
 ``` r
 library(ggplot2)
-data = data.frame(new_x)
-data$pred_exact = as.numeric(pred_exact)
-data$pred_pivoted = as.numeric(pred_pivoted)
-data$pred_nystrom = as.numeric(pred_nystrom)
-data$pred_rff = as.numeric(pred_rff)
+datas = data.frame(new_x)
+datas$pred_exact = as.numeric(pred_exact)
+datas$pred_pivoted = as.numeric(pred_pivoted)
+datas$pred_nystrom = as.numeric(pred_nystrom)
+datas$pred_rff = as.numeric(pred_rff)
 
-data_train = data.frame(x = X, y = y)
 
-ggplot(data = data) +
+ggplot(data = datas) +
   geom_line(aes("x" = new_x, "y" = pred_exact, color = 'opt = "exact"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_nystrom, color = 'opt = "nystrom"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2) +
-  geom_point(data = data_train, aes(x = x, y = y), col = "gray", alpha = 0.2) +
+  geom_point(data = data, aes(x = X, y = y), col = "gray", alpha = 0.2) +
   theme_minimal()
 ```
 
@@ -191,11 +192,13 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
+data = data.frame(X, y = y)
+
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
-#> NULL
+#> [1] 4
 ```
 
 ### 5) Show that FastKRR links to libomp (macOS only)

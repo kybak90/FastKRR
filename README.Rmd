@@ -76,7 +76,7 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
-data = data.frame("X" = X, "y" = y)
+data = data.frame(X, y = y)
 
 # model fitting - exact
 model_exact = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
@@ -185,8 +185,10 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
+data = data.frame(X, y = y)
+
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
 
