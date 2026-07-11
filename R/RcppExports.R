@@ -21,7 +21,7 @@ pchol <- function(X, y, lambda, rho = 1.0, kernel = "gaussian", m = NULL, eps = 
     .Call(`_FastKRR_pchol`, X, y, lambda, rho, kernel, m, eps, verbose)
 }
 
-#' Newton-Raphson REML (no intercept) for exact KRR
+#' Newton-Raphson REML for exact KRR
 #'
 #' Eigendecomposition of K computed once O(n^3); each Newton iteration O(n).
 #'

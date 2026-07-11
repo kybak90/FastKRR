@@ -27,10 +27,13 @@ utils::globalVariables(c("yhat", "x", "y"))
 #' set.seed(1)
 #' n = 1000
 #' rho = 1
-#' X = runif(n, 0, 1)
-#' y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'
-#' model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
+#' data = data.frame(X, y = y)
+#'
+#' model_exact = fastkrr(data = data, response = "y",
+#'                       kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 #' plot(model_exact)
 #' }
 #'
