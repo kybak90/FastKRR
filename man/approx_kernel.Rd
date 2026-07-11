@@ -5,7 +5,6 @@
 \title{Compute low-rank approximations(Nyström, Pivoted Cholesky, RFF)}
 \usage{
 approx_kernel(
-  K = NULL,
   X = NULL,
   opt = c("nystrom", "pivoted", "rff"),
   kernel = c("gaussian", "laplace"),
@@ -19,9 +18,7 @@ approx_kernel(
 )
 }
 \arguments{
-\item{K}{Exact Kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}. Used in \code{"nystrom"} and \code{"pivoted"}.}
-
-\item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}}. Only required for \code{"rff"}.}
+\item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.}
 
 \item{opt}{Method for constructing or approximating :
 \describe{
@@ -41,7 +38,7 @@ approx_kernel(
 \item{m}{Approximation rank (number of random features) for the
 low-rank kernel approximation. If not specified, the recommended
 choice is
-\deqn{\lceil n \cdot \log(d + 5) / 10 \rceil}
+\deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
 where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{d}{Design matrix's dimension (\eqn{d = ncol(X)}).}
@@ -61,13 +58,11 @@ it automatically falls back to 1 thread. It is applied only for \code{opt = "nys
 , and for the Laplace kernel (\code{kernel = "laplace"}).}
 }
 \value{
-An S3 object of class \code{"approx_kernel"} containing the results of the
-kernel approximation:
-
 \itemize{
   \item \code{call}: The matched function call used to create the object.
   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
   \item \code{K_approx}: \eqn{n \times n} approximated kernel matrix.
+  \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
   \item \code{m}: Kernel approximation degree.
 }
 
@@ -116,8 +111,7 @@ Requirements and what to supply:
 \strong{nystrom / pivoted}
 
 \itemize{
-  \item Require a precomputed kernel matrix \code{K}; error if \code{K} is \code{NULL}.
-  \item If \code{m} is \code{NULL}, use \eqn{\lceil n \cdot \log(d + 5) / 10 \rceil}.
+  \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/3} \cdot \log(d + 5)  \rceil}.
   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
   when the next pivot (residual diagonal) drops below \code{eps}.
 }
@@ -125,7 +119,6 @@ Requirements and what to supply:
 \strong{rff}
 
 \itemize{
-  \item \code{K} must be \code{NULL} (not used) and \code{X} must be provided with \code{d = ncol(X)}.
   \item The function automatically generates
         \code{W} (random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}) and
         \code{b} (random phase vector \eqn{b \in \mathbb{R}^{m}}).
@@ -136,11 +129,9 @@ Requirements and what to supply:
 # Data setting
 set.seed(1)
 d = 1
-n = 1000
+n = 100
 m = 50
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-K = make_kernel(X, kernel = "gaussian", rho = 1)
 
 # Example: RFF approximation
 K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
@@ -148,11 +139,11 @@ K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
                       n_threads = 1)
 
 # Exapmle: Nystrom approximation
-K_nystrom = approx_kernel(K = K, opt = "nystrom",
+K_nystrom = approx_kernel(X = X, opt = "nystrom",
                           m = m, d = d, rho = 1,
                           n_threads = 1)
 
 # Example: Pivoted Cholesky approximation
-K_pivoted = approx_kernel(K = K, opt = "pivoted",
+K_pivoted = approx_kernel(X = X, opt = "pivoted",
                           m = m, d = d, rho = 1)
 }

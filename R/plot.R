@@ -27,6 +27,7 @@ utils::globalVariables(c("yhat", "x", "y"))
 #' set.seed(1)
 #' n = 1000
 #' rho = 1
+#' d = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
 #' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'

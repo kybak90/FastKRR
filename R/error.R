@@ -28,6 +28,11 @@ error.default = function(x, ...) {
 #'
 #' @param x An object of class \code{"krr"}, typically returned by
 #'   \code{\link{fastkrr}}.
+#' @param data_new An optional data frame containing new predictor variables
+#'   and the observed response variable. The response column must have the
+#'   same name as the response variable used to fit the model. If
+#'   \code{NULL}, the training MSE is computed. Otherwise, the PMSE is
+#'   computed using predictions for \code{data_new}.
 #' @param ... Additional arguments (ignored).
 #'
 #' @return A numeric value giving the mean squared error (MSE).
