@@ -36,6 +36,8 @@
 #' @param selection_method Method used to select \eqn{\lambda}: one of
 #'   \code{"exactCV"} (full CVST cross-validation, default), \code{"fastCV"}
 #'   (accelerated sequential-testing CV via \pkg{CVST}), or \code{"REML"}.
+#' @param na.rm Logical. If \code{TRUE}, rows containing missing values are
+#'   removed before fitting. Defaults to \code{FALSE}.
 #'
 #' @return A parsnip model specification of class \code{"krr_reg"}.
 #'
