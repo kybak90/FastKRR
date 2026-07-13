@@ -117,7 +117,7 @@
 #' @export
 krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
                    n_threads = NULL, m = NULL, rho = NULL, penalty = NULL,
-                   selection_method = NULL) {
+                   selection_method = NULL, na.rm = NULL) {
   if (mode != "regression") {
     rlang::abort("`mode` should be 'regression'.")
   }
@@ -129,7 +129,8 @@ krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
     n_threads = rlang::enquo(n_threads),
     rho     = rlang::enquo(rho),
     penalty = rlang::enquo(penalty),
-    selection_method = rlang::enquo(selection_method)
+    selection_method = rlang::enquo(selection_method),
+    na.rm = rlang::enquo(na.rm)
   )
   parsnip::new_model_spec(
     "krr_reg",
@@ -208,7 +209,7 @@ make_krr_reg = function(){
     has_submodel = FALSE
   )
 
-  for (nm in c("kernel", "opt", "m", "eps", "n_threads", "rho", "selection_method")){
+  for (nm in c("kernel", "opt", "m", "eps", "n_threads", "rho", "selection_method", "na.rm")){
     parsnip::set_model_arg(
       model    = "krr_reg",
       eng      = "fastkrr",
@@ -239,7 +240,8 @@ make_krr_reg = function(){
         n_threads  = rlang::expr(n_threads),
         rho    = rlang::expr(rho),
         lambda = rlang::expr(penalty),
-        selection_method = rlang::expr(selection_method)
+        selection_method = rlang::expr(selection_method),
+        na.rm = rlang::expr(na.rm)
       ),
       defaults = list()
     )
@@ -301,7 +303,7 @@ update.krr_reg = function(object, parameters = NULL,
                           kernel = NULL, opt = NULL,
                           m = NULL, eps = NULL,
                           n_threads = NULL, rho = NULL,
-                          selection_method = NULL, penalty = NULL,
+                          selection_method = NULL, penalty = NULL, na.rm = NULL,
                           fresh = FALSE, ...) {
 
   # if (requireNamespace("parsnip", quietly = TRUE) &&
@@ -344,6 +346,10 @@ update.krr_reg = function(object, parameters = NULL,
     args_new$selection_method = rlang::enquo(selection_method)
   }
 
+  if (!missing(na.rm)) {
+    args_new$na.rm = rlang::enquo(na.rm)
+  }
+
   if (!missing(penalty)) {
     args_new$penalty = rlang::enquo(penalty)
   }
@@ -374,7 +380,8 @@ fastkrr_fit_wrapper = function(x, y,
                                lambda = NULL,
                                selection_method = "exactCV",
                                n_threads = 4,
-                               verbose = FALSE) {
+                               verbose = FALSE,
+                               na.rm = FALSE) {
 
   df = as.data.frame(x)
 
@@ -395,7 +402,8 @@ fastkrr_fit_wrapper = function(x, y,
     lambda            = lambda,
     selection_method  = selection_method,
     n_threads         = n_threads,
-    verbose           = verbose
+    verbose           = verbose,
+    na.rm             = na.rm
   )
 }
 
@@ -411,5 +419,5 @@ fastkrr_fit_wrapper = function(x, y,
 
 
 utils::globalVariables(c(
-  "x","y","opt","m", "eps","n_threads","rho","penalty","selection_method","object","new_data"
+  "x","y","opt","m", "eps","n_threads","rho","penalty","selection_method", "na.rm", "object","new_data"
 ))

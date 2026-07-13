@@ -13,7 +13,8 @@ krr_reg(
   m = NULL,
   rho = NULL,
   penalty = NULL,
-  selection_method = NULL
+  selection_method = NULL,
+  na.rm = NULL
 )
 }
 \arguments{

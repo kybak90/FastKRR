@@ -15,7 +15,8 @@ fastkrr_fit_wrapper(
   lambda = NULL,
   selection_method = "exactCV",
   n_threads = 4,
-  verbose = FALSE
+  verbose = FALSE,
+  na.rm = FALSE
 )
 }
 \description{

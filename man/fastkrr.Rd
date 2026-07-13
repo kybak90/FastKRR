@@ -15,7 +15,8 @@ fastkrr(
   lambda = NULL,
   selection_method = "exactCV",
   n_threads = 4,
-  verbose = TRUE
+  verbose = TRUE,
+  na.rm = FALSE
 )
 }
 \arguments{
@@ -78,6 +79,9 @@ Laplace kernel (\code{kernel = "laplace"}).}
 \item{verbose}{If TRUE, detailed progress and cross-validation
 results are printed to the console. If FALSE, suppresses
 intermediate output and only returns the final result.}
+
+\item{na.rm}{Logical. If \code{TRUE}, rows containing missing values are
+removed before fitting. Defaults to \code{FALSE}.}
 }
 \value{
 \itemize{
@@ -96,6 +100,7 @@ intermediate output and only returns the final result.}
   \item{\code{selection_method}: Tunning method for select hyperparmeter lambda}
   \item{\code{call}: Ahe matched function call used to create the object.}
   \item{\code{n_threads}: Number of threads used for parallelization.}
+  \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
 }
 
 Additional components depend on the value of \code{opt}:
@@ -174,6 +179,7 @@ The function performs several input checks and automatic adjustments:
   \item \code{n_threads}: Number of threads for parallel computation.
     Default is \code{4}. If the system has <= 3 available processors,
     it uses \code{1}.
+  \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 }
 }
 \examples{
