@@ -61,7 +61,6 @@ it automatically falls back to 1 thread. It is applied only for \code{opt = "nys
 \itemize{
   \item \code{call}: The matched function call used to create the object.
   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
-  \item \code{K_approx}: \eqn{n \times n} approximated kernel matrix.
   \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
   \item \code{m}: Kernel approximation degree.
 }

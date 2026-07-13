@@ -34,11 +34,11 @@
 #' set.seed(1)
 #' d = 1
 #' rho = 1
-#' n = 1000
+#' n = 100
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #'
 #' # New design matrix
-#' new_n = 1500
+#' new_n = 150
 #' new_X = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 #'
 #' # Make kernel : Gaussian kernel
