@@ -125,6 +125,8 @@ predict.krr = function(object, newdata, ...){
 #' @param verbose If TRUE, detailed progress and cross-validation
 #' results are printed to the console. If FALSE, suppresses
 #' intermediate output and only returns the final result.
+#' @param na.rm Logical. If \code{TRUE}, rows containing missing values are
+#'   removed before fitting. Defaults to \code{FALSE}.
 #'
 #' @details
 #' The function performs several input checks and automatic adjustments:
@@ -151,6 +153,7 @@ predict.krr = function(object, newdata, ...){
 #'   \item \code{n_threads}: Number of threads for parallel computation.
 #'     Default is \code{4}. If the system has <= 3 available processors,
 #'     it uses \code{1}.
+#'   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 #'}
 #'
 #'
@@ -172,6 +175,7 @@ predict.krr = function(object, newdata, ...){
 #'   \item{\code{selection_method}: Tunning method for select hyperparmeter lambda}
 #'   \item{\code{call}: Ahe matched function call used to create the object.}
 #'   \item{\code{n_threads}: Number of threads used for parallelization.}
+#'   \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
 #' }
 #'
 #' Additional components depend on the value of \code{opt}:
