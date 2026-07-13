@@ -86,7 +86,7 @@ predict.krr = function(object, newdata, ...){
 #' \deqn{\text{Laplace kernel : } \mathcal{K}(x, x') = \exp(-\rho \| x - x'\|_1)}
 #' @param m Approximation rank(number of random features) used for the low-rank kernel approximation.
 #'   If not provided by the user, it defaults to
-#'   \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil,}
+#'   \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil,}
 #'   where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #' @param eps Tolerance parameter used only in \code{"pivoted"}
 #'   for stopping criterion of the Pivoted Cholesky decomposition.
@@ -136,7 +136,7 @@ predict.krr = function(object, newdata, ...){
 #'   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
 #'     \code{"nystrom"}, or \code{"rff"}.
 #'   \item If \code{m} is \code{NULL}, it defaults to
-#'     \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
+#'     \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 #'     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #'     Otherwise, \code{m} must be a positive integer.
 #'   \item \code{rho} must be a positive real number (default is 1).
@@ -304,7 +304,7 @@ fastkrr = function(data, response,
   if (eps <= 0)
     stop("eps must be a positive real number")
   if (is.null(m))
-    m = as.integer(max(1, ceiling(nrow(x)^(1/3) * log(ncol(x) + 5))))
+    m = as.integer(max(1, ceiling(nrow(x)^(1/2) * log(ncol(x) + 5))))
   else if(m <= 0)
     stop("m must be a positive integer")
   if (rho <= 0)

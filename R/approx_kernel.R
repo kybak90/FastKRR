@@ -21,7 +21,7 @@
 #' @param m Approximation rank (number of random features) for the
 #'   low-rank kernel approximation. If not specified, the recommended
 #'   choice is
-#'   \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
+#'   \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 #'   where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #' @param d Design matrix's dimension (\eqn{d = ncol(X)}).
 #' @param rho Scaling parameter of the kernel (\eqn{\rho}), specified by the user.
@@ -47,7 +47,7 @@
 #' \strong{nystrom / pivoted}
 #'
 #' \itemize{
-#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/3} \cdot \log(d + 5)  \rceil}.
+#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5)  \rceil}.
 #'   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
 #'   when the next pivot (residual diagonal) drops below \code{eps}.
 #' }
@@ -156,7 +156,7 @@ approx_kernel = function(X = NULL,
   if (opt %in% c("nystrom", "pivoted")) {
 
     n = nrow(X)
-    if (is.null(m)) m = n^(1/3) * log(d + 5)
+    if (is.null(m)) m = n^(1/2) * log(d + 5)
     m = as.integer(max(1, min(n, floor(m))))
 
     if (opt == "nystrom") {
@@ -218,7 +218,7 @@ approx_kernel = function(X = NULL,
     return(result_values)
   }
 
-  if (is.null(m)) m = n^(1/3) * log(d + 5)
+  if (is.null(m)) m = n^(1/2) * log(d + 5)
   m = as.integer(max(1, floor(m)))
 
   old_d_exists = exists("d", envir = .GlobalEnv, inherits = FALSE)

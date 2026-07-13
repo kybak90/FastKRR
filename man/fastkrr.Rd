@@ -45,7 +45,7 @@ variable in \code{data}.}
 
 \item{m}{Approximation rank(number of random features) used for the low-rank kernel approximation.
 If not provided by the user, it defaults to
-\deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil,}
+\deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil,}
 where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{eps}{Tolerance parameter used only in \code{"pivoted"}
@@ -162,7 +162,7 @@ The function performs several input checks and automatic adjustments:
   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
     \code{"nystrom"}, or \code{"rff"}.
   \item If \code{m} is \code{NULL}, it defaults to
-    \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
+    \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
     Otherwise, \code{m} must be a positive integer.
   \item \code{rho} must be a positive real number (default is 1).

@@ -38,7 +38,7 @@ approx_kernel(
 \item{m}{Approximation rank (number of random features) for the
 low-rank kernel approximation. If not specified, the recommended
 choice is
-\deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
+\deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{d}{Design matrix's dimension (\eqn{d = ncol(X)}).}
@@ -110,7 +110,7 @@ Requirements and what to supply:
 \strong{nystrom / pivoted}
 
 \itemize{
-  \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/3} \cdot \log(d + 5)  \rceil}.
+  \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5)  \rceil}.
   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
   when the next pivot (residual diagonal) drops below \code{eps}.
 }
