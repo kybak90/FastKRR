@@ -25,20 +25,16 @@ numerical tolerance (\code{eps}), and number of threads used (\code{n_threads}).
 \examples{
 # Data setting
 set.seed(1)
-d = 1
-n = 1000
-m = 50
+d = 2
+n = 100
 rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-K = make_kernel(X, kernel = "gaussian", rho = rho)
 
 # Example: nystrom
-K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = rho, n_threads = 1)
-class(K_nystrom)
+K_nystrom = approx_kernel(X = X, opt = "nystrom", d = d, rho = rho, n_threads = 1)
 
 print(K_nystrom)
 }
 \seealso{
-\code{\link{approx_kernel}, \link{print.krr}}, \code{\link{print.kernel_matrix}}
+\code{\link{approx_kernel}, \link{print.krr}}
 }

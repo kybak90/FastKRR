@@ -4,8 +4,7 @@
 #' Nyström approximation, Pivoted Cholesky decomposition, and
 #' Random Fourier Features (RFF).
 #'
-#' @param K Exact Kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}. Used in \code{"nystrom"} and \code{"pivoted"}.
-#' @param X Design matrix \eqn{X \in \mathbb{R}^{n \times d}}. Only required for \code{"rff"}.
+#' @param X Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
 #' @param opt Method for constructing or approximating :
 #'  \describe{
 #'   \item{\code{"nystrom"}}{Construct a low-rank approximation of
@@ -22,7 +21,7 @@
 #' @param m Approximation rank (number of random features) for the
 #'   low-rank kernel approximation. If not specified, the recommended
 #'   choice is
-#'   \deqn{\lceil n \cdot \log(d + 5) / 10 \rceil}
+#'   \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
 #'   where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #' @param d Design matrix's dimension (\eqn{d = ncol(X)}).
 #' @param rho Scaling parameter of the kernel (\eqn{\rho}), specified by the user.
@@ -48,8 +47,7 @@
 #' \strong{nystrom / pivoted}
 #'
 #' \itemize{
-#'   \item Require a precomputed kernel matrix \code{K}; error if \code{K} is \code{NULL}.
-#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n \cdot \log(d + 5) / 10 \rceil}.
+#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/3} \cdot \log(d + 5)  \rceil}.
 #'   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
 #'   when the next pivot (residual diagonal) drops below \code{eps}.
 #' }
@@ -57,7 +55,6 @@
 #' \strong{rff}
 #'
 #' \itemize{
-#'   \item \code{K} must be \code{NULL} (not used) and \code{X} must be provided with \code{d = ncol(X)}.
 #'   \item The function automatically generates
 #'         \code{W} (random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}) and
 #'         \code{b} (random phase vector \eqn{b \in \mathbb{R}^{m}}).
@@ -66,14 +63,13 @@
 #'
 #'
 #' @return
-#' An S3 object of class \code{"approx_kernel"} containing the results of the
-#' kernel approximation:
 #'
 #' \itemize{
 #'   \item \code{call}: The matched function call used to create the object.
 #'   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
-#'   \item \code{K_approx}: \eqn{n \times n} approximated kernel matrix.
+#'   \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
 #'   \item \code{m}: Kernel approximation degree.
+#'   \item \code{rho}: Scaling parameter of the kernel.
 #' }
 #'
 #' Additional components depend on the value of opt:
@@ -95,9 +91,7 @@
 #' \strong{rff}
 #'
 #' \itemize{
-#'   \item \code{approx_factor}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} such that \eqn{K \approx Z Z^\top}.
 #'   \item \code{d}: Input design matrix's dimension.
-#'   \item \code{rho}: Scaling parameter of the kernel.
 #'   \item \code{W}: \eqn{m \times d} Random frequency matrix.
 #'   \item \code{b}: Random phase \eqn{m}--vector.
 #'   \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied
@@ -110,11 +104,9 @@
 #' # Data setting
 #' set.seed(1)
 #' d = 1
-#' n = 1000
+#' n = 100
 #' m = 50
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-#' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-#' K = make_kernel(X, kernel = "gaussian", rho = 1)
 #'
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
@@ -181,6 +173,7 @@ approx_kernel = function(X = NULL,
       result_values$K_approx = tcrossprod(rslt$R)
       result_values$approx_factor = rslt$R
       result_values$m = rslt$m
+      result_values$rho = rho
       result_values$n_threads = rslt$n_threads
 
       return(result_values)
@@ -190,14 +183,13 @@ approx_kernel = function(X = NULL,
       result_values$K_approx = tcrossprod(rslt$PR)
       result_values$approx_factor = rslt$PR
       result_values$m = rslt$rank
+      result_values$rho = rho
       result_values$eps = rslt$eps
       return(result_values)
     }
   }
 
-  #if (!is.null(K)) stop("For opt='rff', argument 'K' must be NULL (not used).")
-
-  if (is.null(X))  stop("For opt='rff', argument 'X' must be provided (not NULL).")
+  if (is.null(X))  stop("Argument 'X' must be provided (not NULL).")
 
   n   = nrow(X)
   d_x = ncol(X)

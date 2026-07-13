@@ -174,18 +174,7 @@ static double newton_loop(std::function<REMLEval(double)> eval_fn,
   return std::exp(t);
 }
 
-//' Newton-Raphson REML for exact KRR
-//'
-//' Eigendecomposition of K computed once O(n^3); each Newton iteration O(n).
-//'
-//' @param K          Full kernel matrix (n x n, symmetric PSD)
-//' @param y          Response vector (length n)
-//' @param lambda_vec Candidate lambda grid, used only for search bounds
-//'                    and initial value (geometric mean).
-//' @param max_iter   Maximum Newton iterations (default 50)
-//' @param tol        Convergence tolerance on |dh/dt| (default 1e-8)
-//' @param n_threads  Unused (kept for interface compatibility)
-//' @return Optimal lambda (scalar)
+// Newton-Raphson REML for exact KRR
 // [[Rcpp::export]]
 double reml_exact(const arma::mat& K,
                    const arma::vec& y,
@@ -216,19 +205,7 @@ double reml_exact(const arma::mat& K,
   return newton_loop(eval_fn, t_init, t_lo, t_hi, max_iter, tol);
 }
 
-//' Newton-Raphson REML (no intercept) for low-rank KRR (K ~= FF')
-//'
-//' Eigendecomposition of F'F computed once O(nm^2+m^3);
-//' each Newton iteration O(m) via Woodbury + determinant lemma.
-//'
-//' @param F          Low-rank factor (n x m): R (Nystrom), PR (pivoted), Z (RFF)
-//' @param y          Response vector (length n)
-//' @param lambda_vec Candidate lambda grid, used only for search bounds
-//'                    and initial value.
-//' @param max_iter   Maximum Newton iterations (default 50)
-//' @param tol        Convergence tolerance on |dh/dt| (default 1e-8)
-//' @param n_threads  Unused (kept for interface compatibility)
-//' @return Optimal lambda (scalar)
+// Newton-Raphson REML (no intercept) for low-rank KRR (K ~= FF')
 // [[Rcpp::export]]
 double reml_lowrank(const arma::mat& F,
                      const arma::vec& y,

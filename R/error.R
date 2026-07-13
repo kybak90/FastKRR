@@ -28,6 +28,11 @@ error.default = function(x, ...) {
 #'
 #' @param x An object of class \code{"krr"}, typically returned by
 #'   \code{\link{fastkrr}}.
+#' @param data_new An optional data frame containing new predictor variables
+#'   and the observed response variable. The response column must have the
+#'   same name as the response variable used to fit the model. If
+#'   \code{NULL}, the training MSE is computed. Otherwise, the PMSE is
+#'   computed using predictions for \code{data_new}.
 #' @param ... Additional arguments (ignored).
 #'
 #' @return A numeric value giving the mean squared error (MSE).
@@ -46,11 +51,20 @@ error.default = function(x, ...) {
 #' d = 1
 #' n = 50
 #' rho = 1
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-#' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'
-#' model = fastkrr(X, y, kernel = "gaussian", lambda = 0.001)
-#' error(model)
+#' data = data.frame(X, y = y)
+#'
+#' model = fastkrr(data = data, response = "y", kernel = "gaussian",
+#'                 opt = "exact", lambda = lambda)
+#'
+#' new_n = 50
+#' new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
+#' new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
+#' new_data = data.frame(new_x, y = new_y)
+#'
+#' error(model, data_new = new_data)
 #'
 #'
 #' @export

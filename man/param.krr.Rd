@@ -37,11 +37,14 @@ lambda = 1e-4
 d = 1
 n = 50
 rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 
-model = fastkrr(X, y, kernel="gaussian", opt="nystrom",
-              rho=1, lambda=1e-4, m=200, n_threads=4, fastcv=FALSE)
+data = data.frame(X, y = y)
+
+model = fastkrr(data = data, response = "y",
+                kernel="gaussian", opt="pivoted",
+                rho=1, lambda=1e-4, n_threads = 1)
 
 
 class(model)

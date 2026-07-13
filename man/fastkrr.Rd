@@ -5,23 +5,25 @@
 \title{Fit kernel ridge regression using exact or approximate methods}
 \usage{
 fastkrr(
-  x,
-  y,
+  data,
+  response,
   kernel = "gaussian",
   opt = "exact",
   m = NULL,
   eps = 1e-06,
   rho = 1,
   lambda = NULL,
-  fastcv = FALSE,
+  selection_method = "exactCV",
   n_threads = 4,
   verbose = TRUE
 )
 }
 \arguments{
-\item{x}{Design matrix \eqn{X \in \mathbb{R}^{n\times d}}.}
+\item{data}{A data frame containing the data point variables and response
+variable.}
 
-\item{y}{Response variable \eqn{y  \in \mathbb{R}^{n}}.}
+\item{response}{A character string specifying the name of the response
+variable in \code{data}.}
 
 \item{kernel}{Kernel type either "gaussian"or "laplace".}
 
@@ -42,7 +44,7 @@ fastkrr(
 
 \item{m}{Approximation rank(number of random features) used for the low-rank kernel approximation.
 If not provided by the user, it defaults to
-\deqn{\lceil n \cdot \frac{\log(d + 5)}{10} \rceil,}
+\deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil,}
 where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{eps}{Tolerance parameter used only in \code{"pivoted"}
@@ -54,12 +56,17 @@ for stopping criterion of the Pivoted Cholesky decomposition.}
 \deqn{\text{Laplace kernel : } \mathcal{K}(x, x') = \exp(-\rho \| x - x'\|_1)}}
 
 \item{lambda}{Regularization parameter. If \code{NULL}, the penalty parameter
-is chosen automatically via \pkg{CVST} package. If not provided, the argument is set to a
-kernel-specific grid of 100 values: \eqn{[10^{-10}, 10^{-3}]} for Gaussian, \eqn{[10^{-5}, 10^{-2}]} for Laplace.}
+is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to a
+kernel-specific grid of 100 values: \eqn{[10^{-10}, 10^{-3}]} for Gaussian,
+\eqn{[10^{-5}, 10^{-2}]} for Laplace.}
 
-\item{fastcv}{If \code{TRUE}, accelerated cross-validation is
-performed via sequential testing (early stopping) as implemented in the \pkg{CVST} package.
-The default is \code{FALSE}.}
+\item{selection_method}{Method used to select \eqn{\lambda} when a grid or \code{NULL} is
+passed. One of:
+\describe{
+  \item{\code{"exactCV"}}{Full cross-validation via \pkg{CVST} (default).}
+  \item{\code{"fastCV"}}{Accelerated sequential-testing CV via \pkg{CVST}.}
+  \item{\code{"REML"}}{Restricted Maximum Likelihood.}
+}}
 
 \item{n_threads}{Number of parallel threads.
 The default is 4. If the system does not support 4 threads,
@@ -73,18 +80,21 @@ results are printed to the console. If FALSE, suppresses
 intermediate output and only returns the final result.}
 }
 \value{
-An S3 object of class \code{"fastkrr"}, which is a list containing the
-results of the fitted Kernel Ridge Regression model.
-
 \itemize{
-  \item{\code{coefficients}: Estimated coefficient vector \eqn{\mathbb{R}^{n}}. Accessible via \code{model$coefficients}.}
-  \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}. Accessible via \code{model$fitted.values}.}
-  \item{\code{opt}: Kernel approximation option. One of \code{"exact"}, \code{"pivoted"}, \code{"nystrom"}, \code{"rff"}.}
+  \item{\code{coefficients}: Estimated coefficient vector \eqn{\mathbb{R}^{n}}.
+  Accessible via \code{model$coefficients}.}
+  \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}.
+  Accessible via \code{model$fitted.values}.}
+  \item{\code{opt}: Kernel approximation option.
+  One of \code{"exact"}, \code{"pivoted"}, \code{"nystrom"}, \code{"rff"}.}
   \item{\code{kernel}: Kernel used (\code{"gaussian"} or \code{"laplace"}).}
   \item{\code{x}: Input design matrix.}
   \item{\code{y}: Response vector.}
-  \item{\code{lambda}: Regularization parameter. If \code{NULL}, tuned by cross-validation via \pkg{CVST}.}
+  \item{\code{lambda}: Regularization parameter. If \code{NULL}, tuned
+  by cross-validation via \pkg{CVST} or REML.}
   \item{\code{rho}: Additional user-specified hyperparameter.}
+  \item{\code{selection_method}: Tunning method for select hyperparmeter lambda}
+  \item{\code{call}: Ahe matched function call used to create the object.}
   \item{\code{n_threads}: Number of threads used for parallelization.}
 }
 
@@ -92,24 +102,24 @@ Additional components depend on the value of \code{opt}:
 
 \subsection{opt = \dQuote{exact}}{
 \itemize{
-  \item{\code{K}: The full kernel matrix.}
+  \item{\code{K}: The full kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
+  \item{\code{chol_factor}: Lower triangular Cholesky factor \eqn{L \in \mathbb{R}^{n \times n}}
+    of \eqn{K + n\lambda I}; satisfies \eqn{K + n\lambda I = L L^\top}.}
 }}
 
 
 \subsection{opt = \dQuote{nystrom}}{
 \itemize{
-  \item{\code{K}: Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
   \item{\code{m}: Kernel approximation degree.}
-  \item{\code{R}: The method provides a low-rank approximation to the kernel matrix
+  \item{\code{approx_factor}: The method provides a low-rank approximation to the kernel matrix
     \eqn{R \in \mathbb{R}^{n \times m}} obtained via
     Nyström approximation; satisfies \eqn{K \approx R R^\top}.}
 }}
 
 \subsection{opt = \dQuote{pivoted}}{
 \itemize{
-  \item{\code{K}: Exact kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}.}
   \item{\code{m}: Kernel pproximation degree.}
-  \item{\code{PR}: The method provides a low-rank approximation to the kernel matrix
+  \item{\code{approx_factor}: The method provides a low-rank approximation to the kernel matrix
     \eqn{PR \in \mathbb{R}^{ n \times m}} obtained via
     Pivoted Cholesky decomposition; satisfies \eqn{K \approx PR\,(PR)^\top}.}
   \item{\code{eps}: Numerical tolerance used for early stopping in the pivoted Cholesky decomposition.}
@@ -118,7 +128,7 @@ Additional components depend on the value of \code{opt}:
 \subsection{opt = \dQuote{rff}}{
 \itemize{
   \item{\code{m}: Number of random features.}
-  \item{\code{Z}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
+  \item{\code{approx_factor}: Random Fourier Feature matrix \eqn{Z \in \mathbb{R}^{n \times m}} with
     \eqn{Z_{ij} = z_j(x_i) = \sqrt{2/m}\cos(\omega_j^\top x_i + b_j), \quad j = 1, \cdots, m,}
     so that \eqn{K \approx Z Z^\top}.}
   \item{\code{W}: Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
@@ -132,8 +142,9 @@ Additional components depend on the value of \code{opt}:
 }
 \description{
 This function performs kernel ridge regression (KRR) in high-dimensional
-settings. The regularization parameter \eqn{\lambda} can be selected via the
-CVST (Cross-Validation via Sequential Testing) procedure. For scalability,
+settings. The regularization parameter \eqn{\lambda} can be supplied by
+the user or selected automatically using cross-validation or
+restricted maximum likelihood (REML). For scalability,
 three different kernel approximation strategies are supported (Nyström approximation,
 Pivoted Cholesky decomposition, Random Fourier Features(RFF)), and kernel matrix
 can be computed using two methods(Gaussian kernel, Laplace kerenl).
@@ -142,14 +153,11 @@ can be computed using two methods(Gaussian kernel, Laplace kerenl).
 The function performs several input checks and automatic adjustments:
 
 \itemize{
-  \item If \code{x} is a vector, it is converted to a one column matrix.
-    Otherwise, \code{x} must be a matrix; otherwise an error is thrown.
-  \item \code{y} must be a vector, and its length must match \code{nrow(x)}.
   \item \code{kernel} must be either \code{gaussian} or \code{laplace}.
   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
     \code{"nystrom"}, or \code{"rff"}.
   \item If \code{m} is \code{NULL}, it defaults to
-    \deqn{\lceil n \cdot \log(d + 5) / 10 \rceil}
+    \deqn{\lceil n^{1/3} \cdot \log(d + 5) \rceil}
     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
     Otherwise, \code{m} must be a positive integer.
   \item \code{rho} must be a positive real number (default is 1).
@@ -161,7 +169,7 @@ The function performs several input checks and automatic adjustments:
          selection is performed by \pkg{CVST} cross-validation (sequential testing if
          \code{fastcv = TRUE}).
       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
-        via \pkg{CVST} cross-validation (sequential testing if \code{fastcv = TRUE}).}
+        via \pkg{CVST} or REML}
 
   \item \code{n_threads}: Number of threads for parallel computation.
     Default is \code{4}. If the system has <= 3 available processors,
@@ -172,22 +180,29 @@ The function performs several input checks and automatic adjustments:
 # Data setting
 set.seed(1)
 lambda = 1e-4
-d = 1
+d = 3
 rho = 1
 n = 50
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
+
+data = data.frame(X, y = y)
 
 # Exapmle: pivoted cholesky
-model = fastkrr(X, y, kernel = "gaussian", opt = "pivoted", rho = rho, lambda = 1e-4)
+model = fastkrr(data = data, response = "y",  kernel = "gaussian",
+                opt = "pivoted", rho = rho, lambda = 1e-4)
 
 # Example: nystrom
-model = fastkrr(X, y, kernel = "gaussian", opt = "nystrom", rho = rho, lambda = 1e-4)
+model = fastkrr(data = data, response = "y", kernel = "gaussian",
+                opt = "nystrom", rho = rho, lambda = 1e-4)
 
 # Example: random fourier features
-model = fastkrr(X, y, kernel = "gaussian", opt = "rff", rho = rho, lambda = 1e-4)
+model = fastkrr(data = data, response = "y", kernel = "gaussian",
+                opt = "rff", rho = rho, lambda = 1e-4)
 
 # Example: Laplace kernel
-model = fastkrr(X, y, kernel = "laplace", opt = "nystrom", n_threads = 1, rho = rho)
+model = fastkrr(data = data, response = "y",  kernel = "laplace",
+                opt = "nystrom", n_threads = 1, rho = rho)
 
 }

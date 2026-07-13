@@ -11,8 +11,7 @@
 #'
 #' @return A human-readable summary of the fitted KRR model to the console.
 #'
-#' @seealso \code{\link{fastkrr}}, \code{\link{print.approx_kernel}},
-#'   \code{\link{print.kernel_matrix}}
+#' @seealso \code{\link{fastkrr}}, \code{\link{print.approx_kernel}}
 #'
 #' @examples
 #' # Data setting
@@ -21,14 +20,15 @@
 #' d = 1
 #' n = 50
 #' rho = 1
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-#' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
+#'
+#' data = data.frame(X, y = y)
 #'
 #' # Example: exact
-#' model = fastkrr(X, y,
+#' model = fastkrr(data = data, response = "y",
 #'                 kernel = "gaussian", opt = "exact",
 #'                 rho = rho, lambda = 1e-4)
-#' class(model)
 #'
 #' print(model)
 #' @export
@@ -70,22 +70,18 @@ print.krr = function(x, ...) {
 #'
 #' @return An approximated kernel matrix and its associated options.
 #'
-#' @seealso \code{\link{approx_kernel}, \link{print.krr}}, \code{\link{print.kernel_matrix}}
+#' @seealso \code{\link{approx_kernel}, \link{print.krr}}
 #'
 #' @examples
 #' # Data setting
 #' set.seed(1)
-#' d = 1
-#' n = 1000
-#' m = 50
+#' d = 2
+#' n = 100
 #' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
-#' y = as.vector(sin(2*pi*rowMeans(X)^3) + rnorm(n, 0, 0.1))
-#' K = make_kernel(X, kernel = "gaussian", rho = rho)
 #'
 #' # Example: nystrom
-#' K_nystrom = approx_kernel(K = K, opt = "nystrom", m = m, d = d, rho = rho, n_threads = 1)
-#' class(K_nystrom)
+#' K_nystrom = approx_kernel(X = X, opt = "nystrom", d = d, rho = rho, n_threads = 1)
 #'
 #' print(K_nystrom)
 #' @export

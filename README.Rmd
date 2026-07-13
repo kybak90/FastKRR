@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The 'FastKRR' implements its core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide sequential-testing cross-validation that identifies competitive hyperparameters without exhaustive grid search. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method 'tunable.krr_reg()', and the direct fitting helper 'fit_krr()'.
+ The 'FastKRR' implements its core computational operations in C++ via 'RcppArmadillo', enabling faster performance than pure R, improved numerical stability, and parallel execution with OpenMP where available. On systems without OpenMP support, the package automatically falls back to single-threaded execution with no user configuration required. For efficient model selection, it integrates with 'CVST' to provide full and sequential-testing cross-validation and additionally supports restricted maximum likelihood (REML) for continuous optimization of the regularization parameter. The package offers a unified interface for exact kernel ridge regression and three scalable approximations—Nyström, Pivoted Cholesky, and Random Fourier Features—allowing analyses with substantially larger sample sizes than are feasible with exact KRR. It also integrates with the 'tidymodels' ecosystem via the 'parsnip' model specification 'krr_reg', the S3 method 'tunable.krr_reg()', and the direct fitting helper 'fit_krr()'.
+
 
 **Dependencies:** Rcpp, RcppArmadillo, CVST, parsnip  
 This package uses **CVST** (GPL ≥ 2). Overall license: **GPL (≥ 2)**.
@@ -76,17 +77,19 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
+data = data.frame(X, y = y)
+
 # model fitting - exact
-model_exact = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
+model_exact = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 
 # model fitting - pivoted
-model_pivoted = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "pivoted", verbose = FALSE)
+model_pivoted = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "pivoted", verbose = FALSE)
 
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 # model fitting - rff
-model_rff = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
+model_rff = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "rff", verbose = FALSE)
 
 
 # prediction
@@ -104,20 +107,19 @@ The visualization of the fitted results is shown below.
 
 ```{r warning=FALSE, message=FALSE}
 library(ggplot2)
-data = data.frame(new_x)
-data$pred_exact = as.numeric(pred_exact)
-data$pred_pivoted = as.numeric(pred_pivoted)
-data$pred_nystrom = as.numeric(pred_nystrom)
-data$pred_rff = as.numeric(pred_rff)
+datas = data.frame(new_x)
+datas$pred_exact = as.numeric(pred_exact)
+datas$pred_pivoted = as.numeric(pred_pivoted)
+datas$pred_nystrom = as.numeric(pred_nystrom)
+datas$pred_rff = as.numeric(pred_rff)
 
-data_train = data.frame(x = X, y = y)
 
-ggplot(data = data) +
+ggplot(data = datas) +
   geom_line(aes("x" = new_x, "y" = pred_exact, color = 'opt = "exact"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_pivoted, color = 'opt = "pivoted"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_nystrom, color = 'opt = "nystrom"'), linewidth=1.2) + 
   geom_line(aes("x" = new_x, "y" = pred_rff, color = 'opt = "rff"'), linewidth=1.2) +
-  geom_point(data = data_train, aes(x = x, y = y), col = "gray", alpha = 0.2) +
+  geom_point(data = data, aes(x = X, y = y), col = "gray", alpha = 0.2) +
   theme_minimal()
 ```
 
@@ -184,8 +186,10 @@ rho = 1
 X = runif(n, 0, 1)
 y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 
+data = data.frame(X, y = y)
+
 # model fitting - nystrom
-model_nystrom = fastkrr(X, y, kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
 
 model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
 
