@@ -174,7 +174,7 @@ static double newton_loop(std::function<REMLEval(double)> eval_fn,
   return std::exp(t);
 }
 
-//' Newton-Raphson REML for exact KRR
+// Newton-Raphson REML for exact KRR
 double reml_exact(const arma::mat& K,
                    const arma::vec& y,
                    const arma::vec& lambda_vec,
@@ -204,8 +204,7 @@ double reml_exact(const arma::mat& K,
   return newton_loop(eval_fn, t_init, t_lo, t_hi, max_iter, tol);
 }
 
-//' Newton-Raphson REML (no intercept) for low-rank KRR (K ~= FF')
-//'
+// Newton-Raphson REML (no intercept) for low-rank KRR (K ~= FF')
 double reml_lowrank(const arma::mat& F,
                      const arma::vec& y,
                      const arma::vec& lambda_vec,

@@ -63,6 +63,7 @@ it automatically falls back to 1 thread. It is applied only for \code{opt = "nys
   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
   \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
   \item \code{m}: Kernel approximation degree.
+  \item \code{rho}: Scaling parameter of the kernel.
 }
 
 Additional components depend on the value of opt:
@@ -85,7 +86,6 @@ Additional components depend on the value of opt:
 
 \itemize{
   \item \code{d}: Input design matrix's dimension.
-  \item \code{rho}: Scaling parameter of the kernel.
   \item \code{W}: \eqn{m \times d} Random frequency matrix.
   \item \code{b}: Random phase \eqn{m}--vector.
   \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied

@@ -65,8 +65,7 @@ passed. One of:
 \describe{
   \item{\code{"exactCV"}}{Full cross-validation via \pkg{CVST} (default).}
   \item{\code{"fastCV"}}{Accelerated sequential-testing CV via \pkg{CVST}.}
-  \item{\code{"REML"}}{Restricted Maximum Likelihood: minimises the profiled
-    marginal log-likelihood over the supplied \code{lambda} grid.}
+  \item{\code{"REML"}}{Restricted Maximum Likelihood.}
 }}
 
 \item{n_threads}{Number of parallel threads.
@@ -154,9 +153,6 @@ can be computed using two methods(Gaussian kernel, Laplace kerenl).
 The function performs several input checks and automatic adjustments:
 
 \itemize{
-  \item If \code{x} is a vector, it is converted to a one column matrix.
-    Otherwise, \code{x} must be a matrix; otherwise an error is thrown.
-  \item \code{y} must be a vector, and its length must match \code{nrow(x)}.
   \item \code{kernel} must be either \code{gaussian} or \code{laplace}.
   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
     \code{"nystrom"}, or \code{"rff"}.
