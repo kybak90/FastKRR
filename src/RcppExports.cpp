@@ -90,6 +90,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// reml_exact
+double reml_exact(const arma::mat& K, const arma::vec& y, const arma::vec& lambda_vec, int max_iter, double tol, int n_threads);
+RcppExport SEXP _FastKRR_reml_exact(SEXP KSEXP, SEXP ySEXP, SEXP lambda_vecSEXP, SEXP max_iterSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type lambda_vec(lambda_vecSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(reml_exact(K, y, lambda_vec, max_iter, tol, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// reml_lowrank
+double reml_lowrank(const arma::mat& F, const arma::vec& y, const arma::vec& lambda_vec, int max_iter, double tol, int n_threads);
+RcppExport SEXP _FastKRR_reml_lowrank(SEXP FSEXP, SEXP ySEXP, SEXP lambda_vecSEXP, SEXP max_iterSEXP, SEXP tolSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type F(FSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type lambda_vec(lambda_vecSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(reml_lowrank(F, y, lambda_vec, max_iter, tol, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // make_Z
 arma::mat make_Z(const arma::mat& X, const arma::mat& W, const arma::vec& b, int n_threads);
 RcppExport SEXP _FastKRR_make_Z(SEXP XSEXP, SEXP WSEXP, SEXP bSEXP, SEXP n_threadsSEXP) {
@@ -161,6 +193,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FastKRR_nystrom", (DL_FUNC) &_FastKRR_nystrom, 6},
     {"_FastKRR_pchol_kernel", (DL_FUNC) &_FastKRR_pchol_kernel, 6},
     {"_FastKRR_pchol", (DL_FUNC) &_FastKRR_pchol, 8},
+    {"_FastKRR_reml_exact", (DL_FUNC) &_FastKRR_reml_exact, 6},
+    {"_FastKRR_reml_lowrank", (DL_FUNC) &_FastKRR_reml_lowrank, 6},
     {"_FastKRR_make_Z", (DL_FUNC) &_FastKRR_make_Z, 4},
     {"_FastKRR_rff", (DL_FUNC) &_FastKRR_rff, 6},
     {"_FastKRR_get_num_procs", (DL_FUNC) &_FastKRR_get_num_procs, 0},

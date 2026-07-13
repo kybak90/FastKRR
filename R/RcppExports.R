@@ -21,6 +21,14 @@ pchol <- function(X, y, lambda, rho = 1.0, kernel = "gaussian", m = NULL, eps = 
     .Call(`_FastKRR_pchol`, X, y, lambda, rho, kernel, m, eps, verbose)
 }
 
+reml_exact <- function(K, y, lambda_vec, max_iter = 50L, tol = 1e-8, n_threads = 1L) {
+    .Call(`_FastKRR_reml_exact`, K, y, lambda_vec, max_iter, tol, n_threads)
+}
+
+reml_lowrank <- function(F, y, lambda_vec, max_iter = 50L, tol = 1e-8, n_threads = 1L) {
+    .Call(`_FastKRR_reml_lowrank`, F, y, lambda_vec, max_iter, tol, n_threads)
+}
+
 make_Z <- function(X, W, b, n_threads = 4L) {
     .Call(`_FastKRR_make_Z`, X, W, b, n_threads)
 }
