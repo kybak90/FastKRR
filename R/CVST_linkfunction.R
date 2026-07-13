@@ -256,16 +256,30 @@ fastkrr = function(data, response,
                    lambda = NULL,
                    selection_method = "exactCV",  # c(exactCV, fastCV, REML)
                    n_threads = 4,
-                   verbose =  TRUE)
+                   verbose =  TRUE,
+                   na.rm = FALSE)
 {
   call = match.call()
 
   # Data frame
   if(!is.data.frame(data)) stop("data must be a data.frame")
+  removed_row_idx = integer(0)
   if (anyNA(data)){
     na_cols = names(data)[colSums(is.na(data)) > 0]
-    stop("Missing values (NA) found in: ",
-         paste(na_cols, collapse = ", "), call. = FALSE)
+    if(!na.rm){
+      stop("Missing values (NA) found in: ",
+           paste(na_cols, collapse = ", "),
+           "\nSet na.rm = TRUE to remove rows containing missing values.",
+           call. = FALSE)
+    }else{
+      removed_row_idx = which(!stats::complete.cases(data))
+      data = stats::na.omit(data)
+      message("Removed ", length(removed_row_idx),
+              " row", if (length(removed_row_idx) != 1) "s" else "",
+              " containing missing values.\n",
+              "Removed row indices: ",
+              paste(removed_row_idx, collapse = ", "), ".")
+    }
   }
   if(!(length(response) == 1 && is.character(response) &&
        response %in% colnames(data)))
@@ -383,6 +397,8 @@ fastkrr = function(data, response,
   # Fitting
   result_values = list()
   class(result_values) = "krr"
+  result_values$removed_row_idx = removed_row_idx
+
   if(opt == "rff"){
     rand_set = rff_random(m = m, rho = rho, d = d, kernel = kernel)
     rslt = rff(x, y, rand_set$W, rand_set$b, lambda = lambda, n_threads = n_threads)
