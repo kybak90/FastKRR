@@ -169,7 +169,7 @@ The function performs several input checks and automatic adjustments:
          selection is performed by \pkg{CVST} cross-validation (sequential testing if
          \code{fastcv = TRUE}).
       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
-        via \pkg{CVST} cross-validation (sequential testing if \code{fastcv = TRUE}).}
+        via \pkg{CVST} or REML}
 
   \item \code{n_threads}: Number of threads for parallel computation.
     Default is \code{4}. If the system has <= 3 available processors,
