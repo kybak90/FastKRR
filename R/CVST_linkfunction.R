@@ -4,7 +4,7 @@
 #' for new data.
 #'
 #' @param object A S3 object of class \code{krr} created by \code{\link{fastkrr}}.
-#' @param newdata New design matrix or data frame containing new observations
+#' @param newdata New design matrix containing new observations
 #'                for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.
 #' @param ... Additional arguments (currently ignored).
 #'
