@@ -90,10 +90,10 @@ predict.krr = function(object, newdata, ...){
 #'   where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #' @param eps Tolerance parameter used only in \code{"pivoted"}
 #'   for stopping criterion of the Pivoted Cholesky decomposition.
+#'   Defaults to \code{1e-6} for Gaussian kernel and \code{1e-4} for Laplace kernel.
 #' @param lambda Regularization parameter. If \code{NULL}, the penalty parameter
-#'   is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to a
-#'   kernel-specific grid of 100 values: \eqn{[10^{-10}, 10^{-3}]} for Gaussian,
-#'   \eqn{[10^{-5}, 10^{-2}]} for Laplace.
+#'   is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to
+#'   the grid of 100 values: \eqn{[10^{-11}, 10^{-1}]}.
 #' @param opt Method for constructing or approximating :
 #'  \describe{
 #'   \item{\code{"exact"}}{Construct the full kernel matrix
@@ -109,12 +109,13 @@ predict.krr = function(object, newdata, ...){
 #'   \eqn{K \approx Z Z^\top}. Here, \eqn{m} is the number of features.}
 
 #'  }
-#' @param n_threads Number of parallel threads.
-#'   The default is 4. If the system does not support 4 threads,
-#'   it automatically falls back to 1 thread.
-#'   Parallelization (implemented in C++) is one of the main advantages
-#'   of this package and is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
-#'   Laplace kernel (\code{kernel = "laplace"}).
+#' @param n_threads Number of parallel threads. If \code{NULL}, it defaults to
+#'   half of the available system processors (\code{max_threads \%/\% 2}).
+#'   Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
+#'   \code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
+#'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
+#'   falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
+#'   For all other settings, it is restricted to \code{1} thread.
 #' @param selection_method Method used to select \eqn{\lambda} when a grid or \code{NULL} is
 #'   passed. One of:
 #'   \describe{
@@ -140,6 +141,8 @@ predict.krr = function(object, newdata, ...){
 #'     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
 #'     Otherwise, \code{m} must be a positive integer.
 #'   \item \code{rho} must be a positive real number (default is 1).
+#'    \item \code{eps}: If not specified, it defaults to \code{1e-6} for the Gaussian kernel
+#'      and \code{1e-4} for the Laplace kernel.
 #'   \item \code{lambda} can be specified in three ways:
 #'     \enumerate{
 #'       \item A positive numeric scalar, in which case the model is fitted with
@@ -217,6 +220,9 @@ predict.krr = function(object, newdata, ...){
 #'         \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).}
 #'         \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
 #'       }}}
+#'   \item \code{n_threads}: Default is half of the available cores. For parallelizable pipelines,
+#'      if available processors are \eqn{\le 3}, it falls back to \code{1}. Otherwise, it uses at most
+#'      \code{max_threads - 1}. For non-parallelizable pipelines, it is forced to \code{1}.
 #'   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 #' }}
 #'
@@ -255,11 +261,11 @@ fastkrr = function(data, response,
                    kernel = "gaussian", # c(gaussian, laplace)
                    opt = "exact",  # c(exact, pivoted, nystrom, rff)
                    m = NULL,
-                   eps = 1e-6,
+                   eps = NULL,
                    rho = 1,
                    lambda = NULL,
                    selection_method = "exactCV",  # c(exactCV, fastCV, REML)
-                   n_threads = 4,
+                   n_threads = NULL,
                    verbose =  TRUE,
                    na.rm = FALSE)
 {
@@ -301,8 +307,10 @@ fastkrr = function(data, response,
   x = as.matrix(data[, setdiff(names(data), response), drop = FALSE])
 
   # Parameter setting
-  if (eps <= 0)
-    stop("eps must be a positive real number")
+  if (is.null(eps)){
+    eps = if (kernel == "gaussian") 1e-6 else 1e-4
+  }else{
+    if (eps <= 0) stop("eps must be a positive real number")}
   if (is.null(m))
     m = as.integer(max(1, ceiling(nrow(x)^(1/2) * log(ncol(x) + 5))))
   else if(m <= 0)
@@ -313,7 +321,7 @@ fastkrr = function(data, response,
 
   # Complexity parameter setting
   if(is.null(lambda)){
-    lambda = if (kernel == "gaussian") seq(1e-10, 1e-3, len = 100) else seq(1e-5, 1e-2, len = 100) # vector
+    lambda = seq(1e-11, 1e-1, len = 100) # vector
   }else if(is.vector(lambda) && all(lambda > 0) && length(lambda) >= 3){
     lambda = lambda # vector
   }else if(is.numeric(lambda) && length(lambda) == 1 && lambda > 0){
@@ -324,12 +332,10 @@ fastkrr = function(data, response,
 
 
   # Adjust number of threads
+  max_threads = get_num_procs()
+  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace") || (selection_method == "REML")){
-    max_threads = get_num_procs()
-    if (max_threads <= 3)
-      n_threads = 1
-    else
-      n_threads = min(n_threads, max_threads - 1)
+    n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{
     n_threads = 1
   }
