@@ -154,8 +154,6 @@ predict.krr = function(object, newdata, ...){
 #'         via \pkg{CVST} or REML}
 #'
 #'   \item \code{n_threads}: Number of threads for parallel computation.
-#'     Default is \code{4}. If the system has <= 3 available processors,
-#'     it uses \code{1}.
 #'   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 #'}
 #'
