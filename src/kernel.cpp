@@ -9,28 +9,28 @@ using namespace arma;
 
 // [[Rcpp::export]]
 Rcpp::NumericMatrix make_kernel(const arma::mat& X,
-                      Nullable<NumericMatrix> X_new = R_NilValue,
-                      std::string kernel = "gaussian",
-                      double rho = 0,
-                      Nullable<int> n_threads = R_NilValue){
+                                Nullable<NumericMatrix> X_new = R_NilValue,
+                                std::string kernel = "gaussian",
+                                double rho = 0,
+                                Nullable<int> n_threads = R_NilValue){
 
   int max_threads = 1;
-  #ifdef _OPENMP
-    max_threads = omp_get_num_procs();
-  #endif
+#ifdef _OPENMP
+  max_threads = omp_get_num_procs();
+#endif
 
   int final_threads = 1;
   if (kernel == "laplace") {
-  #ifdef _OPENMP
+#ifdef _OPENMP
     if (n_threads.isNull()) {
       final_threads = std::max(1, max_threads / 2);
     } else {
       final_threads = Rcpp::as<int>(n_threads);
     }
     final_threads = (max_threads <= 3) ? 1 : std::min(final_threads, max_threads - 1);
-  #else
+#else
     final_threads = 1;
-  #endif
+#endif
   }else{
     final_threads = 1;
   }

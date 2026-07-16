@@ -23,7 +23,6 @@
 #'   choice is
 #'   \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 #'   where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
-#' @param d Design matrix's dimension (\eqn{d = ncol(X)}).
 #' @param rho Scaling parameter of the kernel (\eqn{\rho}), specified by the user.
 #' @param eps Tolerance parameter used only in \code{"pivoted"}
 #'   for stopping criterion of the Pivoted Cholesky decomposition.
@@ -41,7 +40,7 @@
 #' \strong{Common}
 #'
 #' \itemize{
-#'   \item \code{d} and \code{rho} must be provided (non-\code{NULL}).
+#'   \item \code{rho} must be provided (non-\code{NULL}).
 #' }
 #'
 #' \strong{nystrom / pivoted}
@@ -110,22 +109,20 @@
 #'
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                       m = m, d = d, rho = 1,
-#'                       n_threads = 1)
+#'                       m = m, rho = 1, n_threads = 1)
 #'
 #' # Exapmle: Nystrom approximation
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom",
-#'                           m = m, d = d, rho = 1,
-#'                           n_threads = 1)
+#'                           m = m, rho = 1, n_threads = 1)
 #'
 #' # Example: Pivoted Cholesky approximation
 #' K_pivoted = approx_kernel(X = X, opt = "pivoted",
-#'                           m = m, d = d, rho = 1)
+#'                           m = m, rho = 1)
 #' @export
 approx_kernel = function(X = NULL,
                          opt = c("nystrom", "pivoted", "rff"),
                          kernel = c("gaussian", "laplace"),
-                         m = NULL, d, rho, eps = 1e-6,
+                         m = NULL, rho, eps = 1e-6,
                          W = NULL, b = NULL, n_threads = 4) {
   call   = match.call()
   opt    = match.arg(opt)
@@ -143,7 +140,7 @@ approx_kernel = function(X = NULL,
     n_threads = 1
   }
 
-  if (missing(d) || is.null(d))   stop("'d' must be provided and non-NULL.")
+  d = ncol(X)
   if (missing(rho) || is.null(rho)) stop("'rho' must be provided and non-NULL.")
 
 
