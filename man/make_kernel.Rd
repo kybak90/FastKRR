@@ -13,9 +13,11 @@ If omitted, \eqn{X' = X} and \eqn{n' = n}.}
 
 \item{rho}{Kernel width parameter (\eqn{\rho > 0}).}
 
-\item{n_threads}{Number of parallel threads.
-The default is 4. If the system does not support 4 threads,
-it automatically falls back to 1 thread.
+\item{n_threads}{Number of parallel threads. If \code{NULL}, it defaults to
+half of the available system processors (\code{max_threads \%/\% 2}).
+For these parallelizable cases, if the system has 3 or fewer processors, it automatically
+falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
+For all other settings, it is restricted to \code{1} thread.
 Parallelization (implemented in C++) is one of the main advantages
 of this package and is applied only for \code{"laplace"} kernels.}
 }

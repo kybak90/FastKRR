@@ -10,11 +10,11 @@ fastkrr(
   kernel = "gaussian",
   opt = "exact",
   m = NULL,
-  eps = 1e-06,
+  eps = NULL,
   rho = 1,
   lambda = NULL,
   selection_method = "exactCV",
-  n_threads = 4,
+  n_threads = NULL,
   verbose = TRUE,
   na.rm = FALSE
 )
@@ -49,7 +49,8 @@ If not provided by the user, it defaults to
 where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{eps}{Tolerance parameter used only in \code{"pivoted"}
-for stopping criterion of the Pivoted Cholesky decomposition.}
+for stopping criterion of the Pivoted Cholesky decomposition.
+Defaults to \code{1e-6} for Gaussian kernel and \code{1e-4} for Laplace kernel.}
 
 \item{rho}{Scaling parameter of the kernel(\eqn{\rho}),  specified by the user.
   Defaults to \code{1}.
@@ -57,9 +58,8 @@ for stopping criterion of the Pivoted Cholesky decomposition.}
 \deqn{\text{Laplace kernel : } \mathcal{K}(x, x') = \exp(-\rho \| x - x'\|_1)}}
 
 \item{lambda}{Regularization parameter. If \code{NULL}, the penalty parameter
-is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to a
-kernel-specific grid of 100 values: \eqn{[10^{-10}, 10^{-3}]} for Gaussian,
-\eqn{[10^{-5}, 10^{-2}]} for Laplace.}
+is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to
+the grid of 100 values: \eqn{[10^{-11}, 10^{-1}]}.}
 
 \item{selection_method}{Method used to select \eqn{\lambda} when a grid or \code{NULL} is
 passed. One of:
@@ -69,12 +69,13 @@ passed. One of:
   \item{\code{"REML"}}{Restricted Maximum Likelihood.}
 }}
 
-\item{n_threads}{Number of parallel threads.
-The default is 4. If the system does not support 4 threads,
-it automatically falls back to 1 thread.
-Parallelization (implemented in C++) is one of the main advantages
-of this package and is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
-Laplace kernel (\code{kernel = "laplace"}).}
+\item{n_threads}{Number of parallel threads. If \code{NULL}, it defaults to
+half of the available system processors (\code{max_threads \%/\% 2}).
+Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
+\code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
+For these parallelizable cases, if the system has 3 or fewer processors, it automatically
+falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
+For all other settings, it is restricted to \code{1} thread.}
 
 \item{verbose}{If TRUE, detailed progress and cross-validation
 results are printed to the console. If FALSE, suppresses
@@ -142,6 +143,9 @@ Additional components depend on the value of \code{opt}:
         \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).}
         \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
       }}}
+  \item \code{n_threads}: Default is half of the available cores. For parallelizable pipelines,
+     if available processors are \eqn{\le 3}, it falls back to \code{1}. Otherwise, it uses at most
+     \code{max_threads - 1}. For non-parallelizable pipelines, it is forced to \code{1}.
   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 }}
 }
@@ -166,6 +170,8 @@ The function performs several input checks and automatic adjustments:
     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
     Otherwise, \code{m} must be a positive integer.
   \item \code{rho} must be a positive real number (default is 1).
+   \item \code{eps}: If not specified, it defaults to \code{1e-6} for the Gaussian kernel
+     and \code{1e-4} for the Laplace kernel.
   \item \code{lambda} can be specified in three ways:
     \enumerate{
       \item A positive numeric scalar, in which case the model is fitted with
@@ -177,8 +183,6 @@ The function performs several input checks and automatic adjustments:
         via \pkg{CVST} or REML}
 
   \item \code{n_threads}: Number of threads for parallel computation.
-    Default is \code{4}. If the system has <= 3 available processors,
-    it uses \code{1}.
   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 }
 }

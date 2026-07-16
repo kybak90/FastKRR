@@ -9,7 +9,6 @@ approx_kernel(
   opt = c("nystrom", "pivoted", "rff"),
   kernel = c("gaussian", "laplace"),
   m = NULL,
-  d,
   rho,
   eps = 1e-06,
   W = NULL,
@@ -40,8 +39,6 @@ low-rank kernel approximation. If not specified, the recommended
 choice is
 \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
-
-\item{d}{Design matrix's dimension (\eqn{d = ncol(X)}).}
 
 \item{rho}{Scaling parameter of the kernel (\eqn{\rho}), specified by the user.}
 
@@ -104,7 +101,7 @@ Requirements and what to supply:
 \strong{Common}
 
 \itemize{
-  \item \code{d} and \code{rho} must be provided (non-\code{NULL}).
+  \item \code{rho} must be provided (non-\code{NULL}).
 }
 
 \strong{nystrom / pivoted}
@@ -134,15 +131,13 @@ X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 
 # Example: RFF approximation
 K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-                      m = m, d = d, rho = 1,
-                      n_threads = 1)
+                      m = m, rho = 1, n_threads = 1)
 
 # Exapmle: Nystrom approximation
 K_nystrom = approx_kernel(X = X, opt = "nystrom",
-                          m = m, d = d, rho = 1,
-                          n_threads = 1)
+                          m = m, rho = 1, n_threads = 1)
 
 # Example: Pivoted Cholesky approximation
 K_pivoted = approx_kernel(X = X, opt = "pivoted",
-                          m = m, d = d, rho = 1)
+                          m = m, rho = 1)
 }

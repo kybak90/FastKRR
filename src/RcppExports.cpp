@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // make_kernel
-Rcpp::NumericMatrix make_kernel(const arma::mat& X, Nullable<NumericMatrix> X_new, std::string kernel, double rho, int n_threads);
+Rcpp::NumericMatrix make_kernel(const arma::mat& X, Nullable<NumericMatrix> X_new, std::string kernel, double rho, Nullable<int> n_threads);
 RcppExport SEXP _FastKRR_make_kernel(SEXP XSEXP, SEXP X_newSEXP, SEXP kernelSEXP, SEXP rhoSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -21,7 +21,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Nullable<NumericMatrix> >::type X_new(X_newSEXP);
     Rcpp::traits::input_parameter< std::string >::type kernel(kernelSEXP);
     Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< Nullable<int> >::type n_threads(n_threadsSEXP);
     rcpp_result_gen = Rcpp::wrap(make_kernel(X, X_new, kernel, rho, n_threads));
     return rcpp_result_gen;
 END_RCPP
