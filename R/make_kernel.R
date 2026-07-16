@@ -25,8 +25,7 @@
 #' Laplace:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
 #'
 #' @return
-#' An S3 object of class \code{"kernel_matrix"} that represents the computed
-#' kernel matrix. If \code{X_new} is \code{NULL}, the result is a symmetric matrix
+#' The computed kernel matrix. If \code{X_new} is \code{NULL}, the result is a symmetric matrix
 #' \eqn{K_{ij} = \mathcal{K}(x_i, x_j)}, with \eqn{K \in \mathbb{R}^{n \times n}}.
 #' Otherwise, the result is a rectangular matrix
 #' \eqn{K'_{ij} = \mathcal{K}(x_i, x'_j)}, with \eqn{K' \in \mathbb{R}^{n \times n'}}.

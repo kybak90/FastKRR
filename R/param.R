@@ -7,6 +7,7 @@
 #' @param x An object.
 #' @param ... Additional arguments passed to methods.
 #' @return A named list of hyperparameters (invisibly); may print side effects.
+#' @keywords internal
 #' @export
 param = function(x, ...) UseMethod("param")
 

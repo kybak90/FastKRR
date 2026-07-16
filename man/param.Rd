@@ -21,3 +21,4 @@ A named list of hyperparameters (invisibly); may print side effects.
 \code{"param()"} is a generic S3 function that displays (and invisibly returns)
 model hyperparameters. Methods are provided for \code{"krr"} objects.
 }
+\keyword{internal}

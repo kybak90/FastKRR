@@ -20,3 +20,4 @@ A numeric value or class-specific result.
 \description{
 Generic function for computing model error.
 }
+\keyword{internal}

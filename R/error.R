@@ -7,6 +7,7 @@
 #' @param ... Additional arguments passed to methods.
 #'
 #' @return A numeric value or class-specific result.
+#' @keywords internal
 #' @export
 error = function(x, ...) {
   UseMethod("error")

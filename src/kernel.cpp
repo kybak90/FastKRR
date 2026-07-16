@@ -115,8 +115,6 @@ Rcpp::NumericMatrix make_kernel(const arma::mat& X,
   }
 
   Rcpp::NumericMatrix K_out = Rcpp::wrap(K);
-  K_out.attr("class") = Rcpp::CharacterVector::create("kernel_matrix");
-
 
   return K_out;
 }
