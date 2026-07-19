@@ -157,6 +157,10 @@ predict.krr = function(object, newdata, ...){
 #'   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 #'}
 #'
+#' After fitting the model with \code{fastkrr()}, users can readily generate predictions
+#' for new test data or out-of-sample observations using the standard generic
+#' \code{\link[stats]{predict}} function, which is internally dispatched to \code{\link{predict.krr}}.
+#'
 #'
 #' @return
 #'
@@ -224,6 +228,8 @@ predict.krr = function(object, newdata, ...){
 #'   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 #' }}
 #'
+#' @seealso \code{\link{predict.krr}}, \code{\link{param.krr}}, \code{\link{make_kernel}}
+#'
 #'
 #' @examples
 #' # Data setting
@@ -253,6 +259,11 @@ predict.krr = function(object, newdata, ...){
 #' # Example: Laplace kernel
 #' model = fastkrr(data = data, response = "y",  kernel = "laplace",
 #'                 opt = "nystrom", n_threads = 1, rho = rho)
+#'
+#' # Generate predictions for new data
+#' new_X = matrix(runif(10 * d, 0, 1), nrow = 10, ncol = d)
+#' pred = predict(model, new_X)
+#' print(pred)
 #'
 #' @export
 fastkrr = function(data, response,
