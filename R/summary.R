@@ -12,12 +12,11 @@
 #' @return Invisibly returns the hyperparameter list or model statistics after
 #'   printing the summary panel to the console.
 #'
-#' @seealso \code{\link{fastkrr}}, \code{\link{param}}, \code{\link{error}}
+#' @seealso \code{\link{fastkrr}}, \code{\link{param.krr}}, \code{\link{error.krr}}
 #'
 #' @examples
 #' # Data setting
 #' set.seed(1)
-#' lambda = 1e-4
 #' d = 1
 #' n = 50
 #' rho = 1

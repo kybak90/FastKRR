@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_kernel.R
 \name{make_kernel}
 \alias{make_kernel}
-\title{Kernel matrix \eqn{K} construction for given datasets}
+\title{Kernel matrix construction for given datasets}
 \arguments{
 \item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}} (rows  \eqn{x_i \in \mathbb{R}^d}).}
 
@@ -36,8 +36,8 @@ i-th and j-th rows of \eqn{X} and \eqn{X'}, respectively, and
 Implemented in C++ via RcppArmadillo.
 }
 \details{
-Gaussian: \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_2^2\big)}
-Laplace:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
+Gaussian kernel: \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_2^2\big)}
+Laplace kernel:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
 }
 \examples{
 # Data setting

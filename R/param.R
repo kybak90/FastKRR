@@ -17,7 +17,7 @@ param.default = function(x, ...) {
   stop(sprintf("No 'param' method for objects of class: %s", paste(class(x), collapse=", ")))
 }
 
-#' Param method for fitted Kernel Ridge Regression models
+#' Displays hyperparameters of fitted Kernel Ridge Regression models
 #'
 #' @description
 #' Displays (and invisibly returns) the hyperparameters actually used by a
@@ -67,7 +67,7 @@ param.default = function(x, ...) {
 #'
 #' model = fastkrr(data = data, response = "y",
 #'                  kernel="gaussian", opt="pivoted",
-#'                  rho=1, lambda=1e-4, n_threads = 1)
+#'                  rho=1, lambda=lambda, n_threads = 1)
 #'
 #' # Inspect hyperparameters
 #' param(model)

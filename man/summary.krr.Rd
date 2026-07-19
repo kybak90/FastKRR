@@ -42,5 +42,5 @@ summary(model)
 
 }
 \seealso{
-\code{\link{fastkrr}}, \code{\link{param}}, \code{\link{error}}
+\code{\link{fastkrr}}, \code{\link{param.krr}}, \code{\link{error.krr}}
 }

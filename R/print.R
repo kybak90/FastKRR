@@ -27,7 +27,7 @@
 #' # Example: exact
 #' model = fastkrr(data = data, response = "y",
 #'                  kernel = "gaussian", opt = "exact",
-#'                  rho = rho, lambda = 1e-4)
+#'                  rho = rho, lambda = lambda)
 #'
 #' print(model)
 #' @export
@@ -76,12 +76,12 @@ print.krr = function(x, ...) {
 #' @examples
 #' # Data setting
 #' set.seed(1)
-#' d = 2
+#' d = 1
 #' n = 100
 #' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #'
-#' # Example: nystrom (Note: 'd = d' is automatically inferred from X)
+#' # Example: nystrom
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom", rho = rho, n_threads = 1)
 #'
 #' print(K_nystrom)
