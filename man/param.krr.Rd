@@ -2,7 +2,7 @@
 % Please edit documentation in R/param.R
 \name{param.krr}
 \alias{param.krr}
-\title{Param method for fitted Kernel Ridge Regression models}
+\title{Displays hyperparameters of fitted Kernel Ridge Regression models}
 \usage{
 \method{param}{krr}(x, ...)
 }
