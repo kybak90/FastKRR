@@ -17,7 +17,7 @@ param.default = function(x, ...) {
   stop(sprintf("No 'param' method for objects of class: %s", paste(class(x), collapse=", ")))
 }
 
-#' Param method for fitted Kernel Ridge Regression models
+#' Displays hyperparameters of fitted Kernel Ridge Regression models
 #'
 #' @description
 #' Displays (and invisibly returns) the hyperparameters actually used by a

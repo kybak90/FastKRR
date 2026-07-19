@@ -16,7 +16,7 @@
 #' @examples
 #' # Data setting
 #' n = 30
-#' d = 2
+#' d = 1
 #'
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
 #' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)

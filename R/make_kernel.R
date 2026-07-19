@@ -1,4 +1,4 @@
-#'  Kernel matrix \eqn{K} construction for given datasets
+#'  Kernel matrix construction for given datasets
 #'
 #' Constructs a kernel matrix \eqn{K \in \mathbb{R}^{n \times n'}} given two
 #' datasets \eqn{X \in \mathbb{R}^{n \times d}} and \eqn{X' \in \mathbb{R}^{n' \times d}},
@@ -21,8 +21,8 @@
 #'   of this package and is applied only for \code{"laplace"} kernels.
 #'
 #' @details
-#' Gaussian: \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_2^2\big)}
-#' Laplace:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
+#' Gaussian kernel: \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_2^2\big)}
+#' Laplace kernel:  \deqn{\mathcal{K}(x_i,x_j)=\exp\!\big(-\rho\|x_i-x_j\|_1\big)}
 #'
 #' @return
 #' The computed kernel matrix. If \code{X_new} is \code{NULL}, the result is a symmetric matrix
