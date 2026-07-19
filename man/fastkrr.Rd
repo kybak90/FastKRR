@@ -156,7 +156,7 @@ the user or selected automatically using cross-validation or
 restricted maximum likelihood (REML). For scalability,
 three different kernel approximation strategies are supported (Nyström approximation,
 Pivoted Cholesky decomposition, Random Fourier Features(RFF)), and kernel matrix
-can be computed using two methods(Gaussian kernel, Laplace kerenl).
+can be computed using two methods(Gaussian kernel, Laplace kernel).
 }
 \details{
 The function performs several input checks and automatic adjustments:
@@ -203,7 +203,7 @@ y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 
 data = data.frame(X, y = y)
 
-# Exapmle: pivoted cholesky
+# Example: pivoted cholesky
 model = fastkrr(data = data, response = "y",  kernel = "gaussian",
                 opt = "pivoted", rho = rho, lambda = 1e-4)
 

@@ -4,7 +4,7 @@
 #' for new data.
 #'
 #' @param object A S3 object of class \code{krr} created by \code{\link{fastkrr}}.
-#' @param newdata New design matrix containing new observations
+#' @param newdata A numeric design matrix containing new observations
 #'                for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.
 #' @param ... Additional arguments (currently ignored).
 #'
@@ -73,7 +73,7 @@ predict.krr = function(object, newdata, ...){
 #' restricted maximum likelihood (REML). For scalability,
 #' three different kernel approximation strategies are supported (Nyström approximation,
 #' Pivoted Cholesky decomposition, Random Fourier Features(RFF)), and kernel matrix
-#' can be computed using two methods(Gaussian kernel, Laplace kerenl).
+#' can be computed using two methods(Gaussian kernel, Laplace kernel).
 #'
 #' @param data A data frame containing the data point variables and response
 #' variable.
@@ -97,7 +97,7 @@ predict.krr = function(object, newdata, ...){
 #' @param opt Method for constructing or approximating :
 #'  \describe{
 #'   \item{\code{"exact"}}{Construct the full kernel matrix
-#'   \eqn{K \in \mathbb{R}^{n\times n}} using design martix \eqn{X}.}
+#'   \eqn{K \in \mathbb{R}^{n\times n}} using design matrix \eqn{X}.}
 #'   \item{\code{"nystrom"}}{Construct a low-rank approximation of
 #'       the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
 #'       using the Nyström approximation.}
@@ -149,7 +149,7 @@ predict.krr = function(object, newdata, ...){
 #'          this single value.
 #'       \item A numeric vector (length >= 3) of positive values used as a tuning grid;
 #'          selection is performed by \pkg{CVST} cross-validation (sequential testing if
-#'          \code{fastcv = TRUE}).
+#'          \code{selection_method = "fastCV"}).
 #'       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
 #'         via \pkg{CVST} or REML}
 #'
@@ -178,7 +178,7 @@ predict.krr = function(object, newdata, ...){
 #'   by cross-validation via \pkg{CVST} or REML.}
 #'   \item{\code{rho}: Additional user-specified hyperparameter.}
 #'   \item{\code{selection_method}: Tunning method for select hyperparmeter lambda}
-#'   \item{\code{call}: Ahe matched function call used to create the object.}
+#'   \item{\code{call}: The matched function call used to create the object.}
 #'   \item{\code{n_threads}: Number of threads used for parallelization.}
 #'   \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
 #' }
@@ -244,17 +244,17 @@ predict.krr = function(object, newdata, ...){
 #'
 #' data = data.frame(X, y = y)
 #'
-#' # Exapmle: pivoted cholesky
+#' # Example: pivoted cholesky
 #' model = fastkrr(data = data, response = "y",  kernel = "gaussian",
-#'                 opt = "pivoted", rho = rho, lambda = 1e-4)
+#'                 opt = "pivoted", rho = rho, lambda = lambda)
 #'
 #' # Example: nystrom
 #' model = fastkrr(data = data, response = "y", kernel = "gaussian",
-#'                 opt = "nystrom", rho = rho, lambda = 1e-4)
+#'                 opt = "nystrom", rho = rho, lambda = lambda)
 #'
 #' # Example: random fourier features
 #' model = fastkrr(data = data, response = "y", kernel = "gaussian",
-#'                 opt = "rff", rho = rho, lambda = 1e-4)
+#'                 opt = "rff", rho = rho, lambda = lambda)
 #'
 #' # Example: Laplace kernel
 #' model = fastkrr(data = data, response = "y",  kernel = "laplace",
@@ -281,7 +281,7 @@ fastkrr = function(data, response,
   call = match.call()
 
   # Data frame
-  if(!is.data.frame(data)) stop("data must be a data.frame")
+  if(!is.data.frame(data)) stop("data must be a data.frame", call. = FALSE)
   removed_row_idx = integer(0)
   if (anyNA(data)){
     na_cols = names(data)[colSums(is.na(data)) > 0]
@@ -302,15 +302,15 @@ fastkrr = function(data, response,
   }
   if(!(length(response) == 1 && is.character(response) &&
        response %in% colnames(data)))
-    stop("response must be a single column name in data.")
+    stop("response must be a single column name in data.", call. = FALSE)
 
   # Kernel and approximation option
   if (!kernel %in% c("gaussian", "laplace"))
-    stop("kernel must be one of 'gaussian', 'laplace'")
+    stop("kernel must be one of 'gaussian', 'laplace'", call. = FALSE)
   if (!opt %in% c("exact", "pivoted", "nystrom", "rff"))
-    stop("opt must be one of 'exact', 'pivoted', 'nystrom', 'rff'")
+    stop("opt must be one of 'exact', 'pivoted', 'nystrom', 'rff'", call. = FALSE)
   if (!selection_method %in% c("exactCV", "fastCV", "REML"))
-    stop("selection_method must be one of 'exactCV', 'fastCV', 'REML'")
+    stop("selection_method must be one of 'exactCV', 'fastCV', 'REML'", call. = FALSE)
 
   y = data[[response]]
   x = as.matrix(data[, setdiff(names(data), response), drop = FALSE])
@@ -319,13 +319,13 @@ fastkrr = function(data, response,
   if (is.null(eps)){
     eps = if (kernel == "gaussian") 1e-6 else 1e-4
   }else{
-    if (eps <= 0) stop("eps must be a positive real number")}
+    if (eps <= 0) stop("eps must be a positive real number", call. = FALSE)}
   if (is.null(m))
     m = as.integer(max(1, ceiling(nrow(x)^(1/2) * log(ncol(x) + 5))))
   else if(m <= 0)
-    stop("m must be a positive integer")
+    stop("m must be a positive integer", call. = FALSE)
   if (rho <= 0)
-    stop("rho must be a positive real number")
+    stop("rho must be a positive real number", call. = FALSE)
 
 
   # Complexity parameter setting
@@ -336,7 +336,8 @@ fastkrr = function(data, response,
   }else if(is.numeric(lambda) && length(lambda) == 1 && lambda > 0){
     lambda = lambda # scalar
   }else{
-    stop("lambda must be a positive number or a numeric vector of positive real numbers with length greater than 3")
+    stop("lambda must be a positive number or a numeric vector of positive real numbers with length greater than 3",
+         call. = FALSE)
   }
 
 
