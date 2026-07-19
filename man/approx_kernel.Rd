@@ -37,7 +37,7 @@ approx_kernel(
 \item{m}{Approximation rank (number of random features) for the
 low-rank kernel approximation. If not specified, the recommended
 choice is
-\deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
+\eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
 where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{rho}{Scaling parameter of the kernel (\eqn{\rho}), specified by the user.}
@@ -129,10 +129,6 @@ n = 100
 m = 50
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 
-# Example: RFF approximation
-K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-                       m = m, rho = 1, n_threads = 1)
-
 # Example: Nystrom approximation
 K_nystrom = approx_kernel(X = X, opt = "nystrom",
                            m = m, rho = 1, n_threads = 1)
@@ -140,4 +136,8 @@ K_nystrom = approx_kernel(X = X, opt = "nystrom",
 # Example: Pivoted Cholesky approximation
 K_pivoted = approx_kernel(X = X, opt = "pivoted",
                            m = m, rho = 1)
+# Example: RFF approximation
+K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
+                       m = m, rho = 1, n_threads = 1)
+
 }

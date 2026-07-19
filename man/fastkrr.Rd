@@ -44,13 +44,16 @@ variable in \code{data}.}
  }}
 
 \item{m}{Approximation rank(number of random features) used for the low-rank kernel approximation.
-If not provided by the user, it defaults to
-\deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil,}
+If not provided by the user, it defaults to \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil},
 where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 
 \item{eps}{Tolerance parameter used only in \code{"pivoted"}
-for stopping criterion of the Pivoted Cholesky decomposition.
-Defaults to \code{1e-6} for Gaussian kernel and \code{1e-4} for Laplace kernel.}
+for the stopping criterion of the Pivoted Cholesky decomposition.
+The default value is dynamically adjusted based on the mathematical smoothness
+of the selected kernel: it defaults to \code{1e-6} for the infinitely
+differentiable and smooth Gaussian kernel, and relaxes to \code{1e-4} for
+the non-smooth, rougher Laplace kernel to properly balance numerical precision
+and computational overhead.}
 
 \item{rho}{Scaling parameter of the kernel(\eqn{\rho}),  specified by the user.
   Defaults to \code{1}.
@@ -143,20 +146,17 @@ Additional components depend on the value of \code{opt}:
         \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).}
         \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
       }}}
-  \item \code{n_threads}: Default is half of the available cores. For parallelizable pipelines,
-     if available processors are \eqn{\le 3}, it falls back to \code{1}. Otherwise, it uses at most
-     \code{max_threads - 1}. For non-parallelizable pipelines, it is forced to \code{1}.
   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 }}
 }
 \description{
-This function performs kernel ridge regression (KRR) in high-dimensional
-settings. The regularization parameter \eqn{\lambda} can be supplied by
+This function performs kernel ridge regression (KRR).
+The regularization parameter \eqn{\lambda} can be supplied by
 the user or selected automatically using cross-validation or
 restricted maximum likelihood (REML). For scalability,
 three different kernel approximation strategies are supported (Nyström approximation,
 Pivoted Cholesky decomposition, Random Fourier Features(RFF)), and kernel matrix
-can be computed using two methods(Gaussian kernel, Laplace kernel).
+can be computed using two methods (Gaussian kernel, Laplace kernel).
 }
 \details{
 The function performs several input checks and automatic adjustments:
@@ -166,7 +166,7 @@ The function performs several input checks and automatic adjustments:
   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
     \code{"nystrom"}, or \code{"rff"}.
   \item If \code{m} is \code{NULL}, it defaults to
-    \deqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
+    \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
     Otherwise, \code{m} must be a positive integer.
   \item \code{rho} must be a positive real number (default is 1).

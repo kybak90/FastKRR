@@ -2,7 +2,7 @@
 % Please edit documentation in R/coef.R
 \name{coef.krr}
 \alias{coef.krr}
-\title{Coef method for fitted Kernel Ridge Regression models}
+\title{Extract Model Coefficients from a Fitted KRR Model}
 \usage{
 \method{coef}{krr}(object, ...)
 }
@@ -19,7 +19,7 @@ A numeric vector of the estimated model coefficients (\eqn{\alpha} or \eqn{\beta
 Extracts the estimated coefficients from a fitted Kernel Ridge Regression (KRR) model.
 The type of coefficient reported depends on the kernel approximation method:
 for \code{opt = "exact"}, \code{"nystrom"}, or \code{"pivoted"}, the coefficients represent
-the dual weights \eqn{\alpha}; for \code{opt = "rff"}, they represent the primal weights \eqn{\beta}.
+the dual weights \eqn{\alpha}. For \code{opt = "rff"}, they represent the coefficients \eqn{\beta}.
 }
 \examples{
 # Data setting
@@ -36,7 +36,7 @@ data = data.frame(X, y = y)
 # Example: exact
 model = fastkrr(data = data, response = "y",
                  kernel = "gaussian", opt = "exact",
-                 rho = rho, lambda = 1e-4)
+                 rho = rho, lambda = lambda)
 
 coef(model)
 
