@@ -9,24 +9,24 @@
 \arguments{
 \item{x}{A fitted KRR model (class \code{"krr"}) returned by \code{\link{fastkrr}}.}
 
-\item{show_points}{Logical; if \code{TRUE}, displays the training data points.
-Default = \code{TRUE}.}
+\item{show_points}{Logical; if \code{TRUE}, displays the original training data points
+as a background layer. Default is \code{TRUE}.}
 
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-A ggplot object showing the fitted regression curve.
+A \code{ggplot} object showing the fitted regression line and training data.
 }
 \description{
-Visualizes fitted results from a Kernel Ridge Regression (KRR) model.
-Automatically generates predictions on a regular grid
-(120\% of training sample size) and overlays them with training data.
+Visualizes the fitted regression curve from a Kernel Ridge Regression (KRR) model.
+Automatically generates predictions on a regular grid (1.2 times the training
+sample size) and overlays them with the training data.
 }
 \details{
-For multivariate inputs (\eqn{d \ge 2}), visualization requires fixing
-all but one variable. For example, in 2D, one can plot
-\eqn{f(x_1, x_2 = \bar{x}_2)} to examine the effect of \eqn{x_1}
-while holding \eqn{x_2} at its mean.
+Currently, \code{plot.krr} supports only uni-variate inputs (\eqn{d = 1}).
+For multivariate settings (\eqn{d \ge 2}), the plot method will return an error,
+and users are encouraged to manually slice their data to visualize conditional
+main effects.
 }
 \examples{
 \donttest{
@@ -40,7 +40,7 @@ y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 data = data.frame(X, y = y)
 
 model_exact = fastkrr(data = data, response = "y",
-                      kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
+                       kernel = "gaussian", rho = rho, opt = "exact", verbose = FALSE)
 plot(model_exact)
 }
 

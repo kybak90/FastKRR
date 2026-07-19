@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{A S3 object of class \code{krr} created by \code{\link{fastkrr}}.}
 
-\item{newdata}{New design matrix containing new observations
+\item{newdata}{A numeric design matrix containing new observations
 for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.}
 
 \item{...}{Additional arguments (currently ignored).}

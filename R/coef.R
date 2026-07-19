@@ -1,17 +1,16 @@
 #' Coef method for fitted Kernel Ridge Regression models
 #'
 #' @description
-#' Displays the main coefficient information from a fitted Kernel Ridge Regression (KRR) model,
-#' including the original function call and the first few estimated coefficients.
+#' Extracts the estimated coefficients from a fitted Kernel Ridge Regression (KRR) model.
 #' The type of coefficient reported depends on the kernel approximation method:
 #' for \code{opt = "exact"}, \code{"nystrom"}, or \code{"pivoted"}, the coefficients represent
-#' \eqn{\alpha}; for \code{opt = "rff"}, they represent the coefficient (\eqn{\beta}).
+#' the dual weights \eqn{\alpha}; for \code{opt = "rff"}, they represent the primal weights \eqn{\beta}.
 #'
 #' @param object An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
-#' @return A human-readable summary of the fitted KRR model to the console.
+#' @return A numeric vector of the estimated model coefficients (\eqn{\alpha} or \eqn{\beta}).
 #'
 #' @seealso \code{\link{fastkrr}}
 #'
@@ -29,8 +28,8 @@
 #'
 #' # Example: exact
 #' model = fastkrr(data = data, response = "y",
-#'                 kernel = "gaussian", opt = "exact",
-#'                 rho = rho, lambda = 1e-4)
+#'                  kernel = "gaussian", opt = "exact",
+#'                  rho = rho, lambda = 1e-4)
 #'
 #' coef(model)
 #'
@@ -38,15 +37,5 @@
 #' @method coef krr
 #' @export
 coef.krr = function(object, ...){
-  model = object
-  cat("Call:\n")
-  print(model$call)
-  cat("\n")
-
-  cat("Coefficients:\n")
-  coefs = as.vector(model$coefficients)
-  n_show = min(6, length(coefs))
-  cat("  ")
-  cat(coefs[1:n_show])
-  if (length(coefs) > n_show) cat(" ...")
+  return(as.vector(object$coefficients))
 }

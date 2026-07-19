@@ -1,15 +1,14 @@
 #' Print method for fitted Kernel Ridge Regression models
 #'
 #' @description
-#' Displays key information from a fitted Kernel Ridge Regression (KRR) model,
-#' including the original call, first few coefficients, a 6×6 block of the
-#' kernel (or approximated kernel) matrix, and the main kernel options.
+#' Displays a concise summary of key information from a fitted Kernel Ridge Regression (KRR) model,
+#' including the original function call and the main hyperparameter options used during fitting.
 #'
 #' @param x An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
-#' @return A human-readable summary of the fitted KRR model to the console.
+#' @return Invisibly returns the input \code{krr} object after printing the summary to the console.
 #'
 #' @seealso \code{\link{fastkrr}}, \code{\link{print.approx_kernel}}
 #'
@@ -27,8 +26,8 @@
 #'
 #' # Example: exact
 #' model = fastkrr(data = data, response = "y",
-#'                 kernel = "gaussian", opt = "exact",
-#'                 rho = rho, lambda = 1e-4)
+#'                  kernel = "gaussian", opt = "exact",
+#'                  rho = rho, lambda = 1e-4)
 #'
 #' print(model)
 #' @export
@@ -58,19 +57,21 @@ print.krr = function(x, ...) {
 #' Print method for approximated kernel matrices
 #'
 #' @description
-#' Displays the approximated kernel matrix and key options used to construct it.
+#' Displays the key algorithmic choices and hyperparameter options used to construct
+#' an approximated kernel matrix object.
 #'
 #' @details
-#' The function prints the stored approximated kernel matrix (top-left 6x6)
-#' and summarizes options such as the approximation method (\code{opt}), approximaion degree (\code{m}),
-#' numerical tolerance (\code{eps}), and number of threads used (\code{n_threads}).
+#' The function summarizes critical metadata attributes stored within the
+#' \code{approx_kernel} object, including the approximation strategy (\code{opt}),
+#' kernel type, approximation degree (\code{m}), numerical tolerance (\code{eps}),
+#' and the number of parallel computational threads used.
 #'
 #' @param x An S3 object created by \code{\link{approx_kernel}}.
 #' @param ... Additional arguments (currently ignored).
 #'
-#' @return An approximated kernel matrix and its associated options.
+#' @return Invisibly returns the input \code{approx_kernel} object after printing the options.
 #'
-#' @seealso \code{\link{approx_kernel}, \link{print.krr}}
+#' @seealso \code{\link{approx_kernel}}, \code{\link{print.krr}}
 #'
 #' @examples
 #' # Data setting
@@ -80,8 +81,8 @@ print.krr = function(x, ...) {
 #' rho = 1
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #'
-#' # Example: nystrom
-#' K_nystrom = approx_kernel(X = X, opt = "nystrom", d = d, rho = rho, n_threads = 1)
+#' # Example: nystrom (Note: 'd = d' is automatically inferred from X)
+#' K_nystrom = approx_kernel(X = X, opt = "nystrom", rho = rho, n_threads = 1)
 #'
 #' print(K_nystrom)
 #' @export

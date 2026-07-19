@@ -2,7 +2,7 @@
 % Please edit documentation in R/approx_kernel.R
 \name{approx_kernel}
 \alias{approx_kernel}
-\title{Compute low-rank approximations(Nyström, Pivoted Cholesky, RFF)}
+\title{Compute low-rank approximations (Nyström, Pivoted Cholesky, RFF)}
 \usage{
 approx_kernel(
   X = NULL,
@@ -10,29 +10,29 @@ approx_kernel(
   kernel = c("gaussian", "laplace"),
   m = NULL,
   rho,
-  eps = 1e-06,
+  eps = NULL,
   W = NULL,
   b = NULL,
-  n_threads = 4
+  n_threads = NULL
 )
 }
 \arguments{
 \item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.}
 
-\item{opt}{Method for constructing or approximating :
+\item{opt}{Method for constructing or approximating:
 \describe{
- \item{\code{"nystrom"}}{Construct a low-rank approximation of
-     the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-     using the Nyström approximation.}
- \item{\code{"pivoted"}}{Construct a low-rank approximation of
-     the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-     using Pivoted Cholesky decomposition.}
- \item{\code{"rff"}}{Construct a low-rank approximation of
-     the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-     using Random Fourier Features (RFF).}
+  \item{\code{"nystrom"}}{Construct a low-rank approximation of
+      the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+      using the Nyström approximation.}
+  \item{\code{"pivoted"}}{Construct a low-rank approximation of
+      the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+      using Pivoted Cholesky decomposition.}
+  \item{\code{"rff"}}{Construct a low-rank approximation of
+      the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+      using Random Fourier Features (RFF).}
 }}
 
-\item{kernel}{Kernel type either "gaussian"or "laplace".}
+\item{kernel}{Kernel type either "gaussian" or "laplace".}
 
 \item{m}{Approximation rank (number of random features) for the
 low-rank kernel approximation. If not specified, the recommended
@@ -43,55 +43,55 @@ where \eqn{X} is design matrix, \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.}
 \item{rho}{Scaling parameter of the kernel (\eqn{\rho}), specified by the user.}
 
 \item{eps}{Tolerance parameter used only in \code{"pivoted"}
-for stopping criterion of the Pivoted Cholesky decomposition.}
+for stopping criterion of the Pivoted Cholesky decomposition.
+If \code{NULL}, it is dynamically adjusted based on the smoothness of the chosen kernel:
+defaults to \code{1e-6} for the infinitely smooth Gaussian kernel to ensure precision,
+and \code{1e-4} for the less smooth Laplace kernel.}
 
 \item{W}{Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}}
 
-\item{b}{Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0,\,2\pi ]}.}
+\item{b}{Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0, 2\pi ]}.}
 
 \item{n_threads}{Number of parallel threads.
-The default is 4. If the system does not support 4 threads,
-it automatically falls back to 1 thread. It is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}
-, and for the Laplace kernel (\code{kernel = "laplace"}).}
+If \code{NULL}, defaults to half of the available system processors.
+It automatically falls back to 1 thread if the system has 3 or fewer processors.
+Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.}
 }
 \value{
 \itemize{
   \item \code{call}: The matched function call used to create the object.
   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
-  \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
+  \item \code{K_approx}: The fully reconstructed \eqn{n \times n} approximated kernel matrix.
+  \item \code{approx_factor}: Low-rank component matrix (\eqn{R} for Nyström, \eqn{PR} for Pivoted Cholesky, \eqn{Z} for RFF).
   \item \code{m}: Kernel approximation degree.
   \item \code{rho}: Scaling parameter of the kernel.
 }
 
 Additional components depend on the value of opt:
 
-
 \strong{nystrom}
-
 \itemize{
   \item \code{n_threads}: Number of threads used in the computation.
 }
 
 \strong{pivoted}
-
 \itemize{
   \item \code{eps}: Numerical tolerance used for early stopping in the
-                    pivoted Cholesky decomposition.
+                     pivoted Cholesky decomposition.
 }
 
 \strong{rff}
-
 \itemize{
   \item \code{d}: Input design matrix's dimension.
   \item \code{W}: \eqn{m \times d} Random frequency matrix.
-  \item \code{b}: Random phase \eqn{m}--vector.
+  \item \code{b}: Random phase \eqn{m}-vector.
   \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied
         \code{W}, \code{b} were used, \code{FALSE} otherwise.
   \item \code{n_threads}: Number of threads used in the computation.
 }
 }
 \description{
-Computes low-rank kernel approximation \eqn{\tilde{K} \in \mathbb{R}^{n \times n}}using three methods:
+Computes low-rank kernel approximation \eqn{\tilde{K} \in \mathbb{R}^{n \times n}} using three methods:
 Nyström approximation, Pivoted Cholesky decomposition, and
 Random Fourier Features (RFF).
 }
@@ -107,7 +107,7 @@ Requirements and what to supply:
 \strong{nystrom / pivoted}
 
 \itemize{
-  \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5)  \rceil}.
+  \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}.
   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
   when the next pivot (residual diagonal) drops below \code{eps}.
 }
@@ -131,13 +131,13 @@ X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 
 # Example: RFF approximation
 K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-                      m = m, rho = 1, n_threads = 1)
+                       m = m, rho = 1, n_threads = 1)
 
-# Exapmle: Nystrom approximation
+# Example: Nystrom approximation
 K_nystrom = approx_kernel(X = X, opt = "nystrom",
-                          m = m, rho = 1, n_threads = 1)
+                           m = m, rho = 1, n_threads = 1)
 
 # Example: Pivoted Cholesky approximation
 K_pivoted = approx_kernel(X = X, opt = "pivoted",
-                          m = m, rho = 1)
+                           m = m, rho = 1)
 }

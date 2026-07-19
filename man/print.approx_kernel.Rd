@@ -12,15 +12,17 @@
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-An approximated kernel matrix and its associated options.
+Invisibly returns the input \code{approx_kernel} object after printing the options.
 }
 \description{
-Displays the approximated kernel matrix and key options used to construct it.
+Displays the key algorithmic choices and hyperparameter options used to construct
+an approximated kernel matrix object.
 }
 \details{
-The function prints the stored approximated kernel matrix (top-left 6x6)
-and summarizes options such as the approximation method (\code{opt}), approximaion degree (\code{m}),
-numerical tolerance (\code{eps}), and number of threads used (\code{n_threads}).
+The function summarizes critical metadata attributes stored within the
+\code{approx_kernel} object, including the approximation strategy (\code{opt}),
+kernel type, approximation degree (\code{m}), numerical tolerance (\code{eps}),
+and the number of parallel computational threads used.
 }
 \examples{
 # Data setting
@@ -30,11 +32,11 @@ n = 100
 rho = 1
 X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 
-# Example: nystrom
-K_nystrom = approx_kernel(X = X, opt = "nystrom", d = d, rho = rho, n_threads = 1)
+# Example: nystrom (Note: 'd = d' is automatically inferred from X)
+K_nystrom = approx_kernel(X = X, opt = "nystrom", rho = rho, n_threads = 1)
 
 print(K_nystrom)
 }
 \seealso{
-\code{\link{approx_kernel}, \link{print.krr}}
+\code{\link{approx_kernel}}, \code{\link{print.krr}}
 }

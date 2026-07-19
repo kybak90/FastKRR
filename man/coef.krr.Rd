@@ -13,14 +13,13 @@
 \item{...}{Additional arguments (currently ignored).}
 }
 \value{
-A human-readable summary of the fitted KRR model to the console.
+A numeric vector of the estimated model coefficients (\eqn{\alpha} or \eqn{\beta}).
 }
 \description{
-Displays the main coefficient information from a fitted Kernel Ridge Regression (KRR) model,
-including the original function call and the first few estimated coefficients.
+Extracts the estimated coefficients from a fitted Kernel Ridge Regression (KRR) model.
 The type of coefficient reported depends on the kernel approximation method:
 for \code{opt = "exact"}, \code{"nystrom"}, or \code{"pivoted"}, the coefficients represent
-\eqn{\alpha}; for \code{opt = "rff"}, they represent the coefficient (\eqn{\beta}).
+the dual weights \eqn{\alpha}; for \code{opt = "rff"}, they represent the primal weights \eqn{\beta}.
 }
 \examples{
 # Data setting
@@ -36,8 +35,8 @@ data = data.frame(X, y = y)
 
 # Example: exact
 model = fastkrr(data = data, response = "y",
-                kernel = "gaussian", opt = "exact",
-                rho = rho, lambda = 1e-4)
+                 kernel = "gaussian", opt = "exact",
+                 rho = rho, lambda = 1e-4)
 
 coef(model)
 

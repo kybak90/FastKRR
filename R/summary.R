@@ -1,17 +1,18 @@
 #' Summary method for fitted Kernel Ridge Regression models
 #'
 #' @description
-#' Displays key information from a fitted Kernel Ridge Regression (KRR) model,
-#' including the original call, first few coefficients, a 6×6 block of the
-#' kernel (or approximated kernel) matrix, and the main kernel options.
+#' Computes and displays a comprehensive summary of a fitted Kernel Ridge Regression (KRR) model,
+#' including the original function call, fitted hyperparameters (via \code{\link{param}}),
+#' and the final training mean squared error (via \code{\link{error}}).
 #'
 #' @param object An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
 #' @param ... Additional arguments (currently ignored).
 #'
-#' @return A human-readable summary of the fitted KRR model to the console.
+#' @return Invisibly returns the hyperparameter list or model statistics after
+#'   printing the summary panel to the console.
 #'
-#' @seealso \code{\link{fastkrr}}
+#' @seealso \code{\link{fastkrr}}, \code{\link{param}}, \code{\link{error}}
 #'
 #' @examples
 #' # Data setting
@@ -27,8 +28,8 @@
 #'
 #' # Example: exact
 #' model = fastkrr(data = data, response = "y",
-#'                 kernel = "gaussian", opt = "exact",
-#'                 rho = rho, selection_method = "fastCV")
+#'                  kernel = "gaussian", opt = "exact",
+#'                  rho = rho, selection_method = "fastCV")
 #'
 #' summary(model)
 #'

@@ -1,25 +1,3 @@
-#' Compute Model Error (Generic)
-#'
-#' @description
-#' Generic function for computing model error.
-#'
-#' @param x An object to compute model error for.
-#' @param ... Additional arguments passed to methods.
-#'
-#' @return A numeric value or class-specific result.
-#' @keywords internal
-#' @export
-error = function(x, ...) {
-  UseMethod("error")
-}
-
-#' @rdname error
-#' @export
-error.default = function(x, ...) {
-  stop(sprintf("No 'error' method for objects of class: %s",
-               paste(class(x), collapse = ", ")))
-}
-
 #' Compute Model Error for Kernel Ridge Regression Models
 #'
 #' @description
@@ -32,15 +10,15 @@ error.default = function(x, ...) {
 #' @param data_new An optional data frame containing new predictor variables
 #'   and the observed response variable. The response column must have the
 #'   same name as the response variable used to fit the model. If
-#'   \code{NULL}, the training MSE is computed. Otherwise, the PMSE is
-#'   computed using predictions for \code{data_new}.
+#'   \code{NULL}, the training MSE is computed. Otherwise, the prediction MSE (PMSE)
+#'   is computed using predictions for \code{data_new}.
 #' @param ... Additional arguments (ignored).
 #'
 #' @return A numeric value giving the mean squared error (MSE).
 #'
 #' @details
 #' This method computes:
-#' \deqn{\text{MSE} = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2}
+#' \deqn{\text{MSE} = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2}
 #' where \code{y} and \code{fitted.values} are stored in the \code{"krr"} object attributes.
 #'
 #' @seealso \code{\link{summary.krr}}, \code{\link{plot.krr}}, \code{\link{predict.krr}}
@@ -58,15 +36,14 @@ error.default = function(x, ...) {
 #' data = data.frame(X, y = y)
 #'
 #' model = fastkrr(data = data, response = "y", kernel = "gaussian",
-#'                 opt = "exact", lambda = lambda)
+#'                  opt = "exact", lambda = lambda)
 #'
 #' new_n = 50
-#' new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
+#' new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d); colnames(new_x) = colnames(X)
 #' new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 #' new_data = data.frame(new_x, y = new_y)
 #'
 #' error(model, data_new = new_data)
-#'
 #'
 #' @export
 error.krr = function(x, data_new = NULL, ...) {

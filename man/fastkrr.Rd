@@ -31,7 +31,7 @@ variable in \code{data}.}
 \item{opt}{Method for constructing or approximating :
  \describe{
   \item{\code{"exact"}}{Construct the full kernel matrix
-  \eqn{K \in \mathbb{R}^{n\times n}} using design martix \eqn{X}.}
+  \eqn{K \in \mathbb{R}^{n\times n}} using design matrix \eqn{X}.}
   \item{\code{"nystrom"}}{Construct a low-rank approximation of
       the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
       using the Nyström approximation.}
@@ -99,7 +99,7 @@ removed before fitting. Defaults to \code{FALSE}.}
   by cross-validation via \pkg{CVST} or REML.}
   \item{\code{rho}: Additional user-specified hyperparameter.}
   \item{\code{selection_method}: Tunning method for select hyperparmeter lambda}
-  \item{\code{call}: Ahe matched function call used to create the object.}
+  \item{\code{call}: The matched function call used to create the object.}
   \item{\code{n_threads}: Number of threads used for parallelization.}
   \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
 }
@@ -178,7 +178,7 @@ The function performs several input checks and automatic adjustments:
          this single value.
       \item A numeric vector (length >= 3) of positive values used as a tuning grid;
          selection is performed by \pkg{CVST} cross-validation (sequential testing if
-         \code{fastcv = TRUE}).
+         \code{selection_method = "fastCV"}).
       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
         via \pkg{CVST} or REML}
 
@@ -205,15 +205,15 @@ data = data.frame(X, y = y)
 
 # Example: pivoted cholesky
 model = fastkrr(data = data, response = "y",  kernel = "gaussian",
-                opt = "pivoted", rho = rho, lambda = 1e-4)
+                opt = "pivoted", rho = rho, lambda = lambda)
 
 # Example: nystrom
 model = fastkrr(data = data, response = "y", kernel = "gaussian",
-                opt = "nystrom", rho = rho, lambda = 1e-4)
+                opt = "nystrom", rho = rho, lambda = lambda)
 
 # Example: random fourier features
 model = fastkrr(data = data, response = "y", kernel = "gaussian",
-                opt = "rff", rho = rho, lambda = 1e-4)
+                opt = "rff", rho = rho, lambda = lambda)
 
 # Example: Laplace kernel
 model = fastkrr(data = data, response = "y",  kernel = "laplace",

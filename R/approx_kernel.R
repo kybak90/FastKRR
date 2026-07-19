@@ -1,23 +1,23 @@
-#' Compute low-rank approximations(Nyström, Pivoted Cholesky, RFF)
+#' Compute low-rank approximations (Nyström, Pivoted Cholesky, RFF)
 #'
-#' Computes low-rank kernel approximation \eqn{\tilde{K} \in \mathbb{R}^{n \times n}}using three methods:
+#' Computes low-rank kernel approximation \eqn{\tilde{K} \in \mathbb{R}^{n \times n}} using three methods:
 #' Nyström approximation, Pivoted Cholesky decomposition, and
 #' Random Fourier Features (RFF).
 #'
 #' @param X Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
-#' @param opt Method for constructing or approximating :
-#'  \describe{
-#'   \item{\code{"nystrom"}}{Construct a low-rank approximation of
-#'       the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-#'       using the Nyström approximation.}
-#'   \item{\code{"pivoted"}}{Construct a low-rank approximation of
-#'       the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-#'       using Pivoted Cholesky decomposition.}
-#'   \item{\code{"rff"}}{Construct a low-rank approximation of
-#'       the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
-#'       using Random Fourier Features (RFF).}
-#'  }
-#' @param kernel Kernel type either "gaussian"or "laplace".
+#' @param opt Method for constructing or approximating:
+#'   \describe{
+#'     \item{\code{"nystrom"}}{Construct a low-rank approximation of
+#'         the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+#'         using the Nyström approximation.}
+#'     \item{\code{"pivoted"}}{Construct a low-rank approximation of
+#'         the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+#'         using Pivoted Cholesky decomposition.}
+#'     \item{\code{"rff"}}{Construct a low-rank approximation of
+#'         the kernel matrix \eqn{K \in \mathbb{R}^{n \times n}}
+#'         using Random Fourier Features (RFF).}
+#'   }
+#' @param kernel Kernel type either "gaussian" or "laplace".
 #' @param m Approximation rank (number of random features) for the
 #'   low-rank kernel approximation. If not specified, the recommended
 #'   choice is
@@ -26,13 +26,15 @@
 #' @param rho Scaling parameter of the kernel (\eqn{\rho}), specified by the user.
 #' @param eps Tolerance parameter used only in \code{"pivoted"}
 #'   for stopping criterion of the Pivoted Cholesky decomposition.
+#'   If \code{NULL}, it is dynamically adjusted based on the smoothness of the chosen kernel:
+#'   defaults to \code{1e-6} for the infinitely smooth Gaussian kernel to ensure precision,
+#'   and \code{1e-4} for the less smooth Laplace kernel.
 #' @param W Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
-#' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0,\,2\pi ]}.
+#' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0, 2\pi ]}.
 #' @param n_threads Number of parallel threads.
-#'   The default is 4. If the system does not support 4 threads,
-#'   it automatically falls back to 1 thread. It is applied only for \code{opt = "nystrom"} or \code{opt = "rff"}
-#'   , and for the Laplace kernel (\code{kernel = "laplace"}).
-#'
+#'   If \code{NULL}, defaults to half of the available system processors.
+#'   It automatically falls back to 1 thread if the system has 3 or fewer processors.
+#'   Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'
 #' @details
 #' Requirements and what to supply:
@@ -46,7 +48,7 @@
 #' \strong{nystrom / pivoted}
 #'
 #' \itemize{
-#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5)  \rceil}.
+#'   \item If \code{m} is \code{NULL}, use \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}.
 #'   \item For \code{"pivoted"}, a tolerance \code{eps} is used; the decomposition stops early
 #'   when the next pivot (residual diagonal) drops below \code{eps}.
 #' }
@@ -60,44 +62,38 @@
 #'   \item If the user provides them manually, both \code{W} and \code{b} must be specified and their dimensions must be compatible.
 #' }
 #'
-#'
 #' @return
-#'
 #' \itemize{
 #'   \item \code{call}: The matched function call used to create the object.
 #'   \item \code{opt}: The kernel approximation method actually used (\code{"nystrom", "pivoted", "rff"}).
-#'   \item \code{approx_factor}: \eqn{n \times m} approximated kernel matrix.
+#'   \item \code{K_approx}: The fully reconstructed \eqn{n \times n} approximated kernel matrix.
+#'   \item \code{approx_factor}: Low-rank component matrix (\eqn{R} for Nyström, \eqn{PR} for Pivoted Cholesky, \eqn{Z} for RFF).
 #'   \item \code{m}: Kernel approximation degree.
 #'   \item \code{rho}: Scaling parameter of the kernel.
 #' }
 #'
 #' Additional components depend on the value of opt:
 #'
-#'
 #' \strong{nystrom}
-#'
 #' \itemize{
 #'   \item \code{n_threads}: Number of threads used in the computation.
 #' }
 #'
 #' \strong{pivoted}
-#'
 #' \itemize{
 #'   \item \code{eps}: Numerical tolerance used for early stopping in the
-#'                     pivoted Cholesky decomposition.
+#'                      pivoted Cholesky decomposition.
 #' }
 #'
 #' \strong{rff}
-#'
 #' \itemize{
 #'   \item \code{d}: Input design matrix's dimension.
 #'   \item \code{W}: \eqn{m \times d} Random frequency matrix.
-#'   \item \code{b}: Random phase \eqn{m}--vector.
+#'   \item \code{b}: Random phase \eqn{m}-vector.
 #'   \item \code{used_supplied_Wb}: Logical; \code{TRUE} if user-supplied
 #'         \code{W}, \code{b} were used, \code{FALSE} otherwise.
 #'   \item \code{n_threads}: Number of threads used in the computation.
 #' }
-#'
 #'
 #' @examples
 #' # Data setting
@@ -109,39 +105,48 @@
 #'
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                       m = m, rho = 1, n_threads = 1)
+#'                        m = m, rho = 1, n_threads = 1)
 #'
-#' # Exapmle: Nystrom approximation
+#' # Example: Nystrom approximation
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom",
-#'                           m = m, rho = 1, n_threads = 1)
+#'                            m = m, rho = 1, n_threads = 1)
 #'
 #' # Example: Pivoted Cholesky approximation
 #' K_pivoted = approx_kernel(X = X, opt = "pivoted",
-#'                           m = m, rho = 1)
+#'                            m = m, rho = 1)
 #' @export
 approx_kernel = function(X = NULL,
                          opt = c("nystrom", "pivoted", "rff"),
                          kernel = c("gaussian", "laplace"),
-                         m = NULL, rho, eps = 1e-6,
-                         W = NULL, b = NULL, n_threads = 4) {
+                         m = NULL, rho, eps = NULL,
+                         W = NULL, b = NULL, n_threads = NULL) {
   call   = match.call()
   opt    = match.arg(opt)
   kernel = match.arg(kernel)
 
+  if (is.null(X)) stop("Argument 'X' must be provided (not NULL).", call. = FALSE)
+  if (!is.matrix(X)) stop("Argument 'X' must be a numeric matrix.", call. = FALSE)
+  d = ncol(X)
+
+  # Adjust eps for opt=="pivoted"
+  if (opt == "pivoted") {
+    if (is.null(eps)) {
+      eps = if (kernel == "gaussian") 1e-6 else 1e-4
+    } else {
+      if (eps <= 0) stop("eps must be a positive real number", call. = FALSE)
+    }
+  }
 
   # Adjust number of threads only for heavy computation cases
+  max_threads = get_num_procs()
+  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
-    max_threads = get_num_procs()
-    if (max_threads <= 3)
-      n_threads = 1
-    else
-      n_threads = min(n_threads, max_threads - 1)
+    n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{
     n_threads = 1
   }
 
-  d = ncol(X)
-  if (missing(rho) || is.null(rho)) stop("'rho' must be provided and non-NULL.")
+  if (missing(rho) || is.null(rho)) stop("'rho' must be provided and non-NULL.", call. = FALSE)
 
 
   result_values = list()
@@ -175,7 +180,7 @@ approx_kernel = function(X = NULL,
 
       return(result_values)
     } else {
-      rslt = pchol_kernel(X, rho = rho, kernel = kernel, m = m)
+      rslt = rslt = pchol_kernel(X, rho = rho, kernel = kernel, m = m, eps = eps)
 
       result_values$K_approx = tcrossprod(rslt$PR)
       result_values$approx_factor = rslt$PR
@@ -186,7 +191,7 @@ approx_kernel = function(X = NULL,
     }
   }
 
-  if (is.null(X))  stop("Argument 'X' must be provided (not NULL).")
+
 
   n   = nrow(X)
   d_x = ncol(X)

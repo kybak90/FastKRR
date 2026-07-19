@@ -1,7 +1,7 @@
 #' Extract/print hyperparameters of fitted models
 #'
 #' @description
-#' \code{"param()"} is a generic S3 function that displays (and invisibly returns)
+#' \code{param} is a generic S3 function that displays (and invisibly returns)
 #' model hyperparameters. Methods are provided for \code{"krr"} objects.
 #'
 #' @param x An object.
@@ -38,8 +38,18 @@ param.default = function(x, ...) {
 #' @param ... Additional arguments.
 #'
 #' @return
-#' Prints a human-readable panel and returns (invisibly) a named list
-#' of hyperparameters.
+#' Prints a human-readable panel to the console and invisibly returns a
+#' named list of class \code{"krr_params"} containing the extracted hyperparameters:
+#' \itemize{
+#'   \item \code{kernel}: Kernel type used ("gaussian" or "laplace").
+#'   \item \code{opt}: Kernel approximation method.
+#'   \item \code{selection_method}: Lambda tuning method.
+#'   \item \code{rho}: Kernel scaling parameter.
+#'   \item \code{lambda}: Regularization parameter.
+#'   \item \code{m}: Rank or number of random features used for approximation.
+#'   \item \code{eps}: Tolerance parameter (for pivoted Cholesky).
+#'   \item \code{n_threads}: Number of parallel threads used.
+#' }
 #'
 #' @seealso \code{\link{fastkrr}}
 #'
@@ -56,11 +66,10 @@ param.default = function(x, ...) {
 #' data = data.frame(X, y = y)
 #'
 #' model = fastkrr(data = data, response = "y",
-#'                 kernel="gaussian", opt="pivoted",
-#'                 rho=1, lambda=1e-4, n_threads = 1)
+#'                  kernel="gaussian", opt="pivoted",
+#'                  rho=1, lambda=1e-4, n_threads = 1)
 #'
-#'
-#' class(model)
+#' # Inspect hyperparameters
 #' param(model)
 #'
 #' @export
