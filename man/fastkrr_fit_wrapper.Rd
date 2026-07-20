@@ -13,7 +13,6 @@ fastkrr_fit_wrapper(
   eps = 1e-06,
   rho = 1,
   lambda = NULL,
-  selection_method = "exactCV",
   n_threads = 4,
   verbose = FALSE,
   na.rm = FALSE
