@@ -346,7 +346,7 @@ fastkrr = function(data, response,
     if(selection_method == "REML"){
       lambda = c(1e-11, 1e-1) # default min, max for REML
     }else{
-      lambda = seq(1e-11, 1e-1, len = 100) # default grid for exactCV/fastCV
+      lambda = 10^seq(-11, -1, len = 100) # default grid for exactCV/fastCV
     }
   }else if(is.numeric(lambda) && length(lambda) == 1 && lambda > 0){
     lambda = lambda # scalar: lambda fixed, selection not performed
