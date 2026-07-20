@@ -89,10 +89,18 @@ removed before fitting. Defaults to \code{FALSE}.}
 }
 \value{
 \itemize{
-  \item{\code{coefficients}: Estimated coefficient vector.
-  Accessible via \code{model$coefficients}.}
-  \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}.
-  Accessible via \code{model$fitted.values}.}
+  \item{\code{coefficients}: Estimated coefficient vector. Accessible via \code{model$coefficients}.
+    For \code{opt = "rff"}, this is an \eqn{m}-dimensional weight vector in the random feature space.
+    For all other options (\code{"exact"}, \code{"pivoted"}, \code{"nystrom"}),
+    this is an \eqn{n}-dimensional dual coefficient vector.}
+  \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}. Accessible via \code{model$fitted.values}.
+    Computed as:
+    \itemize{
+      \item \eqn{\hat{y} = K \hat{\alpha}} for \code{opt = "exact"} (full kernel matrix \eqn{K}).
+      \item \eqn{\hat{y} = \tilde{K} \tilde{\alpha}} for \code{opt = "pivoted"} or \code{"nystrom"} (low-rank kernel matrix \eqn{\tilde{K}}).
+      \item \eqn{\hat{y} = Z \hat{\beta}} for \code{opt = "rff"} (random feature matrix \eqn{Z}).
+    }
+    Here, \eqn{\hat{\alpha}}, \eqn{\tilde{\alpha}}, and \eqn{\hat{\beta}} represent the estimated regression coefficient vectors (\code{coefficients}) obtained under each respective option \code{opt}.}
   \item{\code{opt}: Kernel approximation option.
   One of \code{"exact"}, \code{"pivoted"}, \code{"nystrom"}, \code{"rff"}.}
   \item{\code{kernel}: Kernel used (\code{"gaussian"} or \code{"laplace"}).}
