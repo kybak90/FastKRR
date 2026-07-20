@@ -95,8 +95,10 @@ predict.krr = function(object, newdata, ...){
 #'   the non-smooth, rougher Laplace kernel to properly balance numerical precision
 #'   and computational overhead.
 #' @param lambda Regularization parameter. If \code{NULL}, the penalty parameter
-#'   is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to
-#'   the grid of 100 values: \eqn{[10^{-11}, 10^{-1}]}.
+#'   is chosen automatically via \pkg{CVST} package or REML: for \code{selection_method = "REML"}
+#'   it defaults to the search range \eqn{[10^{-11}, 10^{-1}]} (a length-2 min/max vector), and for
+#'   \code{selection_method \%in\% c("exactCV", "fastCV")} it defaults to a grid of 100 values over
+#'   \eqn{[10^{-11}, 10^{-1}]}.
 #' @param opt Method for constructing or approximating :
 #'  \describe{
 #'   \item{\code{"exact"}}{Construct the full kernel matrix
@@ -146,15 +148,18 @@ predict.krr = function(object, newdata, ...){
 #'   \item \code{rho} must be a positive real number (default is 1).
 #'    \item \code{eps}: If not specified, it defaults to \code{1e-6} for the Gaussian kernel
 #'      and \code{1e-4} for the Laplace kernel.
-#'   \item \code{lambda} can be specified in three ways:
+#'   \item \code{lambda} can be specified in four ways:
 #'     \enumerate{
 #'       \item A positive numeric scalar, in which case the model is fitted with
-#'          this single value.
+#'          this single value and no selection is performed (any \code{selection_method}).
+#'       \item A numeric vector of length 2 giving \code{c(min, max)}; only valid when
+#'          \code{selection_method = "REML"}, which optimizes \eqn{\lambda} within this range.
 #'       \item A numeric vector (length >= 3) of positive values used as a tuning grid;
+#'          only valid when \code{selection_method \%in\% c("exactCV", "fastCV")}, and
 #'          selection is performed by \pkg{CVST} cross-validation (sequential testing if
 #'          \code{selection_method = "fastCV"}).
-#'       \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
-#'         via \pkg{CVST} or REML}
+#'       \item \code{NULL}: use a default range/grid (internal setting) and tune \code{lambda}
+#'         via \pkg{CVST} or REML, depending on \code{selection_method}.}
 #'
 #'   \item \code{n_threads}: Number of threads for parallel computation.
 #'   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
@@ -338,13 +343,25 @@ fastkrr = function(data, response,
 
   # Complexity parameter setting
   if(is.null(lambda)){
-    lambda = seq(1e-11, 1e-1, len = 100) # vector
-  }else if(is.vector(lambda) && all(lambda > 0) && length(lambda) >= 3){
-    lambda = lambda # vector
+    if(selection_method == "REML"){
+      lambda = c(1e-11, 1e-1) # default min, max for REML
+    }else{
+      lambda = seq(1e-11, 1e-1, len = 100) # default grid for exactCV/fastCV
+    }
   }else if(is.numeric(lambda) && length(lambda) == 1 && lambda > 0){
-    lambda = lambda # scalar
+    lambda = lambda # scalar: lambda fixed, selection not performed
+  }else if(is.vector(lambda) && all(lambda > 0) && length(lambda) == 2){
+    if(selection_method != "REML")
+      stop("A lambda vector of length 2 (min, max) is only supported when selection_method = 'REML'.",
+           call. = FALSE)
+    lambda = lambda # vector: REML min, max
+  }else if(is.vector(lambda) && all(lambda > 0) && length(lambda) >= 3){
+    if(selection_method == "REML")
+      stop("REML does not support a lambda grid of length >= 3; provide a length-2 vector (min, max), a single value, or NULL.",
+           call. = FALSE)
+    lambda = lambda # vector: CV grid
   }else{
-    stop("lambda must be a positive number or a numeric vector of positive real numbers with length greater than 3",
+    stop("lambda must be a positive number, or a numeric vector of positive real numbers of length 2 (REML min/max) or length >= 3 (CV grid)",
          call. = FALSE)
   }
 

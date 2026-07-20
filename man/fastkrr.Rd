@@ -61,8 +61,10 @@ and computational overhead.}
 \deqn{\text{Laplace kernel : } \mathcal{K}(x, x') = \exp(-\rho \| x - x'\|_1)}}
 
 \item{lambda}{Regularization parameter. If \code{NULL}, the penalty parameter
-is chosen automatically via \pkg{CVST} package or REML. If not provided, the argument is set to
-the grid of 100 values: \eqn{[10^{-11}, 10^{-1}]}.}
+is chosen automatically via \pkg{CVST} package or REML: for \code{selection_method = "REML"}
+it defaults to the search range \eqn{[10^{-11}, 10^{-1}]} (a length-2 min/max vector), and for
+\code{selection_method \%in\% c("exactCV", "fastCV")} it defaults to a grid of 100 values over
+\eqn{[10^{-11}, 10^{-1}]}.}
 
 \item{selection_method}{Method used to select \eqn{\lambda} when a grid or \code{NULL} is
 passed. One of:
@@ -180,15 +182,18 @@ The function performs several input checks and automatic adjustments:
   \item \code{rho} must be a positive real number (default is 1).
    \item \code{eps}: If not specified, it defaults to \code{1e-6} for the Gaussian kernel
      and \code{1e-4} for the Laplace kernel.
-  \item \code{lambda} can be specified in three ways:
+  \item \code{lambda} can be specified in four ways:
     \enumerate{
       \item A positive numeric scalar, in which case the model is fitted with
-         this single value.
+         this single value and no selection is performed (any \code{selection_method}).
+      \item A numeric vector of length 2 giving \code{c(min, max)}; only valid when
+         \code{selection_method = "REML"}, which optimizes \eqn{\lambda} within this range.
       \item A numeric vector (length >= 3) of positive values used as a tuning grid;
+         only valid when \code{selection_method \%in\% c("exactCV", "fastCV")}, and
          selection is performed by \pkg{CVST} cross-validation (sequential testing if
          \code{selection_method = "fastCV"}).
-      \item \code{NULL}: use a default grid (internal setting) and tune \code{lambda}
-        via \pkg{CVST} or REML}
+      \item \code{NULL}: use a default range/grid (internal setting) and tune \code{lambda}
+        via \pkg{CVST} or REML, depending on \code{selection_method}.}
 
   \item \code{n_threads}: Number of threads for parallel computation.
   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
