@@ -24,6 +24,7 @@ and the final training mean squared error (via \code{\link{error}}).
 \examples{
 # Data setting
 set.seed(1)
+lambda = 1e-4
 d = 1
 n = 50
 rho = 1
@@ -35,7 +36,7 @@ data = data.frame(X, y = y)
 # Example: exact
 model = fastkrr(data = data, response = "y",
                  kernel = "gaussian", opt = "exact",
-                 rho = rho, selection_method = "fastCV")
+                 rho = rho, lambda = lambda)
 
 summary(model)
 
