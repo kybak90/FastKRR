@@ -9,7 +9,7 @@
 #'
 #'
 #' @param mode A single string; only `"regression"` is supported.
-#' @param kernel Kernel matrix \eqn{K} has two kinds of Kernel ("gaussian", "laplace").
+#' @param kernel Kernel matrix has two kinds of Kernel ("gaussian", "laplace").
 #' @param opt Method for constructing or approximating :
 #'  \describe{
 #'   \item{\code{"exact"}}{Construct the full kernel matrix
@@ -32,12 +32,16 @@
 #'  \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
 #'   Laplace kernel (\code{kernel = "laplace"}).
 #' @param rho  Scaling parameter of the kernel(\eqn{\rho}).
-#' @param penalty Regularization parameter.
-#' @param selection_method Method used to select \eqn{\lambda}: one of
-#'   \code{"exactCV"} (full CVST cross-validation, default), \code{"fastCV"}
-#'   (accelerated sequential-testing CV via \pkg{CVST}), or \code{"REML"}.
+#' @param penalty Regularization parameter. It must be a positive numeric
+#' value, a numeric vector containing at least three positive values, or
+#' \code{tune()}. When using the \pkg{tidymodels} interface for
+#' hyperparameter selection, setting \code{penalty = tune()} is recommended.
+#' Candidate values are then supplied through the \code{grid} argument of
+#' \code{tune_grid()} and evaluated using the resampling scheme specified
+#' by the user.
 #' @param na.rm Logical. If \code{TRUE}, rows containing missing values are
 #'   removed before fitting. Defaults to \code{FALSE}.
+#'
 #'
 #' @return A parsnip model specification of class \code{"krr_reg"}.
 #'
@@ -63,7 +67,7 @@
 #'
 #' # Model spec
 #' krr_spec = krr_reg(kernel = "gaussian", opt = "nystrom",
-#'                    m = 50, eps = 1e-6, n_threads = 4,
+#'                    m = 50, eps = 1e-6, n_threads = 1,
 #'                    rho = 1, penalty = tune()) %>%
 #'  set_engine("fastkrr") %>%
 #'  set_mode("regression")
@@ -119,7 +123,7 @@
 #' @export
 krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
                    n_threads = NULL, m = NULL, rho = NULL, penalty = NULL,
-                   selection_method = NULL, na.rm = NULL) {
+                   na.rm = NULL) {
   if (mode != "regression") {
     rlang::abort("`mode` should be 'regression'.")
   }
@@ -131,7 +135,6 @@ krr_reg = function(mode = "regression", kernel = NULL, opt = NULL, eps = NULL,
     n_threads = rlang::enquo(n_threads),
     rho     = rlang::enquo(rho),
     penalty = rlang::enquo(penalty),
-    selection_method = rlang::enquo(selection_method),
     na.rm = rlang::enquo(na.rm)
   )
   parsnip::new_model_spec(
@@ -211,7 +214,7 @@ make_krr_reg = function(){
     has_submodel = FALSE
   )
 
-  for (nm in c("kernel", "opt", "m", "eps", "n_threads", "rho", "selection_method", "na.rm")){
+  for (nm in c("kernel", "opt", "m", "eps", "n_threads", "rho", "na.rm")){
     parsnip::set_model_arg(
       model    = "krr_reg",
       eng      = "fastkrr",
@@ -242,7 +245,6 @@ make_krr_reg = function(){
         n_threads  = rlang::expr(n_threads),
         rho    = rlang::expr(rho),
         lambda = rlang::expr(penalty),
-        selection_method = rlang::expr(selection_method),
         na.rm = rlang::expr(na.rm)
       ),
       defaults = list()
@@ -305,7 +307,7 @@ update.krr_reg = function(object, parameters = NULL,
                           kernel = NULL, opt = NULL,
                           m = NULL, eps = NULL,
                           n_threads = NULL, rho = NULL,
-                          selection_method = NULL, penalty = NULL, na.rm = NULL,
+                          penalty = NULL, na.rm = NULL,
                           fresh = FALSE, ...) {
 
   # if (requireNamespace("parsnip", quietly = TRUE) &&
@@ -344,10 +346,6 @@ update.krr_reg = function(object, parameters = NULL,
     args_new$rho = rlang::enquo(rho)
   }
 
-  if (!missing(selection_method)) {
-    args_new$selection_method = rlang::enquo(selection_method)
-  }
-
   if (!missing(na.rm)) {
     args_new$na.rm = rlang::enquo(na.rm)
   }
@@ -380,7 +378,6 @@ fastkrr_fit_wrapper = function(x, y,
                                eps = 1e-6,
                                rho = 1,
                                lambda = NULL,
-                               selection_method = "exactCV",
                                n_threads = 4,
                                verbose = FALSE,
                                na.rm = FALSE) {
@@ -402,7 +399,6 @@ fastkrr_fit_wrapper = function(x, y,
     eps               = eps,
     rho               = rho,
     lambda            = lambda,
-    selection_method  = selection_method,
     n_threads         = n_threads,
     verbose           = verbose,
     na.rm             = na.rm
@@ -421,5 +417,5 @@ fastkrr_fit_wrapper = function(x, y,
 
 
 utils::globalVariables(c(
-  "x","y","opt","m", "eps","n_threads","rho","penalty","selection_method", "na.rm", "object","new_data"
+  "x","y","opt","m", "eps","n_threads","rho","penalty", "na.rm", "object","new_data"
 ))

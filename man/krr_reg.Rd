@@ -13,14 +13,13 @@ krr_reg(
   m = NULL,
   rho = NULL,
   penalty = NULL,
-  selection_method = NULL,
   na.rm = NULL
 )
 }
 \arguments{
 \item{mode}{A single string; only `"regression"` is supported.}
 
-\item{kernel}{Kernel matrix \eqn{K} has two kinds of Kernel ("gaussian", "laplace").}
+\item{kernel}{Kernel matrix has two kinds of Kernel ("gaussian", "laplace").}
 
 \item{opt}{Method for constructing or approximating :
  \describe{
@@ -48,11 +47,13 @@ for stopping criterion of the Pivoted Cholesky decomposition.}
 
 \item{rho}{Scaling parameter of the kernel(\eqn{\rho}).}
 
-\item{penalty}{Regularization parameter.}
-
-\item{selection_method}{Method used to select \eqn{\lambda}: one of
-\code{"exactCV"} (full CVST cross-validation, default), \code{"fastCV"}
-(accelerated sequential-testing CV via \pkg{CVST}), or \code{"REML"}.}
+\item{penalty}{Regularization parameter. It must be a positive numeric
+value, a numeric vector containing at least three positive values, or
+\code{tune()}. When using the \pkg{tidymodels} interface for
+hyperparameter selection, setting \code{penalty = tune()} is recommended.
+Candidate values are then supplied through the \code{grid} argument of
+\code{tune_grid()} and evaluated using the resampling scheme specified
+by the user.}
 
 \item{na.rm}{Logical. If \code{TRUE}, rows containing missing values are
 removed before fitting. Defaults to \code{FALSE}.}
@@ -89,7 +90,7 @@ ames_test  = testing(ames_split) # dim (588, 74)
 
 # Model spec
 krr_spec = krr_reg(kernel = "gaussian", opt = "nystrom",
-                   m = 50, eps = 1e-6, n_threads = 4,
+                   m = 50, eps = 1e-6, n_threads = 1,
                    rho = 1, penalty = tune()) \%>\%
  set_engine("fastkrr") \%>\%
  set_mode("regression")
