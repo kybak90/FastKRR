@@ -1,6 +1,6 @@
 utils::globalVariables(c("yhat", "x", "y"))
 
-#' Plot method for fitted Kernel Ridge Regression (KRR) models
+#' Plot method for fitted Kernel Ridge Regression models
 #'
 #' @description
 #' Visualizes the fitted regression curve from a Kernel Ridge Regression (KRR) model.

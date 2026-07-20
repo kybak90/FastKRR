@@ -52,11 +52,15 @@ error = function(x, ...) {
 #' model = fastkrr(data = data, response = "y", kernel = "gaussian",
 #'                  opt = "exact", lambda = lambda)
 #'
+#' # MSE
+#' error(model)
+#'
 #' new_n = 50
 #' new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 #' new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 #' new_data = data.frame(new_x, y = new_y)
 #'
+#' # PMSE
 #' error(model, data_new = new_data)
 #'
 #' @export

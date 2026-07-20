@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.krr}
 \alias{plot.krr}
-\title{Plot method for fitted Kernel Ridge Regression (KRR) models}
+\title{Plot method for fitted Kernel Ridge Regression models}
 \usage{
 \method{plot}{krr}(x, show_points = TRUE, ...)
 }

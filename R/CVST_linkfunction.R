@@ -86,7 +86,7 @@ predict.krr = function(object, newdata, ...){
 #' \deqn{\text{Laplace kernel : } \mathcal{K}(x, x') = \exp(-\rho \| x - x'\|_1)}
 #' @param m Approximation rank(number of random features) used for the low-rank kernel approximation.
 #'   If not provided by the user, it defaults to \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil},
-#'   where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
+#'   where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}. Also it must be a positive integer.
 #' @param eps Tolerance parameter used only in \code{"pivoted"}
 #'   for the stopping criterion of the Pivoted Cholesky decomposition.
 #'   The default value is dynamically adjusted based on the mathematical smoothness
@@ -138,16 +138,6 @@ predict.krr = function(object, newdata, ...){
 #' The function performs several input checks and automatic adjustments:
 #'
 #' \itemize{
-#'   \item \code{kernel} must be either \code{gaussian} or \code{laplace}.
-#'   \item \code{opt} must be one of \code{"exact"}, \code{"pivoted"},
-#'     \code{"nystrom"}, or \code{"rff"}.
-#'   \item If \code{m} is \code{NULL}, it defaults to
-#'     \eqn{\lceil n^{1/2} \cdot \log(d + 5) \rceil}
-#'     where \eqn{n = nrow(X)} and \eqn{d = ncol(X)}.
-#'     Otherwise, \code{m} must be a positive integer.
-#'   \item \code{rho} must be a positive real number (default is 1).
-#'    \item \code{eps}: If not specified, it defaults to \code{1e-6} for the Gaussian kernel
-#'      and \code{1e-4} for the Laplace kernel.
 #'   \item \code{lambda} can be specified in four ways:
 #'     \enumerate{
 #'       \item A positive numeric scalar, in which case the model is fitted with
@@ -160,9 +150,6 @@ predict.krr = function(object, newdata, ...){
 #'          \code{selection_method = "fastCV"}).
 #'       \item \code{NULL}: use a default range/grid (internal setting) and tune \code{lambda}
 #'         via \pkg{CVST} or REML, depending on \code{selection_method}.}
-#'
-#'   \item \code{n_threads}: Number of threads for parallel computation.
-#'   \item If \code{na.rm = TRUE}, rows containing missing values are removed before model fitting.
 #'}
 #'
 #' After fitting the model with \code{fastkrr()}, users can readily generate predictions
