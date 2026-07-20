@@ -1,3 +1,8 @@
+#' @noRd
+#' @export
+error = function(x, ...) {
+  UseMethod("error")
+}
 #' Compute Model Error for Kernel Ridge Regression Models
 #'
 #' @description

@@ -4,7 +4,7 @@
 \alias{error.krr}
 \title{Compute Model Error for Kernel Ridge Regression Models}
 \usage{
-error.krr(x, data_new = NULL, ...)
+\method{error}{krr}(x, data_new = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class \code{"krr"}, typically returned by
