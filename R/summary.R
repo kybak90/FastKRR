@@ -2,8 +2,8 @@
 #'
 #' @description
 #' Computes and displays a comprehensive summary of a fitted Kernel Ridge Regression (KRR) model,
-#' including the original function call, fitted hyperparameters (via \code{\link{param}}),
-#' and the final training mean squared error (via \code{\link{error}}).
+#' including the original function call, fitted hyperparameters (via \code{\link{param.krr}}),
+#' and the final training mean squared error (via \code{\link{error.krr}}).
 #'
 #' @param object An S3 object of class \code{krr}, typically returned by
 #'   \code{\link{fastkrr}}.
@@ -21,7 +21,7 @@
 #' d = 1
 #' n = 50
 #' rho = 1
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'
 #' data = data.frame(X, y = y)
@@ -29,7 +29,7 @@
 #' # Example: exact
 #' model = fastkrr(data = data, response = "y",
 #'                  kernel = "gaussian", opt = "exact",
-#'                  rho = rho, selection_method = "fastCV")
+#'                  rho = rho, lambda = lambda)
 #'
 #' summary(model)
 #'

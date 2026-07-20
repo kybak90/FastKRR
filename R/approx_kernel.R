@@ -4,7 +4,7 @@
 #' Nyström approximation, Pivoted Cholesky decomposition, and
 #' Random Fourier Features (RFF).
 #'
-#' @param X Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
+#' @param X A numeric design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
 #' @param opt Method for constructing or approximating:
 #'   \describe{
 #'     \item{\code{"nystrom"}}{Construct a low-rank approximation of
@@ -99,20 +99,21 @@
 #' # Data setting
 #' set.seed(1)
 #' d = 1
+#' rho = 1
 #' n = 100
 #' m = 50
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #'
 #' # Example: Nystrom approximation
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom",
-#'                            m = m, rho = 1, n_threads = 1)
+#'                            m = m, rho = rho, n_threads = 1)
 #'
 #' # Example: Pivoted Cholesky approximation
 #' K_pivoted = approx_kernel(X = X, opt = "pivoted",
-#'                            m = m, rho = 1)
+#'                            m = m, rho = rho)
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                        m = m, rho = 1, n_threads = 1)
+#'                        m = m, rho = rho, n_threads = 1)
 #'
 #' @export
 approx_kernel = function(X = NULL,
