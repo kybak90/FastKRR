@@ -18,8 +18,8 @@ Invisibly returns the hyperparameter list or model statistics after
 }
 \description{
 Computes and displays a comprehensive summary of a fitted Kernel Ridge Regression (KRR) model,
-including the original function call, fitted hyperparameters (via \code{\link{param}}),
-and the final training mean squared error (via \code{\link{error}}).
+including the original function call, fitted hyperparameters (via \code{\link{param.krr}}),
+and the final training mean squared error (via \code{\link{error.krr}}).
 }
 \examples{
 # Data setting
@@ -28,7 +28,7 @@ lambda = 1e-4
 d = 1
 n = 50
 rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 
 data = data.frame(X, y = y)

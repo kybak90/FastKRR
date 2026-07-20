@@ -4,7 +4,7 @@
 #' Nyström approximation, Pivoted Cholesky decomposition, and
 #' Random Fourier Features (RFF).
 #'
-#' @param X Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
+#' @param X A numeric design matrix \eqn{X \in \mathbb{R}^{n \times d}}.
 #' @param opt Method for constructing or approximating:
 #'   \describe{
 #'     \item{\code{"nystrom"}}{Construct a low-rank approximation of

@@ -18,7 +18,7 @@
 #' n = 30
 #' d = 1
 #'
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'
 #' data = data.frame(X, y = y)
@@ -239,7 +239,7 @@ predict.krr = function(object, newdata, ...){
 #' rho = 1
 #' n = 50
 #'
-#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+#' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #' y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 #'
 #' data = data.frame(X, y = y)

@@ -47,7 +47,7 @@ lambda = 1e-4
 d = 1
 n = 50
 rho = 1
-X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d); colnames(X) = paste0("X", seq_len(d))
+X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 y = sin(2 * pi * rowMeans(X)^3) + rnorm(n, mean = 0, sd = 0.1)
 
 data = data.frame(X, y = y)
@@ -56,7 +56,7 @@ model = fastkrr(data = data, response = "y", kernel = "gaussian",
                  opt = "exact", lambda = lambda)
 
 new_n = 50
-new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d); colnames(new_x) = colnames(X)
+new_x = matrix(runif(new_n*d, 0, 1), nrow = new_n, ncol = d)
 new_y = as.vector(sin(2*pi*rowMeans(new_x)^3) + rnorm(new_n, 0, 0.1))
 new_data = data.frame(new_x, y = new_y)
 

@@ -17,7 +17,7 @@ approx_kernel(
 )
 }
 \arguments{
-\item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}}.}
+\item{X}{A numeric design matrix \eqn{X \in \mathbb{R}^{n \times d}}.}
 
 \item{opt}{Method for constructing or approximating:
 \describe{
