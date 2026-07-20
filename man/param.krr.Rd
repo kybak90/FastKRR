@@ -54,7 +54,7 @@ data = data.frame(X, y = y)
 
 model = fastkrr(data = data, response = "y",
                  kernel="gaussian", opt="pivoted",
-                 rho=1, lambda=1e-4, n_threads = 1)
+                 rho=1, lambda=lambda, n_threads = 1)
 
 # Inspect hyperparameters
 param(model)

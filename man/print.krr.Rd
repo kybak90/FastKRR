@@ -34,7 +34,7 @@ data = data.frame(X, y = y)
 # Example: exact
 model = fastkrr(data = data, response = "y",
                  kernel = "gaussian", opt = "exact",
-                 rho = rho, lambda = 1e-4)
+                 rho = rho, lambda = lambda)
 
 print(model)
 }

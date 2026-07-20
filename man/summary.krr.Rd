@@ -24,7 +24,6 @@ and the final training mean squared error (via \code{\link{error}}).
 \examples{
 # Data setting
 set.seed(1)
-lambda = 1e-4
 d = 1
 n = 50
 rho = 1

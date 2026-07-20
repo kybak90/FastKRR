@@ -89,7 +89,7 @@ removed before fitting. Defaults to \code{FALSE}.}
 }
 \value{
 \itemize{
-  \item{\code{coefficients}: Estimated coefficient vector \eqn{\mathbb{R}^{n}}.
+  \item{\code{coefficients}: Estimated coefficient vector.
   Accessible via \code{model$coefficients}.}
   \item{\code{fitted.values}: Fitted values \eqn{\mathbb{R}^{n}}.
   Accessible via \code{model$fitted.values}.}
