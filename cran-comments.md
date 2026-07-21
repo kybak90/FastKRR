@@ -4,6 +4,7 @@ This is a resubmission of FastKRR (v0.2.1). This release includes major function
 
 ## Changes in version 0.2.0 -> 0.2.1
 
+- Updated default value of the `rho` parameter in `make_kernel()` from `0` to `1` in both C++ implementation, with strict validation for `rho > 0`.
 - Fixed documentation issue in `make_kernel.Rd` by adding the explicit `@usage` directive to correctly document function arguments and pass CRAN incoming pre-checks.
 
 ## Changes in version 0.1.2 -> 0.2.0
