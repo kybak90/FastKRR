@@ -1,8 +1,12 @@
 ## Resubmission
 
-This is a new version of an existing CRAN package (0.1.2 -> 0.2.0). This release includes major functionality enhancements, computational updates (e.g., REML), and interface improvements implemented during the revision of our paper for The R Journal, addressing feedback from the editors and reviewers.
+This is a resubmission of FastKRR (v0.2.1). This release includes major functionality enhancements, computational updates (e.g., REML), and interface improvements implemented during the revision of our paper for The R Journal. This version (v0.2.1) specifically fixes a pre-test issue (`NOTE: Rd files without \usage: 'make_kernel.Rd'`) from the previous submission attempt.
 
-## Changes in version 0.2.0
+## Changes in version 0.2.0 -> 0.2.1
+
+- Fixed documentation issue in `make_kernel.Rd` by adding the explicit `@usage` directive to correctly document function arguments and pass CRAN incoming pre-checks.
+
+## Changes in version 0.1.2 -> 0.2.0
 
 - Added a restricted maximum likelihood (REML) option (`selection_method = "REML"`) as an efficient, C++-implemented alternative to cross-validation-based tuning of the regularization parameter, available for both the exact method and all three low-rank approximations (Nystrom, pivoted Cholesky, RFF).
 - `fastkrr()` now takes a `data.frame` as its primary input (via `data` and `response` arguments), instead of requiring separate `X`/`y` matrices.
