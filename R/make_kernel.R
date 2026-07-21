@@ -51,6 +51,11 @@
 #' new_K = make_kernel(X, new_X, kernel = "laplace", rho = rho, n_threads = 1) ## rectangular matrix
 #'
 #' @name make_kernel
+#' @usage make_kernel(X,
+#'             X_new = NULL,
+#'             kernel = "gaussian",
+#'             rho = 1,
+#'             n_threads = NULL)
 #' @export make_kernel
 #' @useDynLib FastKRR, .registration = TRUE
 #' @importFrom Rcpp evalCpp

@@ -3,6 +3,13 @@
 \name{make_kernel}
 \alias{make_kernel}
 \title{Kernel matrix construction for given datasets}
+\usage{
+make_kernel(X,
+            X_new = NULL,
+            kernel = "gaussian",
+            rho = 1,
+            n_threads = NULL)
+}
 \arguments{
 \item{X}{Design matrix \eqn{X \in \mathbb{R}^{n \times d}} (rows  \eqn{x_i \in \mathbb{R}^d}).}
 
