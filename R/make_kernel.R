@@ -54,7 +54,7 @@
 #' @usage make_kernel(X,
 #'             X_new = NULL,
 #'             kernel = "gaussian",
-#'             rho = 1,
+#'             rho = 0,
 #'             n_threads = NULL)
 #' @export make_kernel
 #' @useDynLib FastKRR, .registration = TRUE

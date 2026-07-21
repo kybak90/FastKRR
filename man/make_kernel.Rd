@@ -7,7 +7,7 @@
 make_kernel(X,
             X_new = NULL,
             kernel = "gaussian",
-            rho = 1,
+            rho = 0,
             n_threads = NULL)
 }
 \arguments{
