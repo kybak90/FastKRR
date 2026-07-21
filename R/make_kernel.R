@@ -11,7 +11,7 @@
 #' @param X_new  Second matrix \eqn{X' \in \mathbb{R}^{n' \times d}} (rows  \eqn{x'_j \in \mathbb{R}^d}).
 #' If omitted, \eqn{X' = X} and \eqn{n' = n}.
 #' @param kernel Kernel type; one of \code{"gaussian"} or \code{"laplace"}.
-#' @param rho Kernel width parameter (\eqn{\rho > 0}).
+#' @param rho Kernel width parameter (\eqn{\rho > 0}). Default is 1.
 #' @param n_threads Number of parallel threads. If \code{NULL}, it defaults to
 #'   half of the available system processors (\code{max_threads \%/\% 2}).
 #'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
@@ -54,7 +54,7 @@
 #' @usage make_kernel(X,
 #'             X_new = NULL,
 #'             kernel = "gaussian",
-#'             rho = 0,
+#'             rho = 1,
 #'             n_threads = NULL)
 #' @export make_kernel
 #' @useDynLib FastKRR, .registration = TRUE

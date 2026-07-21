@@ -11,7 +11,7 @@ using namespace arma;
 Rcpp::NumericMatrix make_kernel(const arma::mat& X,
                                 Nullable<NumericMatrix> X_new = R_NilValue,
                                 std::string kernel = "gaussian",
-                                double rho = 0,
+                                double rho = 1.0,
                                 Nullable<int> n_threads = R_NilValue){
 
   int max_threads = 1;
@@ -40,10 +40,8 @@ Rcpp::NumericMatrix make_kernel(const arma::mat& X,
     stop("Input matrix X is empty");
   }
 
-  if(rho < 0){
+  if(rho <= 0){
     stop("rho must be positive");
-  }else if(rho == 0){
-    rho = 1.0;
   }
 
 

@@ -7,7 +7,7 @@
 make_kernel(X,
             X_new = NULL,
             kernel = "gaussian",
-            rho = 0,
+            rho = 1,
             n_threads = NULL)
 }
 \arguments{
@@ -18,7 +18,7 @@ If omitted, \eqn{X' = X} and \eqn{n' = n}.}
 
 \item{kernel}{Kernel type; one of \code{"gaussian"} or \code{"laplace"}.}
 
-\item{rho}{Kernel width parameter (\eqn{\rho > 0}).}
+\item{rho}{Kernel width parameter (\eqn{\rho > 0}). Default is 1.}
 
 \item{n_threads}{Number of parallel threads. If \code{NULL}, it defaults to
 half of the available system processors (\code{max_threads \%/\% 2}).
