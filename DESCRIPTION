@@ -52,3 +52,4 @@ SystemRequirements:
 Encoding: UTF-8
 Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
+RoxygenNote: 7.3.3
