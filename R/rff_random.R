@@ -6,7 +6,7 @@ rff_random = function(m, d = d, rho = 1, kernel = "gaussian"){
   if(kernel == 'gaussian'){
     W = matrix(rnorm(m * d, 0, sqrt(2 * rho)), nrow = m)
   }else if(kernel == "laplace"){
-    W = matrix(rcauchy(m * d, location = 0, scale = 1/sqrt(2 * rho)), nrow = m)
+    W = matrix(rcauchy(m * d, location = 0, scale = rho), nrow = m)
   }
 
   b = runif(m, 0, 2 * pi)

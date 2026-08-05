@@ -153,8 +153,8 @@ Additional components depend on the value of \code{opt}:
   \item{\code{W}: Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
       (row \eqn{j} is \eqn{\omega_j^\top \in \mathbb{R}^d}), drawn i.i.d. from the spectral density of the chosen kernel:
       \itemize{
-        \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\gamma)} (e.g., \eqn{\gamma=1/\ell^2}).}
-        \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, 1/\sigma)} i.i.d.
+        \item {Gaussian: \eqn{\omega_{jk} \sim \mathcal{N}(0, 2\rho)}.}
+        \item {Laplace: \eqn{\omega_{jk} \sim \mathrm{Cauchy}(0, \rho)} i.i.d.
       }}}
   \item{\code{b} Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif}[0,\,2\pi]}.}
 }}
