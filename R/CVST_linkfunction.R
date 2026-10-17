@@ -8,6 +8,9 @@
 #'                for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.
 #' @param ... Additional arguments (currently ignored).
 #'
+#' @details
+#' Predictions use the \code{n_threads} value stored in the fitted model, that is,
+#' the number of threads chosen when the model was fitted (\code{1} by default).
 #'
 #' @return A numeric vector of predicted values corresponding to \code{newdata} or fitted values.
 #'

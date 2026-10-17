@@ -31,7 +31,8 @@ be combined with \code{data_new}.}
 }
 \value{
 A numeric value giving the mean squared error (MSE). If \code{data_new = NULL},
-  this returns the training MSE based on the fitted values. If \code{data_new} is provided,
+  this returns the training MSE based on the fitted values. If \code{data_new} (or
+  \code{x_new} and \code{y_new}) is provided,
   it returns the prediction mean squared error (PMSE) evaluated on the new dataset.
 }
 \description{

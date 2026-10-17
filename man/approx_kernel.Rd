@@ -54,7 +54,8 @@ and \code{1e-4} for the less smooth Laplace kernel.}
 
 \item{n_threads}{Number of parallel threads.
 Defaults to \code{1}, so that multi-threading is used only when a larger value is explicitly specified.
-It automatically falls back to 1 thread if the system has 3 or fewer processors.
+It automatically falls back to 1 thread if the system has 3 or fewer processors;
+otherwise, it is capped at \code{max_threads - 1}.
 Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.}
 }
 \value{

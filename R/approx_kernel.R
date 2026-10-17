@@ -33,7 +33,8 @@
 #' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0, 2\pi ]}.
 #' @param n_threads Number of parallel threads.
 #'   Defaults to \code{1}, so that multi-threading is used only when a larger value is explicitly specified.
-#'   It automatically falls back to 1 thread if the system has 3 or fewer processors.
+#'   It automatically falls back to 1 thread if the system has 3 or fewer processors;
+#'   otherwise, it is capped at \code{max_threads - 1}.
 #'   Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'
 #' @details
