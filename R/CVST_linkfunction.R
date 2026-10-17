@@ -117,7 +117,7 @@ predict.krr = function(object, newdata, ...){
 #' @param n_threads Number of parallel threads. Defaults to \code{1}, so that
 #'   multi-threading is used only when a larger value is explicitly specified.
 #'   Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
-#'   \code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
+#'   \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
 #'   falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
 #'   For all other settings, it is restricted to \code{1} thread.
@@ -356,7 +356,7 @@ fastkrr = function(data, response,
   # Adjust number of threads
   max_threads = get_num_procs()
   if (is.null(n_threads)) n_threads = 1
-  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace") || (selection_method == "REML")){
+  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
     n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{
     n_threads = 1
