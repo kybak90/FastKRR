@@ -120,7 +120,7 @@ approx_kernel = function(X = NULL,
                          opt = c("nystrom", "pivoted", "rff"),
                          kernel = c("gaussian", "laplace"),
                          m = NULL, rho, eps = NULL,
-                         W = NULL, b = NULL, n_threads = NULL) {
+                         W = NULL, b = NULL, n_threads = 1) {
   call   = match.call()
   opt    = match.arg(opt)
   kernel = match.arg(kernel)
@@ -140,7 +140,7 @@ approx_kernel = function(X = NULL,
 
   # Adjust number of threads only for heavy computation cases
   max_threads = get_num_procs()
-  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
+  if (is.null(n_threads)) n_threads = 1
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
     n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{

@@ -274,7 +274,7 @@ fastkrr = function(data, response,
                    rho = 1,
                    lambda = NULL,
                    selection_method = "exactCV",  # c(exactCV, fastCV, REML)
-                   n_threads = NULL,
+                   n_threads = 1,
                    verbose =  TRUE,
                    na.rm = FALSE)
 {
@@ -355,7 +355,7 @@ fastkrr = function(data, response,
 
   # Adjust number of threads
   max_threads = get_num_procs()
-  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
+  if (is.null(n_threads)) n_threads = 1
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace") || (selection_method == "REML")){
     n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{

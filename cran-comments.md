@@ -2,6 +2,11 @@
 
 This is a resubmission of FastKRR (v0.2.1). This release includes major functionality enhancements, computational updates (e.g., REML), and interface improvements implemented during the revision of our paper for The R Journal. This version (v0.2.1) specifically fixes a pre-test issue (`NOTE: Rd files without \usage: 'make_kernel.Rd'`) from the previous submission attempt.
 
+## Changes in version 0.2.1 -> 0.2.2
+
+- Changed the default of `n_threads` from `NULL` (half of the available cores) to `1` in `fastkrr()`, `approx_kernel()`, `make_kernel()`, and the tidymodels engine (`krr_reg()`), so that multi-threading is used only when explicitly requested by the user.
+- `selection_method = "REML"` is no longer treated as a parallelized case, since the Newton-Raphson REML optimization runs sequentially.
+
 ## Changes in version 0.2.0 -> 0.2.1
 
 - Updated default value of the `rho` parameter in `make_kernel()` from `0` to `1` in both C++ implementation, with strict validation for `rho > 0`.

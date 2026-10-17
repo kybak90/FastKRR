@@ -12,7 +12,7 @@ Rcpp::NumericMatrix make_kernel(const arma::mat& X,
                                 Nullable<NumericMatrix> X_new = R_NilValue,
                                 std::string kernel = "gaussian",
                                 double rho = 1.0,
-                                Nullable<int> n_threads = R_NilValue){
+                                Nullable<int> n_threads = 1){
 
   int max_threads = 1;
 #ifdef _OPENMP
@@ -23,7 +23,7 @@ Rcpp::NumericMatrix make_kernel(const arma::mat& X,
   if (kernel == "laplace") {
 #ifdef _OPENMP
     if (n_threads.isNull()) {
-      final_threads = std::max(1, max_threads / 2);
+      final_threads = 1;
     } else {
       final_threads = Rcpp::as<int>(n_threads);
     }

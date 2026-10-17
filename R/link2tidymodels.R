@@ -378,7 +378,7 @@ fastkrr_fit_wrapper = function(x, y,
                                eps = 1e-6,
                                rho = 1,
                                lambda = NULL,
-                               n_threads = 4,
+                               n_threads = 1,
                                verbose = FALSE,
                                na.rm = FALSE) {
 
