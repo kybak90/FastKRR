@@ -87,3 +87,37 @@ test_that("error.krr throws expected errors on invalid data_new inputs", {
     "Response variable not found in data_new"
   )
 })
+
+test_that("error.krr supports x_new/y_new and stored response names", {
+  set.seed(123)
+  n <- 30
+  X <- matrix(runif(n * 2), ncol = 2)
+  y <- sin(X[, 1]) + rnorm(n, sd = 0.1)
+  df <- data.frame(X, y = y)
+  X_new <- matrix(runif(20 * 2), ncol = 2)
+  y_new <- sin(X_new[, 1]) + rnorm(20, sd = 0.1)
+  df_new <- data.frame(X_new, y = y_new)
+
+  m_df <- fastkrr(df, "y", opt = "exact", lambda = 1e-3, verbose = FALSE)
+  m_xy <- fastkrr(X, y, opt = "exact", lambda = 1e-3, verbose = FALSE)
+  expected <- mean((y_new - predict(m_df, X_new))^2)
+
+  # data.frame model: data_new and x_new/y_new both work
+  expect_equal(error(m_df, data_new = df_new), expected)
+  expect_equal(error(m_df, x_new = X_new, y_new = y_new), expected)
+
+  # matrix model: x_new/y_new work, data_new gives a clear message
+  expect_equal(error(m_xy, x_new = X_new, y_new = y_new), expected)
+  expect_equal(error(m_xy), mean((y - m_xy$fitted.values)^2))
+  expect_error(error(m_xy, data_new = df_new), "use x_new and y_new")
+
+  # response passed through a variable is resolved to the column name
+  resp <- "y"
+  m_var <- fastkrr(df, response = resp, opt = "exact", lambda = 1e-3, verbose = FALSE)
+  expect_equal(error(m_var, data_new = df_new), expected)
+
+  # invalid combinations
+  expect_error(error(m_df, data_new = df_new, x_new = X_new, y_new = y_new), "not both")
+  expect_error(error(m_df, x_new = X_new), "Both x_new and y_new")
+  expect_error(error(m_df, x_new = X_new, y_new = y_new[-1]), "must match")
+})

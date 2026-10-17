@@ -8,6 +8,8 @@ This is a resubmission of FastKRR (v0.2.1). This release includes major function
 - `predict()` (and the cross-validation predictions for `opt = "rff"`) now uses the `n_threads` value of the fitted model instead of an internal default of 4 threads.
 - Disabled Armadillo's internal OpenMP parallelization (`-DARMA_DONT_USE_OPENMP`), so that multi-threading occurs only in the package's own OpenMP loops controlled by `n_threads`.
 - `selection_method = "REML"` is no longer treated as a parallelized case, since the Newton-Raphson REML optimization runs sequentially.
+- `fastkrr()` again accepts a design matrix and a response vector, `fastkrr(X, y)` or `fastkrr(x = X, y = y)`, in addition to the data frame interface `fastkrr(data, response)`. The fitted object records the interface used (`interface`) and the response column name (`response`).
+- `error()` gains `x_new` and `y_new` arguments as an alternative to `data_new`, and now locates the response column from the fitted object, so that it also works when `response` was passed through a variable.
 
 ## Changes in version 0.2.0 -> 0.2.1
 
