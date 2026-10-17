@@ -196,10 +196,10 @@ y = sin(2*pi*X^3) + rnorm(n, 0, 0.1)
 data = data.frame(X, y = y)
 
 # model fitting - nystrom
-model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", verbose = FALSE)
+model_nystrom = fastkrr(data = data, response = "y", kernel = "gaussian", rho = rho, opt = "nystrom", n_threads = 2, verbose = FALSE)
 
-model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 4)
-#> [1] 4
+model_nystrom$n_threads    # >1 indicates OpenMP used by FastKRR (default 1; 2 requested here)
+#> [1] 2
 ```
 
 ### 5) Show that FastKRR links to libomp (macOS only)

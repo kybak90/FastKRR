@@ -32,7 +32,7 @@
 #' @param W Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
 #' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0, 2\pi ]}.
 #' @param n_threads Number of parallel threads.
-#'   If \code{NULL}, defaults to half of the available system processors.
+#'   Defaults to \code{1}, so that multi-threading is used only when a larger value is explicitly specified.
 #'   It automatically falls back to 1 thread if the system has 3 or fewer processors.
 #'   Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'
@@ -106,14 +106,14 @@
 #'
 #' # Example: Nystrom approximation
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom",
-#'                            m = m, rho = rho, n_threads = 1)
+#'                            m = m, rho = rho)
 #'
 #' # Example: Pivoted Cholesky approximation
 #' K_pivoted = approx_kernel(X = X, opt = "pivoted",
 #'                            m = m, rho = rho)
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                        m = m, rho = rho, n_threads = 1)
+#'                        m = m, rho = rho)
 #'
 #' @export
 approx_kernel = function(X = NULL,

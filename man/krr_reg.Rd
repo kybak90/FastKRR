@@ -41,7 +41,7 @@ for stopping criterion of the Pivoted Cholesky decomposition.}
 
 \item{n_threads}{Number of parallel threads. It is applied only for
 \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
- Laplace kernel (\code{kernel = "laplace"}).}
+ Laplace kernel (\code{kernel = "laplace"}). If not specified, \code{1} thread is used.}
 
 \item{m}{Approximation rank(number of random features) used for the low-rank kernel approximation.}
 
@@ -90,7 +90,7 @@ ames_test  = testing(ames_split) # dim (588, 74)
 
 # Model spec
 krr_spec = krr_reg(kernel = "gaussian", opt = "nystrom",
-                   m = 50, eps = 1e-6, n_threads = 1,
+                   m = 50, eps = 1e-6,
                    rho = 1, penalty = tune()) \%>\%
  set_engine("fastkrr") \%>\%
  set_mode("regression")

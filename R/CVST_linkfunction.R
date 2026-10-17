@@ -114,8 +114,8 @@ predict.krr = function(object, newdata, ...){
 #'   \eqn{K \approx Z Z^\top}. Here, \eqn{m} is the number of features.}
 
 #'  }
-#' @param n_threads Number of parallel threads. If \code{NULL}, it defaults to
-#'   half of the available system processors (\code{max_threads \%/\% 2}).
+#' @param n_threads Number of parallel threads. Defaults to \code{1}, so that
+#'   multi-threading is used only when a larger value is explicitly specified.
 #'   Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
 #'   \code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
 #'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
@@ -258,7 +258,7 @@ predict.krr = function(object, newdata, ...){
 #'
 #' # Example: Laplace kernel
 #' model = fastkrr(data = data, response = "y",  kernel = "laplace",
-#'                 opt = "nystrom", n_threads = 1, rho = rho)
+#'                 opt = "nystrom", rho = rho)
 #'
 #' # Generate predictions for new data
 #' new_X = matrix(runif(10 * d, 0, 1), nrow = 10, ncol = d)

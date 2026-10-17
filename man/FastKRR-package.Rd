@@ -27,6 +27,7 @@ This package links against \CRANpkg{Rcpp} and \CRANpkg{RcppArmadillo}
 
 Authors:
 \itemize{
+  \item Kwan-Young Bak \email{kybak@sungshin.ac.kr} (\href{https://orcid.org/0000-0002-4541-160X}{ORCID}) (Sungshin Women's University) [copyright holder]
   \item Gyeongmin Kim \email{rlarudals0824@gmail.com} (Sungshin Women's University)
   \item Seyoung Lee \email{sudang0404@gmail.com} (Sungshin Women's University)
   \item Miyoung Jang \email{miyoung9072@gmail.com} (Sungshin Women's University)
