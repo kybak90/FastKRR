@@ -42,13 +42,14 @@
 #' @export
 predict.krr = function(object, newdata, ...){
   if(missing(newdata)) return(object$fitted.values)
+  n_threads = if (is.null(object$n_threads)) 1 else object$n_threads
 
   if(object$opt == "rff"){
     x_new = newdata
     W = object$W
     b = object$b
     coef = object$coefficients
-    Z_new = make_Z(x_new, W = W, b = b)
+    Z_new = make_Z(x_new, W = W, b = b, n_threads = n_threads)
 
     return(as.vector(Z_new %*% coef))
   }else{
@@ -58,7 +59,7 @@ predict.krr = function(object, newdata, ...){
     rho = object$rho
     coef = object$coefficients
 
-    K_new = make_kernel(x, x_new, kernel = kernel, rho = rho)
+    K_new = make_kernel(x, x_new, kernel = kernel, rho = rho, n_threads = n_threads)
 
     return(as.vector(K_new %*% coef))
   }
@@ -634,7 +635,7 @@ krr_pred_rff = function(model, newdata) {
   W = model$W
   b = model$b
   coef = model$coefficients
-  Z_new = make_Z(x_new, W = W, b = b)
+  Z_new = make_Z(x_new, W = W, b = b, n_threads = model$n_threads)
 
   return(as.vector(Z_new %*% coef))
 }

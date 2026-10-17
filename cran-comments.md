@@ -4,7 +4,9 @@ This is a resubmission of FastKRR (v0.2.1). This release includes major function
 
 ## Changes in version 0.2.1 -> 0.2.2
 
-- Changed the default of `n_threads` from `NULL` (half of the available cores) to `1` in `fastkrr()`, `approx_kernel()`, `make_kernel()`, and the tidymodels engine (`krr_reg()`), so that multi-threading is used only when explicitly requested by the user.
+- Changed the default of `n_threads` from `NULL` (half of the available cores) to `1` in `fastkrr()`, `approx_kernel()`, `make_kernel()`, and the tidymodels engine (`krr_reg()`), so that multi-threading is used only when explicitly requested by the user. Internal C++ routines also default to a single thread.
+- `predict()` (and the cross-validation predictions for `opt = "rff"`) now uses the `n_threads` value of the fitted model instead of an internal default of 4 threads.
+- Disabled Armadillo's internal OpenMP parallelization (`-DARMA_DONT_USE_OPENMP`), so that multi-threading occurs only in the package's own OpenMP loops controlled by `n_threads`.
 - `selection_method = "REML"` is no longer treated as a parallelized case, since the Newton-Raphson REML optimization runs sequentially.
 
 ## Changes in version 0.2.0 -> 0.2.1
