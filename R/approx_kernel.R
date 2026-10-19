@@ -32,8 +32,9 @@
 #' @param W Random frequency matrix \eqn{\omega \in \mathbb{R}^{m \times d}}
 #' @param b Random phase vector \eqn{b \in \mathbb{R}^m}, i.i.d. \eqn{\mathrm{Unif} [ 0, 2\pi ]}.
 #' @param n_threads Number of parallel threads.
-#'   If \code{NULL}, defaults to half of the available system processors.
-#'   It automatically falls back to 1 thread if the system has 3 or fewer processors.
+#'   Defaults to \code{1}, so that multi-threading is used only when a larger value is explicitly specified.
+#'   It automatically falls back to 1 thread if the system has 3 or fewer processors;
+#'   otherwise, it is capped at \code{max_threads - 1}.
 #'   Applied only for \code{opt = "nystrom"}, \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'
 #' @details
@@ -106,21 +107,21 @@
 #'
 #' # Example: Nystrom approximation
 #' K_nystrom = approx_kernel(X = X, opt = "nystrom",
-#'                            m = m, rho = rho, n_threads = 1)
+#'                            m = m, rho = rho)
 #'
 #' # Example: Pivoted Cholesky approximation
 #' K_pivoted = approx_kernel(X = X, opt = "pivoted",
 #'                            m = m, rho = rho)
 #' # Example: RFF approximation
 #' K_rff = approx_kernel(X = X, opt = "rff", kernel = "gaussian",
-#'                        m = m, rho = rho, n_threads = 1)
+#'                        m = m, rho = rho)
 #'
 #' @export
 approx_kernel = function(X = NULL,
                          opt = c("nystrom", "pivoted", "rff"),
                          kernel = c("gaussian", "laplace"),
                          m = NULL, rho, eps = NULL,
-                         W = NULL, b = NULL, n_threads = NULL) {
+                         W = NULL, b = NULL, n_threads = 1) {
   call   = match.call()
   opt    = match.arg(opt)
   kernel = match.arg(kernel)
@@ -140,7 +141,7 @@ approx_kernel = function(X = NULL,
 
   # Adjust number of threads only for heavy computation cases
   max_threads = get_num_procs()
-  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
+  if (is.null(n_threads)) n_threads = 1
   if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
     n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{

@@ -11,7 +11,7 @@ using namespace arma;
 Rcpp::List nystrom_kernel(const arma::mat& K_mm,
                           const arma::mat& K_nm,
                           Rcpp::Nullable<int> m_in = R_NilValue,
-                          int n_threads = 4)
+                          int n_threads = 1)
 {
   int max_threads = 1;
 #ifdef _OPENMP
@@ -69,7 +69,7 @@ Rcpp::List nystrom_kernel(const arma::mat& K_mm,
 Rcpp::List nystrom(const arma::mat& K_mm,
                    const arma::mat& K_nm,
                    const arma::vec& y,
-                   int m, double lambda, int n_threads = 4)
+                   int m, double lambda, int n_threads = 1)
 {
   int n = K_nm.n_rows;
 

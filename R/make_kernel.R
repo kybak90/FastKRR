@@ -12,8 +12,8 @@
 #' If omitted, \eqn{X' = X} and \eqn{n' = n}.
 #' @param kernel Kernel type; one of \code{"gaussian"} or \code{"laplace"}.
 #' @param rho Kernel width parameter (\eqn{\rho > 0}). Default is 1.
-#' @param n_threads Number of parallel threads. If \code{NULL}, it defaults to
-#'   half of the available system processors (\code{max_threads \%/\% 2}).
+#' @param n_threads Number of parallel threads. Defaults to \code{1}, so that
+#'   multi-threading is used only when a larger value is explicitly specified.
 #'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
 #'   falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
 #'   For all other settings, it is restricted to \code{1} thread.
@@ -47,15 +47,15 @@
 #' new_K = make_kernel(X, new_X, kernel = "gaussian", rho = rho) ## rectangular matrix
 #'
 #' # Make kernel : Laplace kernel
-#' K = make_kernel(X, kernel = "laplace", rho = rho, n_threads = 1) ## symmetric matrix
-#' new_K = make_kernel(X, new_X, kernel = "laplace", rho = rho, n_threads = 1) ## rectangular matrix
+#' K = make_kernel(X, kernel = "laplace", rho = rho) ## symmetric matrix
+#' new_K = make_kernel(X, new_X, kernel = "laplace", rho = rho) ## rectangular matrix
 #'
 #' @name make_kernel
 #' @usage make_kernel(X,
 #'             X_new = NULL,
 #'             kernel = "gaussian",
 #'             rho = 1,
-#'             n_threads = NULL)
+#'             n_threads = 1)
 #' @export make_kernel
 #' @useDynLib FastKRR, .registration = TRUE
 #' @importFrom Rcpp evalCpp

@@ -14,17 +14,22 @@ fastkrr(
   rho = 1,
   lambda = NULL,
   selection_method = "exactCV",
-  n_threads = NULL,
+  n_threads = 1,
   verbose = TRUE,
-  na.rm = FALSE
+  na.rm = FALSE,
+  x = NULL,
+  y = NULL
 )
 }
 \arguments{
 \item{data}{A data frame containing the data point variables and response
-variable.}
+variable. Alternatively, a design matrix \eqn{X \in \mathbb{R}^{n\times d}}
+(or a numeric vector when \eqn{d = 1}) when \code{response} is a numeric
+vector, as in \code{fastkrr(X, y)}.}
 
 \item{response}{A character string specifying the name of the response
-variable in \code{data}.}
+variable in \code{data}, or a numeric response vector
+\eqn{y \in \mathbb{R}^{n}} when \code{data} is a design matrix.}
 
 \item{kernel}{Kernel type either "gaussian"or "laplace".}
 
@@ -74,10 +79,10 @@ passed. One of:
   \item{\code{"REML"}}{Restricted Maximum Likelihood.}
 }}
 
-\item{n_threads}{Number of parallel threads. If \code{NULL}, it defaults to
-half of the available system processors (\code{max_threads \%/\% 2}).
+\item{n_threads}{Number of parallel threads. Defaults to \code{1}, so that
+multi-threading is used only when a larger value is explicitly specified.
 Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
-\code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
+\code{opt = "rff"}, or \code{kernel = "laplace"}.
 For these parallelizable cases, if the system has 3 or fewer processors, it automatically
 falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
 For all other settings, it is restricted to \code{1} thread.}
@@ -88,6 +93,10 @@ intermediate output and only returns the final result.}
 
 \item{na.rm}{Logical. If \code{TRUE}, rows containing missing values are
 removed before fitting. Defaults to \code{FALSE}.}
+
+\item{x, y}{Optional design matrix (or numeric vector when \eqn{d = 1}) and
+numeric response vector, as in \code{fastkrr(x = X, y = y)}. An alternative
+to \code{data} and \code{response} that cannot be combined with them.}
 }
 \value{
 \itemize{
@@ -115,6 +124,10 @@ removed before fitting. Defaults to \code{FALSE}.}
   \item{\code{call}: The matched function call used to create the object.}
   \item{\code{n_threads}: Number of threads used for parallelization.}
   \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
+  \item{\code{interface}: How the data were supplied: \code{"data.frame"} for
+    \code{fastkrr(data, response)} or \code{"matrix"} for \code{fastkrr(X, y)}.}
+  \item{\code{response}: Name of the response column when \code{interface = "data.frame"};
+    \code{NULL} otherwise.}
 }
 
 Additional components depend on the value of \code{opt}:
@@ -172,6 +185,11 @@ can be computed using two methods (Gaussian kernel, Laplace kernel).
 The function performs several input checks and automatic adjustments:
 
 \itemize{
+  \item The data can be supplied in three equivalent ways:
+    \code{fastkrr(data, "y")} (a data frame and the name of its response column),
+    \code{fastkrr(X, y)}, or \code{fastkrr(x = X, y = y)} (a design matrix and a
+    numeric response vector). Columns of \code{X} without names are named
+    \code{X1}, \code{X2}, \ldots.
   \item \code{lambda} can be specified in four ways:
     \enumerate{
       \item A positive numeric scalar, in which case the model is fitted with
@@ -207,6 +225,10 @@ data = data.frame(X, y = y)
 model = fastkrr(data = data, response = "y",  kernel = "gaussian",
                 opt = "pivoted", rho = rho, lambda = lambda)
 
+# The same model from a design matrix and a response vector
+model = fastkrr(X, y, kernel = "gaussian",
+                opt = "pivoted", rho = rho, lambda = lambda)
+
 # Example: nystrom
 model = fastkrr(data = data, response = "y", kernel = "gaussian",
                 opt = "nystrom", rho = rho, lambda = lambda)
@@ -217,7 +239,7 @@ model = fastkrr(data = data, response = "y", kernel = "gaussian",
 
 # Example: Laplace kernel
 model = fastkrr(data = data, response = "y",  kernel = "laplace",
-                opt = "nystrom", n_threads = 1, rho = rho)
+                opt = "nystrom", rho = rho)
 
 # Generate predictions for new data
 new_X = matrix(runif(10 * d, 0, 1), nrow = 10, ncol = d)

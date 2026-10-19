@@ -13,7 +13,7 @@ fastkrr_fit_wrapper(
   eps = 1e-06,
   rho = 1,
   lambda = NULL,
-  n_threads = 4,
+  n_threads = 1,
   verbose = FALSE,
   na.rm = FALSE
 )

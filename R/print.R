@@ -82,7 +82,7 @@ print.krr = function(x, ...) {
 #' X = matrix(runif(n*d, 0, 1), nrow = n, ncol = d)
 #'
 #' # Example: nystrom
-#' K_nystrom = approx_kernel(X = X, opt = "nystrom", rho = rho, n_threads = 1)
+#' K_nystrom = approx_kernel(X = X, opt = "nystrom", rho = rho)
 #'
 #' print(K_nystrom)
 #' @export

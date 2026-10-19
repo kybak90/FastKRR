@@ -8,6 +8,9 @@
 #'                for which predictions are to be made. If \code{newdata} is missing, the function returns fitted values.
 #' @param ... Additional arguments (currently ignored).
 #'
+#' @details
+#' Predictions use the \code{n_threads} value stored in the fitted model, that is,
+#' the number of threads chosen when the model was fitted (\code{1} by default).
 #'
 #' @return A numeric vector of predicted values corresponding to \code{newdata} or fitted values.
 #'
@@ -42,13 +45,14 @@
 #' @export
 predict.krr = function(object, newdata, ...){
   if(missing(newdata)) return(object$fitted.values)
+  n_threads = if (is.null(object$n_threads)) 1 else object$n_threads
 
   if(object$opt == "rff"){
     x_new = newdata
     W = object$W
     b = object$b
     coef = object$coefficients
-    Z_new = make_Z(x_new, W = W, b = b)
+    Z_new = make_Z(x_new, W = W, b = b, n_threads = n_threads)
 
     return(as.vector(Z_new %*% coef))
   }else{
@@ -58,7 +62,7 @@ predict.krr = function(object, newdata, ...){
     rho = object$rho
     coef = object$coefficients
 
-    K_new = make_kernel(x, x_new, kernel = kernel, rho = rho)
+    K_new = make_kernel(x, x_new, kernel = kernel, rho = rho, n_threads = n_threads)
 
     return(as.vector(K_new %*% coef))
   }
@@ -76,9 +80,12 @@ predict.krr = function(object, newdata, ...){
 #' can be computed using two methods (Gaussian kernel, Laplace kernel).
 #'
 #' @param data A data frame containing the data point variables and response
-#' variable.
+#' variable. Alternatively, a design matrix \eqn{X \in \mathbb{R}^{n\times d}}
+#' (or a numeric vector when \eqn{d = 1}) when \code{response} is a numeric
+#' vector, as in \code{fastkrr(X, y)}.
 #' @param response A character string specifying the name of the response
-#' variable in \code{data}.
+#' variable in \code{data}, or a numeric response vector
+#' \eqn{y \in \mathbb{R}^{n}} when \code{data} is a design matrix.
 #' @param kernel Kernel type either "gaussian"or "laplace".
 #' @param rho Scaling parameter of the kernel(\eqn{\rho}),  specified by the user.
 #'   Defaults to \code{1}.
@@ -114,10 +121,10 @@ predict.krr = function(object, newdata, ...){
 #'   \eqn{K \approx Z Z^\top}. Here, \eqn{m} is the number of features.}
 
 #'  }
-#' @param n_threads Number of parallel threads. If \code{NULL}, it defaults to
-#'   half of the available system processors (\code{max_threads \%/\% 2}).
+#' @param n_threads Number of parallel threads. Defaults to \code{1}, so that
+#'   multi-threading is used only when a larger value is explicitly specified.
 #'   Note that parallelization (implemented in C++) is applied for \code{opt = "nystrom"},
-#'   \code{opt = "rff"}, \code{kernel = "laplace"}, or \code{selection_method = "REML"}.
+#'   \code{opt = "rff"}, or \code{kernel = "laplace"}.
 #'   For these parallelizable cases, if the system has 3 or fewer processors, it automatically
 #'   falls back to \code{1} thread; otherwise, it is capped at \code{max_threads - 1}.
 #'   For all other settings, it is restricted to \code{1} thread.
@@ -133,11 +140,19 @@ predict.krr = function(object, newdata, ...){
 #' intermediate output and only returns the final result.
 #' @param na.rm Logical. If \code{TRUE}, rows containing missing values are
 #'   removed before fitting. Defaults to \code{FALSE}.
+#' @param x,y Optional design matrix (or numeric vector when \eqn{d = 1}) and
+#'   numeric response vector, as in \code{fastkrr(x = X, y = y)}. An alternative
+#'   to \code{data} and \code{response} that cannot be combined with them.
 #'
 #' @details
 #' The function performs several input checks and automatic adjustments:
 #'
 #' \itemize{
+#'   \item The data can be supplied in three equivalent ways:
+#'     \code{fastkrr(data, "y")} (a data frame and the name of its response column),
+#'     \code{fastkrr(X, y)}, or \code{fastkrr(x = X, y = y)} (a design matrix and a
+#'     numeric response vector). Columns of \code{X} without names are named
+#'     \code{X1}, \code{X2}, \ldots.
 #'   \item \code{lambda} can be specified in four ways:
 #'     \enumerate{
 #'       \item A positive numeric scalar, in which case the model is fitted with
@@ -184,6 +199,10 @@ predict.krr = function(object, newdata, ...){
 #'   \item{\code{call}: The matched function call used to create the object.}
 #'   \item{\code{n_threads}: Number of threads used for parallelization.}
 #'   \item{\code{removed_row_idx}: Indices of rows removed due to missing values.}
+#'   \item{\code{interface}: How the data were supplied: \code{"data.frame"} for
+#'     \code{fastkrr(data, response)} or \code{"matrix"} for \code{fastkrr(X, y)}.}
+#'   \item{\code{response}: Name of the response column when \code{interface = "data.frame"};
+#'     \code{NULL} otherwise.}
 #' }
 #'
 #' Additional components depend on the value of \code{opt}:
@@ -248,6 +267,10 @@ predict.krr = function(object, newdata, ...){
 #' model = fastkrr(data = data, response = "y",  kernel = "gaussian",
 #'                 opt = "pivoted", rho = rho, lambda = lambda)
 #'
+#' # The same model from a design matrix and a response vector
+#' model = fastkrr(X, y, kernel = "gaussian",
+#'                 opt = "pivoted", rho = rho, lambda = lambda)
+#'
 #' # Example: nystrom
 #' model = fastkrr(data = data, response = "y", kernel = "gaussian",
 #'                 opt = "nystrom", rho = rho, lambda = lambda)
@@ -258,7 +281,7 @@ predict.krr = function(object, newdata, ...){
 #'
 #' # Example: Laplace kernel
 #' model = fastkrr(data = data, response = "y",  kernel = "laplace",
-#'                 opt = "nystrom", n_threads = 1, rho = rho)
+#'                 opt = "nystrom", rho = rho)
 #'
 #' # Generate predictions for new data
 #' new_X = matrix(runif(10 * d, 0, 1), nrow = 10, ncol = d)
@@ -274,11 +297,57 @@ fastkrr = function(data, response,
                    rho = 1,
                    lambda = NULL,
                    selection_method = "exactCV",  # c(exactCV, fastCV, REML)
-                   n_threads = NULL,
+                   n_threads = 1,
                    verbose =  TRUE,
-                   na.rm = FALSE)
+                   na.rm = FALSE,
+                   x = NULL,
+                   y = NULL)
 {
   call = match.call()
+
+  # Input: data frame + response column name, or design matrix + response vector
+  has_data = !missing(data)
+  has_response = !missing(response)
+  if (!is.null(x) || !is.null(y)){
+    if (is.null(x) || is.null(y))
+      stop("Both x and y must be supplied.", call. = FALSE)
+    if (has_data || has_response)
+      stop("Use either data/response or x/y, not both.", call. = FALSE)
+    data = x
+    response = y
+  }else{
+    if (!has_data) stop("data must be supplied.", call. = FALSE)
+    if (!has_response)
+      stop("response is missing. Supply either a column name of data ",
+           "(e.g. fastkrr(data, \"y\")) or a numeric response vector ",
+           "(e.g. fastkrr(X, y)).", call. = FALSE)
+  }
+
+  if (is.character(response)){
+    interface = "data.frame"
+  }else if (is.numeric(response) && NCOL(response) == 1){
+    interface = "matrix"
+    X = data
+    if (is.data.frame(X)){
+      if (!all(vapply(X, is.numeric, logical(1))))
+        stop("x must contain only numeric columns.", call. = FALSE)
+      X = as.matrix(X)
+    }else if (is.numeric(X) && is.null(dim(X))){
+      X = matrix(X, ncol = 1)
+    }else if (!(is.matrix(X) && is.numeric(X))){
+      stop("x must be a numeric matrix, vector, or data frame.", call. = FALSE)
+    }
+    if (nrow(X) != length(response))
+      stop("nrow(x) must match length(y).", call. = FALSE)
+    if (is.null(colnames(X))) colnames(X) = paste0("X", seq_len(ncol(X)))
+    response_name = make.unique(c(colnames(X), "y"))[ncol(X) + 1]
+    data = data.frame(X, check.names = FALSE)
+    data[[response_name]] = as.vector(response)
+    response = response_name
+  }else{
+    stop("response must be a single column name of data or a numeric response vector.",
+         call. = FALSE)
+  }
 
   # Data frame
   if(!is.data.frame(data)) stop("data must be a data.frame", call. = FALSE)
@@ -355,8 +424,8 @@ fastkrr = function(data, response,
 
   # Adjust number of threads
   max_threads = get_num_procs()
-  if (is.null(n_threads)) n_threads = as.integer(max(1, max_threads %/% 2))
-  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace") || (selection_method == "REML")){
+  if (is.null(n_threads)) n_threads = 1
+  if ((opt %in% c("nystrom", "rff")) || (kernel == "laplace")){
     n_threads = if (max_threads <= 3) 1 else min(n_threads, max_threads - 1)
   }else{
     n_threads = 1
@@ -446,6 +515,8 @@ fastkrr = function(data, response,
     result_values$n_threads = n_threads
     result_values$selection_method = selection_method
     result_values$call = call
+    result_values$interface = interface
+    result_values$response = if (interface == "data.frame") response else NULL
     result_values$m = m
     result_values$approx_factor = rslt$Z
     result_values$W = rslt$W
@@ -468,6 +539,8 @@ fastkrr = function(data, response,
     result_values$n_threads = n_threads
     result_values$selection_method = selection_method
     result_values$call = call
+    result_values$interface = interface
+    result_values$response = if (interface == "data.frame") response else NULL
     result_values$K = K
     result_values$chol_factor = rslt$chol_factor
     return(result_values)
@@ -487,6 +560,8 @@ fastkrr = function(data, response,
     result_values$n_threads = n_threads
     result_values$selection_method = selection_method
     result_values$call = call
+    result_values$interface = interface
+    result_values$response = if (interface == "data.frame") response else NULL
     result_values$m = rslt$m
     result_values$approx_factor = rslt$PR
     result_values$eps = eps
@@ -515,6 +590,8 @@ fastkrr = function(data, response,
     result_values$n_threads = n_threads
     result_values$selection_method = selection_method
     result_values$call = call
+    result_values$interface = interface
+    result_values$response = if (interface == "data.frame") response else NULL
 
     result_values$m = rslt$m
     result_values$approx_factor = rslt$R
@@ -634,7 +711,7 @@ krr_pred_rff = function(model, newdata) {
   W = model$W
   b = model$b
   coef = model$coefficients
-  Z_new = make_Z(x_new, W = W, b = b)
+  Z_new = make_Z(x_new, W = W, b = b, n_threads = model$n_threads)
 
   return(as.vector(Z_new %*% coef))
 }

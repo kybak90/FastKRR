@@ -30,7 +30,7 @@
 #'   for stopping criterion of the Pivoted Cholesky decomposition.
 #' @param n_threads Number of parallel threads. It is applied only for
 #'  \code{opt = "nystrom"} or \code{opt = "rff"}, and for the
-#'   Laplace kernel (\code{kernel = "laplace"}).
+#'   Laplace kernel (\code{kernel = "laplace"}). If not specified, \code{1} thread is used.
 #' @param rho  Scaling parameter of the kernel(\eqn{\rho}).
 #' @param penalty Regularization parameter. It must be a positive numeric
 #' value, a numeric vector containing at least three positive values, or
@@ -67,7 +67,7 @@
 #'
 #' # Model spec
 #' krr_spec = krr_reg(kernel = "gaussian", opt = "nystrom",
-#'                    m = 50, eps = 1e-6, n_threads = 1,
+#'                    m = 50, eps = 1e-6,
 #'                    rho = 1, penalty = tune()) %>%
 #'  set_engine("fastkrr") %>%
 #'  set_mode("regression")
@@ -378,7 +378,7 @@ fastkrr_fit_wrapper = function(x, y,
                                eps = 1e-6,
                                rho = 1,
                                lambda = NULL,
-                               n_threads = 4,
+                               n_threads = 1,
                                verbose = FALSE,
                                na.rm = FALSE) {
 

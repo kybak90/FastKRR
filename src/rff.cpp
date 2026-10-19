@@ -11,7 +11,7 @@ using namespace arma;
 arma::mat make_Z(const arma::mat& X,
                  const arma::mat& W,
                  const arma::vec& b,
-                 int n_threads = 4){
+                 int n_threads = 1){
   int max_threads = 1;
 #ifdef _OPENMP
   max_threads = omp_get_num_procs();
@@ -43,7 +43,7 @@ List rff(const arma::mat& X,
          const arma::mat& W,
          const arma::vec& b,
          double lambda,
-         int n_threads = 4) {
+         int n_threads = 1) {
 
   int max_threads = 1;
   #ifdef _OPENMP
